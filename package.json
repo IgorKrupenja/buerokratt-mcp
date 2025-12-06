@@ -1,12 +1,29 @@
 {
-  "name": "burokratt-mcp",
-  "module": "index.ts",
+  "name": "byrokratt-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for sharing Cursor rules across Bürokratt modules",
+  "module": "src/server.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "start": "bun run src/server.ts",
+    "dev": "bun run --watch src/server.ts",
+    "validate": "bun run src/scripts/validate.ts",
+    "lint:markdown": "markdownlint-cli2 \"rules/**/*.md\""
+  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "markdownlint": "^0.40.0",
+    "markdownlint-cli2": "^0.19.1"
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.24.3",
+    "gray-matter": "^4.0.3",
+    "remark": "^15.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0"
   }
 }
