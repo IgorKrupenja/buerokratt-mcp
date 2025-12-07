@@ -9,12 +9,15 @@
     "start": "bun run src/server.ts",
     "dev": "bun run --watch src/server.ts",
     "validate": "bun run src/scripts/validate.ts",
-    "lint:markdown": "markdownlint-cli2 \"rules/**/*.md\""
+    "lint:markdown": "markdownlint-cli2 \"rules/**/*.md\"",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write ."
   },
   "devDependencies": {
     "@types/bun": "latest",
     "markdownlint": "^0.40.0",
-    "markdownlint-cli2": "^0.19.1"
+    "markdownlint-cli2": "^0.20.0",
+    "prettier": "^3.6.2"
   },
   "peerDependencies": {
     "typescript": "^5"
