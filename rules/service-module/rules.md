@@ -45,11 +45,8 @@ This repository contains a Service Module with two main parts:
   for modifying and removing data. When updating records, use direct identifiers (e.g., `service_id`, `endpoint_id`) in
   WHERE clauses.
 - **UPDATE and DELETE Statements for `training/` and `analytics/` folders**: UPDATE and DELETE statements are NOT
-  ALLOWED in training-module and analytics-module. Use INSERT statements with SELECT from existing records as a
-  workaround:
-  - Copy all fields from existing record
-  - Modify only the fields that need to change
-  - Use `ORDER BY id DESC LIMIT 1` to get latest record
+  ALLOWED (see shared-backend/sql-restrictions.md for details). This is an exception - service-module allows
+  UPDATE/DELETE in the `services/` folder only.
 
 # Utils
 

@@ -1,6 +1,9 @@
 ---
 modules:
   - service-module
+  - training-module
+  - analytics-module
+  - buerokratt-chatbot
 tags:
   - frontend
   - css

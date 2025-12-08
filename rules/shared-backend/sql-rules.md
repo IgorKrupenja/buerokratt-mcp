@@ -36,7 +36,10 @@ description: SQL rules for DSL-based backends (migrations and queries)
 - **Legacy Files**: Do NOT rename old files with incorrect naming conventions
 - **Parameter Format**: Use colon-prefixed parameters: `:page_size`, `:search`, `:sorting`, `:page`, `:id`
 - **Type Casting**: Use PostgreSQL type casting: `:value::uuid`, `:state::service_state`, `:data::json`
-- **UPDATE and DELETE Statements**: Check module-specific rules for UPDATE and DELETE statement policies
+- **UPDATE and DELETE Statements**:
+  - Most modules (training-module, analytics-module, buerokratt-chatbot) do NOT allow UPDATE/DELETE statements (see
+    sql-restrictions.md)
+  - service-module is an exception and allows UPDATE/DELETE in the `services/` folder (see service-module rules)
 - **Query Structure**:
   - Use CTEs (WITH clauses) for complex queries
   - Include pagination with `OFFSET` and `LIMIT`
