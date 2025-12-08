@@ -28,8 +28,29 @@ export function getRulesForModule(allRules: RuleFile[], moduleName: string): Mod
  * Merge rules into a single markdown string
  */
 export function mergeRules(ruleSet: ModuleRuleSet): string {
-  // TODO: Implement rule merging
-  // Will combine global rules and module-specific rules
-  // Module-specific rules should override global rules when there are conflicts
-  return '';
+  const parts: string[] = [];
+
+  // Add global rules first
+  if (ruleSet.globalRules.length > 0) {
+    // todo check heading level later
+    parts.push('## Global Rules\n\n');
+    for (const rule of ruleSet.globalRules) {
+      parts.push(rule.content);
+      parts.push('\n\n');
+    }
+  }
+
+  // Add module-specific rules
+  if (ruleSet.rules.length > 0) {
+    if (ruleSet.globalRules.length > 0) {
+      parts.push('---\n\n');
+    }
+    parts.push(`## ${ruleSet.module} Rules\n\n`);
+    for (const rule of ruleSet.rules) {
+      parts.push(rule.content);
+      parts.push('\n\n');
+    }
+  }
+
+  return parts.join('').trim();
 }

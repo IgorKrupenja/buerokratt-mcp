@@ -36,8 +36,7 @@ server.server.onerror = (error) => {
 };
 
 // Register resources, tools, and prompts
-// (These will be implemented in the respective modules)
-setupResources(server);
+await setupResources(server);
 setupTools(server);
 setupPrompts(server);
 
