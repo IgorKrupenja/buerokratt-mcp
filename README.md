@@ -35,8 +35,18 @@ bun run src/server.ts
 
 ### Docker
 
+Run the MCP server using Docker Compose:
+
 ```bash
 docker-compose up
+```
+
+The `rules/` directory is volume-mounted, so changes to rule files will be reflected immediately after pulling updates from git. No container restart needed for rule changes.
+
+To rebuild the container after code changes:
+
+```bash
+docker-compose up --build
 ```
 
 ## License

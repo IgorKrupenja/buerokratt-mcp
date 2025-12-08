@@ -1,0 +1,17 @@
+node_modules
+dist
+build
+coverage
+.git
+.gitignore
+.env
+.env.local
+*.log
+.DS_Store
+.vscode
+.idea
+docs
+README.md
+.eslintcache
+*.tsbuildinfo
+
