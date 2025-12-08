@@ -5,36 +5,38 @@
  */
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { GetPromptResult } from '@modelcontextprotocol/sdk/types.js';
-// import { z } from "zod"; // Will be needed when implementing prompts
+import { z } from 'zod';
+import { getMergedRules } from '../rules/manager.ts';
 
 /**
  * Set up prompt handlers for the MCP server
  */
 export function setupPrompts(server: McpServer): void {
-  // TODO: Register prompts
-  // Example:
-  // server.registerPrompt(
-  //   "cursor-rules",
-  //   {
-  //     description: "Get cursor rules as a system prompt for a specific module",
-  //     argsSchema: z.object({
-  //       module: z.string().describe("Module name"),
-  //     }),
-  //   },
-  //   async (args) => {
-  //     // Load rules and format as a prompt
-  //     return {
-  //       messages: [
-  //         {
-  //           role: "user",
-  //           content: {
-  //             type: "text",
-  //             text: `Here are the cursor rules for ${args.module}:\n\n...`,
-  //           },
-  //         },
-  //       ],
-  //     };
-  //   }
-  // );
+  // todo check if actually used
+  // Prompt: Get development rules as a system prompt
+  // Works with any AI editor: Cursor, VS Code, JetBrains, etc.
+  server.registerPrompt(
+    'development-rules',
+    {
+      description: 'Get development rules as a system prompt for a specific module (works with any AI editor)',
+      argsSchema: {
+        module: z.string().describe('Module name'),
+      },
+    },
+    async (args) => {
+      const rules = await getMergedRules(args.module);
+
+      return {
+        messages: [
+          {
+            role: 'user' as const,
+            content: {
+              type: 'text' as const,
+              text: `Here are the development rules for ${args.module}:\n\n${rules}`,
+            },
+          },
+        ],
+      };
+    },
+  );
 }
