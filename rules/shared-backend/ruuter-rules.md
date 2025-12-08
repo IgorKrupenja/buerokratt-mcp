@@ -9,7 +9,7 @@ tags:
 description: Ruuter YAML business logic rules for DSL-based backends
 ---
 
-# Business Logic (Ruuter YAML)
+## Business Logic (Ruuter YAML)
 
 - **Location**: YAML files are under `DSL/Ruuter/` folder
 - **Purpose**: YAML files define API endpoints and business logic
@@ -21,7 +21,7 @@ description: Ruuter YAML business logic rules for DSL-based backends
   - `TEMPLATES/` - Reusable template endpoints
 - **HTTP Methods**: Organize by method (`GET/`, `POST/`) within service folders
 
-## YAML Structure Patterns
+### YAML Structure Patterns
 
 ```yaml
 declaration:
@@ -47,7 +47,7 @@ declaration:
         description: "Header field"
 ```
 
-## Variable Assignment Pattern
+### Variable Assignment Pattern
 
 ```yaml
 extract_request_data:
@@ -59,7 +59,7 @@ extract_request_data:
   next: next_step_name
 ```
 
-## Escaping Curly Brackets
+### Escaping Curly Brackets
 
 - **Standard Syntax**: Use `${...}` for JavaScript expressions without curly brackets
 - **Escaping Syntax**: Use `$= ... =` for JavaScript expressions that contain curly brackets `{}`
@@ -84,7 +84,7 @@ assign:
   name: ${incoming.body.name}
 ```
 
-## Conditional Logic Pattern
+### Conditional Logic Pattern
 
 ```yaml
 check_for_required_parameters:
@@ -96,7 +96,7 @@ check_for_required_parameters:
   next: default_next_step
 ```
 
-## HTTP Call Pattern
+### HTTP Call Pattern
 
 ```yaml
 service_add:
@@ -113,7 +113,7 @@ service_add:
   next: next_step
 ```
 
-## Response Pattern
+### Response Pattern
 
 ```yaml
 return_ok:
@@ -128,7 +128,7 @@ return_error:
   next: end
 ```
 
-## Key Rules
+### Key Rules
 
 - **JavaScript in ${}**: Everything inside `${}` is JavaScript code executed by Ruuter
 - **Variable Access**: Use `incoming.body.field`, `incoming.params.field`, `incoming.headers.field`

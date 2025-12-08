@@ -8,7 +8,7 @@ tags:
 description: TypeScript-specific code quality rules and best practices
 ---
 
-# TypeScript Code Quality
+## TypeScript Code Quality
 
 - **Avoid `any` and `unknown` types**: Avoid using `any` or `unknown` type if at all possible. Use proper TypeScript
   types instead

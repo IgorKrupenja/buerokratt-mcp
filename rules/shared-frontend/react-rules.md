@@ -12,13 +12,13 @@ tags:
 description: React frontend rules (architecture, types, i18n)
 ---
 
-# Component Architecture
+## Component Architecture
 
 - **Extract Functions**: When dealing with React components, extract functions from component itself OUTSIDE for testability
 - **Separate Testable Logic**: Place extracted functions in separate files and export them for easy testing
 - **Small Functions**: Make functions small to make them easily testable
 
-## File Naming & Organization
+### File Naming & Organization
 
 - **Component Names**: Use CamelCase for component names
 - **Other Files**: Use kebab-case for all other files
@@ -27,7 +27,7 @@ description: React frontend rules (architecture, types, i18n)
 - **Single Component**: Use `index.tsx` for single components
 - **Multiple Related Components**: Use `index.tsx` for main component, `CamelCasedComponentName.tsx` for others
 
-# Type Management
+## Type Management
 
 - **Component Props**: Always use `interface` for component props, never `type` (e.g., `interface ComponentProps { ... }`)
 - **Repeated Types**: If you see repeated types in code, create a new type for them
@@ -37,7 +37,7 @@ description: React frontend rules (architecture, types, i18n)
 - **Split Legacy Types**: When dealing with old types in `src/types/`, if there are several types in one file, split
   them into separate files
 
-# Internationalization (i18n)
+## Internationalization (i18n)
 
 - **No Hardcoded Strings**: NEVER hardcode user-facing strings in components. ALL user-visible text MUST use
   translation files
@@ -53,7 +53,7 @@ description: React frontend rules (architecture, types, i18n)
 - **Key Content Alignment**: Rename translation keys to match their string content when refactoring. Keep key names
   simple and aligned with the actual translation values
 
-## Using Translations Outside React Components
+### Using Translations Outside React Components
 
 - **Outside React Hooks**: When using translations outside of React components or hooks, use direct `t` import from
   i18next

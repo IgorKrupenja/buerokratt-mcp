@@ -9,14 +9,14 @@ tags:
 description: Service Module specific rules (overview, testing, utilities)
 ---
 
-# Project Overview
+## Project Overview
 
 This repository contains a Service Module with two main parts:
 
 - **GUI folder**: React-based front-end application (contains all frontend code and tests)
 - **DSL folder**: Back-end using a custom stack (configuration-based, no unit tests)
 
-# Tests
+## Tests
 
 - **Tests are ONLY in GUI folder**: All tests are located in the `GUI/` directory
 - **Run tests from GUI directory**: Always `cd GUI` before running `npm run test:run`
@@ -39,7 +39,7 @@ This repository contains a Service Module with two main parts:
 - **Step-by-Step Tests**: When you have several functions, create tests step by step. First for one function, so it
   can be reviewed. Only after that, create tests for second function, review + so on
 
-# SQL Rules (Service Module Specific)
+## SQL Rules (Service Module Specific)
 
 - **UPDATE and DELETE Statements for `services/` folder**: UPDATE and DELETE statements are allowed and should be used
   for modifying and removing data. When updating records, use direct identifiers (e.g., `service_id`, `endpoint_id`) in
@@ -48,7 +48,7 @@ This repository contains a Service Module with two main parts:
   ALLOWED (see shared-backend/sql-restrictions.md for details). This is an exception - service-module allows
   UPDATE/DELETE in the `services/` folder only.
 
-# Utils
+## Utils
 
 - **String Utilities**: Use `src/utils/string-util.ts` for string manipulation functions:
   - **Template Functions**: `isTemplate()`, `stringToTemplate()`, `templateToString()` for `${variable}` template handling

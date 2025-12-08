@@ -10,7 +10,7 @@ tags:
 description: SQL rules for DSL-based backends (migrations and queries)
 ---
 
-# Database Migrations
+## Database Migrations
 
 - **Migration Location**: SQL migrations are in `DSL/Liquibase/changelog/` folder
 - **Migration Format**: Check latest files in `Liquibase/changelog` folder for current format
@@ -24,7 +24,7 @@ description: SQL rules for DSL-based backends (migrations and queries)
 - **Local Execution**: Run migrations locally with `migrate.sh` in repo root
 - **Author Format**: Use GitHub username in changeSet. Get username with `git remote get-url origin | sed 's/.*github.com[:/]\([^/]*\)\/.*/\1/'`
 
-# SQL Queries
+## SQL Queries
 
 - **Location**: SQL files are under `DSL/Resql/` folder
 - **Database Structure**:

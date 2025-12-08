@@ -11,7 +11,7 @@ tags:
 description: SQL UPDATE and DELETE restrictions for modules that require immutable data
 ---
 
-# SQL Restrictions
+## SQL Restrictions
 
 - **UPDATE and DELETE Statements**: UPDATE and DELETE statements are NOT ALLOWED. Use INSERT statements with SELECT
   from existing records as a workaround:
