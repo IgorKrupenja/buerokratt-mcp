@@ -11,9 +11,9 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
 // Import handlers (will be implemented in next steps)
+import { setupPrompts } from './mcp/prompts.ts';
 import { setupResources } from './mcp/resources.ts';
 import { setupTools } from './mcp/tools.ts';
-import { setupPrompts } from './mcp/prompts.ts';
 
 // Create MCP server instance using the high-level API
 const server = new McpServer(
@@ -36,7 +36,7 @@ server.server.onerror = (error) => {
 };
 
 // Register resources, tools, and prompts
-await setupResources(server);
+setupResources(server);
 setupTools(server);
 setupPrompts(server);
 

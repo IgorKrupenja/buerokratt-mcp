@@ -5,6 +5,7 @@
  */
 
 import matter from 'gray-matter';
+
 import type { RuleFile, RuleFrontmatter } from './types.ts';
 
 const RULES_DIR = `${import.meta.dir}/../../rules`;

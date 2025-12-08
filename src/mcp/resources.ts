@@ -5,13 +5,13 @@
  */
 
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { ReadResourceResult } from '@modelcontextprotocol/sdk/types.js';
-import { getMergedRules, getAvailableModules } from '../rules/manager.ts';
+
+import { getAvailableModules, getMergedRules } from '../rules/manager.ts';
 
 /**
  * Set up resource handlers for the MCP server
  */
-export async function setupResources(server: McpServer): Promise<void> {
+export function setupResources(server: McpServer): void {
   // Register a resource template for module rules
   server.registerResource(
     'module-rules',

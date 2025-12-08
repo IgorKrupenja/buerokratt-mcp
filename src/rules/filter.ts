@@ -4,8 +4,8 @@
  * Filters and merges rules for specific modules
  */
 
-import type { RuleFile, ModuleRuleSet } from './types.ts';
 import { filterRulesByModule } from './loader.ts';
+import type { ModuleRuleSet, RuleFile } from './types.ts';
 
 /**
  * Get all rules for a specific module (including global rules)

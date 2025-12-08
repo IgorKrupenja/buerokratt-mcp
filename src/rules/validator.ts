@@ -4,9 +4,10 @@
  * Validates rule files (Level 1: Frontmatter, Level 2: Markdown)
  */
 
+import { lint } from 'markdownlint/promise';
+
 import type { RuleFile, ValidationResult } from './types.ts';
 import { moduleExists } from '../config/modules.ts';
-import { lint } from 'markdownlint/promise';
 
 /**
  * Validate frontmatter structure (Level 1)
@@ -33,7 +34,7 @@ export function validateFrontmatter(frontmatter: any, filePath: string): Validat
 
   // Validate module names exist in registry
   for (const moduleName of frontmatter.modules) {
-    if (moduleName !== 'global' && !moduleExists(moduleName)) {
+    if (typeof moduleName === 'string' && moduleName !== 'global' && !moduleExists(moduleName)) {
       warnings.push(`Unknown module '${moduleName}' in ${filePath} (not in module registry)`);
     }
   }
@@ -76,8 +77,9 @@ export async function validateMarkdown(content: string, filePath: string): Promi
     for (const [file, issues] of Object.entries(results)) {
       for (const issue of issues) {
         const ruleName = issue.ruleNames.join('/');
-        const detail = issue.errorDetail ? ` - ${issue.errorDetail}` : '';
-        const context = issue.errorContext ? ` Context: "${issue.errorContext}"` : '';
+        const detail = issue.errorDetail && typeof issue.errorDetail === 'string' ? ` - ${issue.errorDetail}` : '';
+        const context =
+          issue.errorContext && typeof issue.errorContext === 'string' ? ` Context: "${issue.errorContext}"` : '';
         const message = `${file}:${issue.lineNumber}: ${ruleName} ${issue.ruleDescription}${detail}${context}`;
 
         warnings.push(message);

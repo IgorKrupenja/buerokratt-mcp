@@ -4,9 +4,9 @@
  * Manages rule loading, caching, and retrieval
  */
 
-import { loadAllRules } from './loader.ts';
 import { getRulesForModule, mergeRules } from './filter.ts';
-import type { RuleFile, ModuleRuleSet } from './types.ts';
+import { loadAllRules } from './loader.ts';
+import type { ModuleRuleSet, RuleFile } from './types.ts';
 
 let cachedRules: RuleFile[] | null = null;
 

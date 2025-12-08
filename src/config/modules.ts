@@ -14,10 +14,10 @@ export interface ModuleConfig {
  * Registry of available Bürokratt modules
  */
 export const MODULES: Record<string, ModuleConfig> = {
-  "service-module": {
-    name: "service-module",
-    displayName: "Service Module",
-    description: "Main service module with frontend and backend components",
+  'service-module': {
+    name: 'service-module',
+    displayName: 'Service Module',
+    description: 'Main service module with frontend and backend components',
   },
 };
 

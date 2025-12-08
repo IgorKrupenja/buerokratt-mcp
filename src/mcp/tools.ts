@@ -6,14 +6,15 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { getMergedRules, getAvailableModules, loadRules } from '../rules/manager.ts';
+
+import { getAvailableModules, getMergedRules, loadRules } from '../rules/manager.ts';
 
 /**
  * Set up tool handlers for the MCP server
  */
 export function setupTools(server: McpServer): void {
-  // Tool: Get rules for a specific module
   // todo check if actually used
+  // Tool: Get rules for a specific module
   server.registerTool(
     'get_rules',
     {
@@ -44,11 +45,12 @@ export function setupTools(server: McpServer): void {
     },
     async () => {
       const modules = await getAvailableModules();
+      const moduleList = modules.map((m) => `- ${m}`).join('\n');
       return {
         content: [
           {
             type: 'text' as const,
-            text: `Available modules:\n\n${modules.map((m) => `- ${m}`).join('\n')}`,
+            text: `Available modules:\n\n${moduleList}`,
           },
         ],
       };
@@ -91,11 +93,12 @@ export function setupTools(server: McpServer): void {
       }
 
       if (results.length === 0) {
+        const moduleText = args.module ? ` in module "${args.module}"` : '';
         return {
           content: [
             {
               type: 'text' as const,
-              text: `No rules found containing "${args.keyword}"${args.module ? ` in module "${args.module}"` : ''}.`,
+              text: `No rules found containing "${args.keyword}"${moduleText}.`,
             },
           ],
         };

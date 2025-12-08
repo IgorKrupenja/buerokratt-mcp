@@ -1,6 +1,6 @@
 /**
  * Type Definitions for Rules
- * 
+ *
  * TypeScript types for rule files, frontmatter, and rule sets
  */
 
@@ -40,4 +40,3 @@ export interface ValidationResult {
   errors?: string[];
   warnings?: string[];
 }
-
