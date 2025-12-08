@@ -18,4 +18,3 @@ description: SQL UPDATE and DELETE restrictions for modules that require immutab
   - Copy all fields from existing record
   - Modify only the fields that need to change
   - Use `ORDER BY id DESC LIMIT 1` to get latest record
-

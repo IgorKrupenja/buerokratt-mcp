@@ -44,4 +44,3 @@ description: SQL rules for DSL-based backends (migrations and queries)
   - Use CTEs (WITH clauses) for complex queries
   - Include pagination with `OFFSET` and `LIMIT`
 - **HTTP Method Folders**: Organize by HTTP method (`GET/`, `POST/`) within database folders
-

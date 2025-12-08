@@ -68,4 +68,3 @@ description: React frontend rules (architecture, types, i18n)
   - **React Components**: Use `useTranslation()` hook inside React components
   - **Non-React Code**: Use direct `import { t } from 'i18next'` for utility functions, services, constants, etc.
 - **Never Mix**: Never use `useTranslation()` hook outside of React components - it will cause linter errors
-

@@ -144,4 +144,3 @@ return_error:
   - `result` is REQUIRED for all HTTP calls (endpoint fails without it). Always include `result` even if you don't plan
     to use the response
   - `next` is optional but useful for flow control
-

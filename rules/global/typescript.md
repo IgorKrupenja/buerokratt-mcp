@@ -19,4 +19,3 @@ description: TypeScript-specific code quality rules and best practices
     errors (e.g., clipboard operations, analytics tracking, logging)
   - **Use `async/await`**: When you need to wait for the Promise to complete or handle the result/error
   - **Consider the UX**: For UI operations, immediate feedback is often more important than waiting for async completion
-
