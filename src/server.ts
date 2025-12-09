@@ -174,8 +174,8 @@ const mcpDeleteHandler = async (req: Request, res: Response): Promise<void> => {
 
 app.delete('/mcp', mcpDeleteHandler);
 
-// Start server
-app.listen(MCP_PORT, () => {
+// Start server - bind to 0.0.0.0 to accept connections from outside the container
+app.listen(MCP_PORT, '0.0.0.0', () => {
   console.log(`MCP Streamable HTTP Server listening on port ${MCP_PORT}`);
 });
 
