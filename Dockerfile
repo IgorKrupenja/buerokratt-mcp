@@ -15,8 +15,7 @@ COPY tsconfig.json ./
 # Rules directory will be volume-mounted, so we don't copy it
 # This allows changes to reflect immediately after git pull
 
-# Expose port (if needed in the future)
-# EXPOSE 3000
+EXPOSE 3627
 
 # Run the MCP server
 CMD ["bun", "run", "src/server.ts"]

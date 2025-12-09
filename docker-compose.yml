@@ -4,16 +4,12 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: byrokratt-mcp
-    stdin_open: true
-    tty: true
     volumes:
       # Volume mount rules directory for immediate changes after git pull
       - ./rules:/app/rules:ro
       # Optional: mount source code for development (comment out in production)
       # - ./src:/app/src:ro
-    # MCP servers communicate via stdio, so no ports needed
-    # If you need to debug or add HTTP endpoints in the future, uncomment:
-    # ports:
-    #   - "3000:3000"
+    ports:
+      - '3627:3627'
     restart: unless-stopped
 
