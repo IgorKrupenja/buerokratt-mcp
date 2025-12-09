@@ -6,10 +6,6 @@ This MCP server provides centralized access to development rules and guidelines 
 Rules are organized by module and can be queried by AI assistants (like Cursor) to provide
 context-aware coding guidance.
 
-## Status
-
-🚧 **In Development** - Initial setup phase
-
 ## Project Structure
 
 ```shell
@@ -99,18 +95,7 @@ If you have Bun installed and prefer to run the server locally:
 
 ### Manual Configuration (JSON)
 
-Alternatively, you can manually edit Cursor's user settings JSON file. The settings file is located at:
-
-- **macOS**: `~/Library/Application Support/Cursor/User/settings.json`
-- **Windows**: `%APPDATA%\Cursor\User\settings.json`
-- **Linux**: `~/.config/Cursor/User/settings.json`
-
-You can also access it through Cursor:
-
-1. Open Command Palette (`Cmd+Shift+P` on macOS, `Ctrl+Shift+P` on Windows/Linux)
-2. Type "Preferences: Open User Settings (JSON)" and select it
-
-Add the following to your Cursor settings:
+`<project-root>/.cursor/mcp.json`
 
 ```json
 {
@@ -124,9 +109,6 @@ Add the following to your Cursor settings:
   }
 }
 ```
-
-**Note**: Make sure the server is running before configuring Cursor. For Docker, use `docker-compose up -d`. For local
-development, run `bun run src/server.ts`.
 
 ### Using the MCP Server in Cursor
 
