@@ -1,0 +1,21 @@
+name: Run check
+on:
+  workflow_call:
+    inputs:
+      command:
+        required: true
+        type: string
+
+jobs:
+  run-check:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: ${{ inputs.command }}
+

@@ -203,7 +203,7 @@ async function main() {
     console.log(
       `${colors.yellow}${colors.bright}⚠️  Summary: Some files/modules are approaching limits${colors.reset}\n`,
     );
-    process.exit(0);
+    process.exit(1);
   } else {
     console.log(`${colors.green}${colors.bright}✅ Summary: All files/modules are within safe limits${colors.reset}\n`);
     process.exit(0);
