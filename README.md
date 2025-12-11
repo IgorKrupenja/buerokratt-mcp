@@ -113,6 +113,7 @@ description: Description of the rule
 ---
 
 ## Some rule set
+
 ... rule set content ...
 ```
 
@@ -163,3 +164,14 @@ bun format
 bun check-context-size # Check context size of all rule files and modules
 bun check-context-size <module-name> # Check context size for a specific module
 ```
+
+### CI Checks
+
+The following checks run automatically on push and pull requests:
+
+- **format**: Checks code formatting with Prettier
+- **lint**: Runs ESLint to check code quality and style
+- **typecheck**: Validates TypeScript types without emitting files
+- **lint-markdown**: Lints markdown files (rules and README) using markdownlint
+- **validate**: Validates rule files (frontmatter structure and markdown syntax)
+- **check-context-size**: Checks that rule files don't exceed safe token limits

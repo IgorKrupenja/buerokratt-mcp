@@ -27,8 +27,8 @@ description: Ruuter YAML business logic rules for DSL-based backends
 declaration:
   call: declare
   version: 0.1
-  description: "Description of the endpoint"
-  method: post  # or get
+  description: 'Description of the endpoint'
+  method: post # or get
   accepts: json
   returns: json
   namespace: service
@@ -36,15 +36,15 @@ declaration:
     body:
       - field: paramName
         type: string|number|boolean|object
-        description: "Parameter description"
+        description: 'Parameter description'
     params:
       - field: id
         type: string
-        description: "URL parameter"
+        description: 'URL parameter'
     headers:
       - field: cookie
         type: string
-        description: "Header field"
+        description: 'Header field'
 ```
 
 ### Variable Assignment Pattern
@@ -76,10 +76,10 @@ extract_request_data:
 assign:
   # Function with curly brackets - use $= ... =
   dateString: $= (function() { const d = new Date(); return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-'); })() =
-  
+
   # Object literal - use $= ... =
   config: $= {"key1":"value1","key2":"value2"} =
-  
+
   # Simple expression without curly brackets - use ${...}
   name: ${incoming.body.name}
 ```
@@ -100,9 +100,9 @@ check_for_required_parameters:
 
 ```yaml
 service_add:
-  call: http.post  # or http.get
+  call: http.post # or http.get
   args:
-    url: "[#SERVICE_RESQL]/add"
+    url: '[#SERVICE_RESQL]/add'
     body:
       name: ${name}
       description: ${description}
@@ -117,14 +117,14 @@ service_add:
 
 ```yaml
 return_ok:
-  reloadDsl: true  # Optional: reload DSL after success
+  reloadDsl: true # Optional: reload DSL after success
   status: 200
   return: ${results.response.body}
   next: end
 
 return_error:
   status: 400
-  return: "Error message"
+  return: 'Error message'
   next: end
 ```
 

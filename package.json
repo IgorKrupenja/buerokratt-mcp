@@ -14,6 +14,7 @@
     "lint:markdown:fix": "markdownlint-cli2 --fix \"rules/**/*.md\" \"README.md\"",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix --max-warnings 0",
+    "typecheck": "bunx tsc --noEmit",
     "format": "prettier --check .",
     "format:fix": "prettier --write ."
   },

@@ -4,8 +4,8 @@
  * Measures how long it takes to load rules to help decide if caching is needed
  */
 
-import { getAvailableModules, getMergedRules } from '../rules/manager.ts';
 import { loadAllRules } from '../rules/loader.ts';
+import { getAvailableModules, getMergedRules } from '../rules/manager.ts';
 
 // ANSI color codes
 const colors = {
@@ -58,10 +58,10 @@ async function measurePerformance() {
 
   // Calculate statistics
   const sorted = [...measurements].sort((a, b) => a - b);
-  const min = sorted[0];
-  const max = sorted[sorted.length - 1];
+  const min = sorted[0]!; // Safe: measurements array is never empty
+  const max = sorted[sorted.length - 1]!; // Safe: measurements array is never empty
   const avg = measurements.reduce((a, b) => a + b, 0) / measurements.length;
-  const median = sorted[Math.floor(sorted.length / 2)];
+  const median = sorted[Math.floor(sorted.length / 2)]!; // Safe: measurements array is never empty
 
   console.log(`\n${colors.bright}Statistics:${colors.reset}`);
   console.log(`  Min:     ${formatTime(min)}`);
@@ -84,17 +84,11 @@ async function measurePerformance() {
   // Recommendation
   console.log(`\n${colors.bright}Recommendation:${colors.reset}`);
   if (avg < 10) {
-    console.log(
-      `  ${colors.green}✅ No caching needed - loading is fast (${formatTime(avg)} average)${colors.reset}`,
-    );
+    console.log(`  ${colors.green}✅ No caching needed - loading is fast (${formatTime(avg)} average)${colors.reset}`);
   } else if (avg < 100) {
-    console.log(
-      `  ${colors.yellow}⚠️  Consider caching - loading takes ${formatTime(avg)} average${colors.reset}`,
-    );
+    console.log(`  ${colors.yellow}⚠️  Consider caching - loading takes ${formatTime(avg)} average${colors.reset}`);
   } else {
-    console.log(
-      `  ${colors.yellow}🔴 Caching recommended - loading takes ${formatTime(avg)} average${colors.reset}`,
-    );
+    console.log(`  ${colors.yellow}🔴 Caching recommended - loading takes ${formatTime(avg)} average${colors.reset}`);
   }
 
   console.log('');
@@ -107,4 +101,3 @@ if (import.meta.main) {
     process.exit(1);
   });
 }
-

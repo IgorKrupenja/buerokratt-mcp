@@ -26,7 +26,7 @@ This repository contains a Service Module with two main parts:
 - **Migration Format**: Check latest files in `Liquibase/changelog` folder for current format
 - **Three Files Required**: When creating migrations, ALWAYS create three files:
   - **XML file**: `YYYYMMDDHHMMSS_description.xml` in `changelog/` folder
-  - **SQL file**: `YYYYMMDDHHMMSS_description.sql` in `changelog/migrations/` folder  
+  - **SQL file**: `YYYYMMDDHHMMSS_description.sql` in `changelog/migrations/` folder
   - **Rollback file**: `YYYYMMDDHHMMSS_rollback.sql` in `changelog/migrations/rollback/` folder
 - **File Naming**: Use timestamp format `YYYYMMDDHHMMSS` followed by descriptive name
 - **XML Structure**: Include proper XML headers and changeSet with sqlFile and rollback sections
@@ -63,7 +63,7 @@ This repository contains a Service Module with two main parts:
 - **Structure**: Each YAML file represents one API endpoint
 - **File Organization**:
   - `services/` - Main service endpoints
-  - `training/` - Training-related endpoints  
+  - `training/` - Training-related endpoints
   - `users/` - User management endpoints
   - `TEMPLATES/` - Reusable template endpoints
 - **HTTP Methods**: Organize by method (`GET/`, `POST/`) within service folders
@@ -74,8 +74,8 @@ This repository contains a Service Module with two main parts:
 declaration:
   call: declare
   version: 0.1
-  description: "Description of the endpoint"
-  method: post  # or get
+  description: 'Description of the endpoint'
+  method: post # or get
   accepts: json
   returns: json
   namespace: service
@@ -83,15 +83,15 @@ declaration:
     body:
       - field: paramName
         type: string|number|boolean|object
-        description: "Parameter description"
+        description: 'Parameter description'
     params:
       - field: id
         type: string
-        description: "URL parameter"
+        description: 'URL parameter'
     headers:
       - field: cookie
         type: string
-        description: "Header field"
+        description: 'Header field'
 ```
 
 #### Variable Assignment Pattern
@@ -122,10 +122,10 @@ extract_request_data:
 assign:
   # Function with curly brackets - use $= ... =
   dateString: $= (function() { const d = new Date(); return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-'); })() =
-  
+
   # Object literal - use $= ... =
   config: $= {"key1":"value1","key2":"value2"} =
-  
+
   # Simple expression without curly brackets - use ${...}
   name: ${incoming.body.name}
 ```
@@ -146,9 +146,9 @@ check_for_required_parameters:
 
 ```yaml
 service_add:
-  call: http.post  # or http.get
+  call: http.post # or http.get
   args:
-    url: "[#SERVICE_RESQL]/add"
+    url: '[#SERVICE_RESQL]/add'
     body:
       name: ${name}
       description: ${description}
@@ -163,14 +163,14 @@ service_add:
 
 ```yaml
 return_ok:
-  reloadDsl: true  # Optional: reload DSL after success
+  reloadDsl: true # Optional: reload DSL after success
   status: 200
   return: ${results.response.body}
   next: end
 
 return_error:
   status: 400
-  return: "Error message"
+  return: 'Error message'
   next: end
 ```
 
@@ -318,4 +318,3 @@ return_error:
 - **ALWAYS run tests until they pass** before proceeding with other tasks
 - **Test-First Approach**: ONLY fix linter issues after all tests pass
 - **Step-by-Step Tests**: When you have several functions, create tests step by step. First for one function, so it can be reviewed. Only after that, create tests for second function, review + so on
-
