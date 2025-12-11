@@ -37,6 +37,11 @@ jobs:
     with:
       command: bun run lint
 
+  typecheck:
+    uses: ./.github/workflows/run-check.yml
+    with:
+      command: bun run typecheck
+
   lint-markdown:
     uses: ./.github/workflows/run-check.yml
     with:

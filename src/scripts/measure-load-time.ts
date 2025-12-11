@@ -58,10 +58,10 @@ async function measurePerformance() {
 
   // Calculate statistics
   const sorted = [...measurements].sort((a, b) => a - b);
-  const min = sorted[0];
-  const max = sorted[sorted.length - 1];
+  const min = sorted[0]!; // Safe: measurements array is never empty
+  const max = sorted[sorted.length - 1]!; // Safe: measurements array is never empty
   const avg = measurements.reduce((a, b) => a + b, 0) / measurements.length;
-  const median = sorted[Math.floor(sorted.length / 2)];
+  const median = sorted[Math.floor(sorted.length / 2)]!; // Safe: measurements array is never empty
 
   console.log(`\n${colors.bright}Statistics:${colors.reset}`);
   console.log(`  Min:     ${formatTime(min)}`);
