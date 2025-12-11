@@ -15,7 +15,7 @@ Planned:
 
 - [ ] Add more module support.
 - [ ] Add OAuth2 support for authentication.
-- [ ] Cache rules in memory if needed. Check with `measure-load-time` script.
+- [ ] Cache rules in memory if needed. Check with `measure-load-time` script. But this should be very fast with Bun.
 
 ## Usage
 
