@@ -1,5 +1,3 @@
-#!/usr/bin/env bun
-
 /**
  * Bürokratt MCP Server
  *
@@ -15,7 +13,6 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 import express, { type Request, type Response } from 'express';
 
-// Import handlers
 import { setupPrompts } from './mcp/prompts.ts';
 import { setupResources } from './mcp/resources.ts';
 import { setupTools } from './mcp/tools.ts';
