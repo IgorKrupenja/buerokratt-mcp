@@ -13,7 +13,6 @@ import { getMergedRules } from '../rules/manager.ts';
  * Set up prompt handlers for the MCP server
  */
 export function setupPrompts(server: McpServer): void {
-  // todo check if actually used
   // Prompt: Get development rules as a system prompt
   // Works with any AI editor: Cursor, VS Code, JetBrains, etc.
   server.registerPrompt(

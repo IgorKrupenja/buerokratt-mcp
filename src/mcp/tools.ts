@@ -13,7 +13,6 @@ import { getAvailableModules, getMergedRules, loadRules } from '../rules/manager
  * Set up tool handlers for the MCP server
  */
 export function setupTools(server: McpServer): void {
-  // todo check if actually used
   // Tool: Get rules for a specific module
   server.registerTool(
     'get_rules',
