@@ -15,6 +15,7 @@
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix --max-warnings 0",
     "typecheck": "bunx tsc --noEmit",
+    "test": "bun test",
     "format": "prettier --check .",
     "format:fix": "prettier --write ."
   },
