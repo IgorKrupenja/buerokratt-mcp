@@ -113,6 +113,7 @@ description: Description of the rule
 ---
 
 ## Some rule set
+
 ... rule set content ...
 ```
 

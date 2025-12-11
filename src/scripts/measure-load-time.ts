@@ -4,8 +4,8 @@
  * Measures how long it takes to load rules to help decide if caching is needed
  */
 
-import { getAvailableModules, getMergedRules } from '../rules/manager.ts';
 import { loadAllRules } from '../rules/loader.ts';
+import { getAvailableModules, getMergedRules } from '../rules/manager.ts';
 
 // ANSI color codes
 const colors = {
@@ -84,17 +84,11 @@ async function measurePerformance() {
   // Recommendation
   console.log(`\n${colors.bright}Recommendation:${colors.reset}`);
   if (avg < 10) {
-    console.log(
-      `  ${colors.green}✅ No caching needed - loading is fast (${formatTime(avg)} average)${colors.reset}`,
-    );
+    console.log(`  ${colors.green}✅ No caching needed - loading is fast (${formatTime(avg)} average)${colors.reset}`);
   } else if (avg < 100) {
-    console.log(
-      `  ${colors.yellow}⚠️  Consider caching - loading takes ${formatTime(avg)} average${colors.reset}`,
-    );
+    console.log(`  ${colors.yellow}⚠️  Consider caching - loading takes ${formatTime(avg)} average${colors.reset}`);
   } else {
-    console.log(
-      `  ${colors.yellow}🔴 Caching recommended - loading takes ${formatTime(avg)} average${colors.reset}`,
-    );
+    console.log(`  ${colors.yellow}🔴 Caching recommended - loading takes ${formatTime(avg)} average${colors.reset}`);
   }
 
   console.log('');
@@ -107,4 +101,3 @@ if (import.meta.main) {
     process.exit(1);
   });
 }
-

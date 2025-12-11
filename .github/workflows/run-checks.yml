@@ -3,25 +3,25 @@ on:
   push:
     branches: [main, dev]
     paths:
-      - "src/**"
-      - "rules/**"
-      - ".github/**"
-      - "package.json"
-      - "bun.lock"
-      - "eslint.config.mjs"
-      - ".markdownlint.json"
-      - "tsconfig.json"
+      - 'src/**'
+      - 'rules/**'
+      - '.github/**'
+      - 'package.json'
+      - 'bun.lock'
+      - 'eslint.config.mjs'
+      - '.markdownlint.json'
+      - 'tsconfig.json'
   pull_request:
     types: [opened, ready_for_review, reopened, synchronize]
     paths:
-      - "src/**"
-      - "rules/**"
-      - ".github/**"
-      - "package.json"
-      - "bun.lock"
-      - "eslint.config.mjs"
-      - ".markdownlint.json"
-      - "tsconfig.json"
+      - 'src/**'
+      - 'rules/**'
+      - '.github/**'
+      - 'package.json'
+      - 'bun.lock'
+      - 'eslint.config.mjs'
+      - '.markdownlint.json'
+      - 'tsconfig.json'
 concurrency:
   group: ${{ github.ref }}-checks
   cancel-in-progress: true
@@ -51,4 +51,3 @@ jobs:
     uses: ./.github/workflows/run-check.yml
     with:
       command: bun run check-context-size
-
