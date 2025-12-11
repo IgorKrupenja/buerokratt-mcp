@@ -1,0 +1,221 @@
+/**
+ * Rule Validator CLI
+ *
+ * CLI tool to validate rule files (frontmatter and markdown)
+ */
+
+import { lint } from 'markdownlint/promise';
+
+import { loadAllRules } from '../rules/loader.ts';
+import type { ValidationResult } from '../rules/types.ts';
+
+// Load markdownlint config
+const MARKDOWNLINT_CONFIG_PATH = `${import.meta.dir}/../../.markdownlint.json`;
+let markdownlintConfig: Record<string, any> | undefined;
+
+async function loadMarkdownlintConfig(): Promise<Record<string, any> | undefined> {
+  if (markdownlintConfig !== undefined) {
+    return markdownlintConfig;
+  }
+
+  try {
+    const configFile = Bun.file(MARKDOWNLINT_CONFIG_PATH);
+    if (await configFile.exists()) {
+      markdownlintConfig = await configFile.json();
+      return markdownlintConfig;
+    }
+  } catch (error) {
+    // Config file doesn't exist or is invalid, use default
+    console.warn(
+      `Warning: Could not load markdownlint config: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+
+  markdownlintConfig = undefined;
+  return undefined;
+}
+
+// ANSI color codes
+const colors = {
+  reset: '\x1b[0m',
+  bright: '\x1b[1m',
+  dim: '\x1b[2m',
+  red: '\x1b[31m',
+  yellow: '\x1b[33m',
+  green: '\x1b[32m',
+  blue: '\x1b[34m',
+  cyan: '\x1b[36m',
+};
+
+/**
+ * Validate frontmatter structure (Level 1)
+ */
+function validateFrontmatter(frontmatter: any, filePath: string): ValidationResult {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  // Check if modules field exists and is an array
+  if (!frontmatter.modules) {
+    errors.push(`Missing 'modules' field in ${filePath}`);
+    return { valid: false, errors };
+  }
+
+  if (!Array.isArray(frontmatter.modules)) {
+    errors.push(`'modules' field must be an array in ${filePath}`);
+    return { valid: false, errors };
+  }
+
+  if (frontmatter.modules.length === 0) {
+    errors.push(`'modules' array cannot be empty in ${filePath}`);
+    return { valid: false, errors };
+  }
+
+  // Validate tags if present
+  if (frontmatter.tags && !Array.isArray(frontmatter.tags)) {
+    warnings.push(`'tags' field should be an array in ${filePath}`);
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors: errors.length > 0 ? errors : undefined,
+    warnings: warnings.length > 0 ? warnings : undefined,
+  };
+}
+
+/**
+ * Validate markdown content (Level 2)
+ *
+ * Uses markdownlint to validate markdown syntax and structure.
+ */
+async function validateMarkdown(content: string, filePath: string): Promise<ValidationResult> {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  // Basic checks
+  if (content.trim().length === 0) {
+    warnings.push(`Empty content in ${filePath}`);
+  }
+
+  // Use markdownlint to validate markdown syntax
+  try {
+    const config = await loadMarkdownlintConfig();
+    const results = await lint({
+      strings: {
+        [filePath]: content,
+      },
+      config: config || undefined,
+    });
+
+    // Convert markdownlint results to our format
+    for (const [file, issues] of Object.entries(results)) {
+      for (const issue of issues) {
+        const ruleName = issue.ruleNames.join('/');
+        const detail = issue.errorDetail && typeof issue.errorDetail === 'string' ? ` - ${issue.errorDetail}` : '';
+        const context =
+          issue.errorContext && typeof issue.errorContext === 'string' ? ` Context: "${issue.errorContext}"` : '';
+        const message = `${file}:${issue.lineNumber}: ${ruleName} ${issue.ruleDescription}${detail}${context}`;
+
+        warnings.push(message);
+      }
+    }
+  } catch (error) {
+    errors.push(
+      `Markdown validation failed for ${filePath}: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors: errors.length > 0 ? errors : undefined,
+    warnings: warnings.length > 0 ? warnings : undefined,
+  };
+}
+
+/**
+ * Main validation function
+ */
+async function main() {
+  console.log(`${colors.bright}${colors.blue}🔍 Validating Rule Files${colors.reset}\n`);
+
+  try {
+    const allRules = await loadAllRules();
+    let totalErrors = 0;
+    let totalWarnings = 0;
+    let validFiles = 0;
+
+    for (const rule of allRules) {
+      const relativePath = rule.path.replace(/^.*\/rules\//, 'rules/');
+      console.log(`${colors.cyan}Checking ${relativePath}...${colors.reset}`);
+
+      // Validate frontmatter
+      const frontmatterResult = validateFrontmatter(rule.frontmatter, relativePath);
+
+      // Validate markdown
+      const markdownResult = await validateMarkdown(rule.content, relativePath);
+
+      // Collect all errors and warnings
+      const errors = [...(frontmatterResult.errors || []), ...(markdownResult.errors || [])];
+      const warnings = [...(frontmatterResult.warnings || []), ...(markdownResult.warnings || [])];
+
+      if (errors.length > 0) {
+        totalErrors += errors.length;
+        console.log(`${colors.red}  ❌ ${errors.length} error(s)${colors.reset}`);
+        for (const error of errors) {
+          console.log(`${colors.red}    • ${error}${colors.reset}`);
+        }
+      }
+
+      if (warnings.length > 0) {
+        totalWarnings += warnings.length;
+        console.log(`${colors.yellow}  ⚠️  ${warnings.length} warning(s)${colors.reset}`);
+        for (const warning of warnings) {
+          console.log(`${colors.yellow}    • ${warning}${colors.reset}`);
+        }
+      }
+
+      if (errors.length === 0 && warnings.length === 0) {
+        validFiles++;
+        console.log(`${colors.green}  ✅ Valid${colors.reset}`);
+      }
+
+      console.log('');
+    }
+
+    // Summary
+    console.log(`${colors.bright}${colors.blue}Summary${colors.reset}\n`);
+    console.log(`  Total files: ${allRules.length}`);
+    console.log(`  ${colors.green}✅ Valid: ${validFiles}${colors.reset}`);
+    if (totalWarnings > 0) {
+      console.log(`  ${colors.yellow}⚠️  Warnings: ${totalWarnings}${colors.reset}`);
+    }
+    if (totalErrors > 0) {
+      console.log(`  ${colors.red}❌ Errors: ${totalErrors}${colors.reset}`);
+    }
+    console.log('');
+
+    // Exit with appropriate code
+    if (totalErrors > 0) {
+      console.log(`${colors.red}${colors.bright}❌ Validation failed with ${totalErrors} error(s)${colors.reset}\n`);
+      process.exit(1);
+    } else if (totalWarnings > 0) {
+      console.log(
+        `${colors.yellow}${colors.bright}⚠️  Validation passed with ${totalWarnings} warning(s)${colors.reset}\n`,
+      );
+      process.exit(0);
+    } else {
+      console.log(`${colors.green}${colors.bright}✅ All files are valid${colors.reset}\n`);
+      process.exit(0);
+    }
+  } catch (error) {
+    console.error(`${colors.red}Error: ${error instanceof Error ? error.message : String(error)}${colors.reset}`);
+    process.exit(1);
+  }
+}
+
+// Run if executed directly
+if (import.meta.main) {
+  main().catch((error) => {
+    console.error(`${colors.red}Error: ${error instanceof Error ? error.message : String(error)}${colors.reset}`);
+    process.exit(1);
+  });
+}
