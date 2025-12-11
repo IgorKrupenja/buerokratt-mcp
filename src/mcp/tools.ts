@@ -7,7 +7,8 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
-import { getAvailableModules, getMergedRules, loadRules } from '../rules/manager.ts';
+import { loadAllRules } from '@/rules/loader.ts';
+import { getAvailableModules, getMergedRules } from '@/rules/manager.ts';
 
 /**
  * Set up tool handlers for the MCP server
@@ -67,7 +68,7 @@ export function setupTools(server: McpServer): void {
       }),
     },
     async (args) => {
-      const allRules = await loadRules();
+      const allRules = await loadAllRules();
       const keyword = args.keyword.toLowerCase();
       const results: string[] = [];
 

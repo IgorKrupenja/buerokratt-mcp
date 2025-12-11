@@ -1,14 +1,12 @@
 /**
  * Rule Manager
  *
- * Manages rule loading, caching, and retrieval
+ * Manages rule loading and retrieval
  */
 
 import { getRulesForModule, mergeRules } from './filter.ts';
 import { loadAllRules } from './loader.ts';
-import type { ModuleRuleSet, RuleFile } from './types.ts';
-
-let cachedRules: RuleFile[] | null = null;
+import type { ModuleRuleSet } from './types.ts';
 
 /**
  * Get merged rules as markdown for a specific module
@@ -22,7 +20,7 @@ export async function getMergedRules(moduleName: string): Promise<string> {
  * Get rules for a specific module
  */
 export async function getModuleRules(moduleName: string): Promise<ModuleRuleSet> {
-  const allRules = await loadRules();
+  const allRules = await loadAllRules();
   return getRulesForModule(allRules, moduleName);
 }
 
@@ -30,7 +28,7 @@ export async function getModuleRules(moduleName: string): Promise<ModuleRuleSet>
  * Get all available modules from loaded rules
  */
 export async function getAvailableModules(): Promise<string[]> {
-  const allRules = await loadRules();
+  const allRules = await loadAllRules();
   const modules = new Set<string>();
 
   for (const rule of allRules) {
@@ -42,21 +40,4 @@ export async function getAvailableModules(): Promise<string[]> {
   }
 
   return Array.from(modules).sort();
-}
-
-/**
- * Load and cache all rules
- */
-export async function loadRules(): Promise<RuleFile[]> {
-  if (cachedRules === null) {
-    cachedRules = await loadAllRules();
-  }
-  return cachedRules;
-}
-
-/**
- * Clear the rule cache (useful for reloading rules)
- */
-export function clearCache(): void {
-  cachedRules = null;
 }
