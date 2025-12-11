@@ -115,6 +115,13 @@ description: Description of the rule
 ... rule set content ...
 ```
 
+**⚠️ Important note on context size**. To ensure the MCP server works correctly, the rule set should not exceed the following limits:
+
+- **Individual files**: Safe < 10 KB, Warning < 20 KB
+- **Merged modules**: Safe < 50 KB, Warning < 100 KB
+
+This can be with an npm script, see [checks](#checks) below.
+
 ### Project Structure
 
 ```shell
@@ -152,4 +159,6 @@ bun start
 bun lint
 bun lint:markdown # Check markdown files (rules + readme)
 bun format
+bun check-context-size # Check context size of all rule files and modules
+bun check-context-size <module-name> # Check context size for a specific module
 ```

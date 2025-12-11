@@ -8,6 +8,7 @@
   "scripts": {
     "start": "bun run --watch src/server.ts",
     "validate": "bun run src/scripts/validate.ts",
+    "check-context-size": "bun run src/scripts/check-context-size.ts",
     "lint:markdown": "markdownlint-cli2 \"rules/**/*.md\" \"README.md\"",
     "lint:markdown:fix": "markdownlint-cli2 --fix \"rules/**/*.md\" \"README.md\"",
     "lint": "eslint . --max-warnings 0",

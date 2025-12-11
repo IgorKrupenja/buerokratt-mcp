@@ -93,6 +93,7 @@ export async function validateMarkdown(content: string, filePath: string): Promi
 /**
  * Validate a complete rule file
  */
+// todo is this used?
 export async function validateRuleFile(rule: RuleFile): Promise<ValidationResult> {
   const frontmatterResult = validateFrontmatter(rule.frontmatter, rule.path);
   const markdownResult = await validateMarkdown(rule.content, rule.path);
