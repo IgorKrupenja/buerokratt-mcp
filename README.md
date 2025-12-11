@@ -6,6 +6,13 @@ This MCP server provides centralized access to development rules and guidelines 
 Rules are organized by module and can be queried by AI assistants (like Cursor) to provide
 context-aware coding guidance.
 
+Currently available rules:
+
+- `global` - Global rules that apply to all modules
+- `service-module` - Service Module specific rules
+- `shared-backend` - Shared backend rules (SQL, Ruuter)
+- `shared-frontend` - Shared frontend rules (React, CSS)
+
 ## Usage
 
 In this repo folder:
@@ -14,7 +21,7 @@ In this repo folder:
 docker-compose up -d
 ```
 
-In your project:
+In your project folder:
 
 **Cursor**:
 
@@ -78,11 +85,6 @@ Once configured, the MCP server provides:
   - `search_rules` - Search rules by keyword
 - **Prompts**:
   - `development-rules` - Get development rules as a system prompt for a specific module
-
-### Available Modules
-
-- `global` - Global rules that apply to all modules
-- `service-module` - Service Module specific rules
 
 ## Development
 
