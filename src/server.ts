@@ -57,6 +57,27 @@ const MCP_PORT = process.env.MCP_PORT ? parseInt(process.env.MCP_PORT, 10) : 362
 const app = express();
 app.use(express.json());
 
+// Middleware to handle SSE reconnection conflicts gracefully
+// Intercepts 409 responses from SSE connections and converts them to success
+app.use((req, res, next) => {
+  // Only intercept GET requests to /mcp (SSE connections)
+  if (req.method === 'GET' && req.path === '/mcp') {
+    const originalStatus = res.status.bind(res);
+    res.status = function (code: number) {
+      // Convert 409 conflicts to 200 for SSE reconnection attempts
+      // This prevents Cursor from showing errors for normal reconnection behavior
+      if (code === 409) {
+        console.log(
+          `SSE reconnection conflict intercepted for session ${req.headers['mcp-session-id']} - treating as success`,
+        );
+        return originalStatus(200);
+      }
+      return originalStatus(code);
+    };
+  }
+  next();
+});
+
 // MCP POST endpoint (JSON-RPC messages)
 const mcpPostHandler = async (req: Request, res: Response): Promise<void> => {
   const sessionId = (req.headers['mcp-session-id'] as string) || undefined;
@@ -145,8 +166,34 @@ const mcpGetHandler = async (req: Request, res: Response): Promise<void> => {
     console.log(`Establishing new SSE stream for session ${sessionId}`);
   }
 
-  const transport = transports[sessionId];
-  await transport.handleRequest(req, res);
+  try {
+    const transport = transports[sessionId];
+    await transport.handleRequest(req, res);
+  } catch (error) {
+    // Handle SSE connection conflicts gracefully (e.g., when client reconnects)
+    // The transport may throw if there's already an active connection
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    if (errorMessage.includes('Conflict') || errorMessage.includes('409')) {
+      // Log but don't treat as error - this is normal during reconnections
+      console.log(`SSE reconnection attempt for session ${sessionId} (conflict is normal)`);
+      // If headers not sent, return a success response to avoid showing error in UI
+      if (!res.headersSent) {
+        // Return 200 with a message indicating the connection is already active
+        res.status(200).json({
+          status: 'ok',
+          message: 'SSE connection already active for this session',
+        });
+      }
+      return;
+    }
+    // Log other errors but don't expose details
+    console.error(`Error handling SSE request for session ${sessionId}:`, errorMessage);
+    if (!res.headersSent) {
+      res.status(500).json({
+        error: 'Internal server error',
+      });
+    }
+  }
 };
 
 app.get('/mcp', mcpGetHandler);
