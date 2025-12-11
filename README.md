@@ -13,9 +13,9 @@ Currently available rules:
 
 Planned:
 
-- [ ] Add more module support
-- [ ] Add OAuth2 support for authentication
-- [ ] Cache rules in memory if needed
+- [ ] Add more module support.
+- [ ] Add OAuth2 support for authentication.
+- [ ] Cache rules in memory if needed. Check with `measure-load-time` script.
 
 ## Usage
 
