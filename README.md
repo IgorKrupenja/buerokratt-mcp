@@ -93,7 +93,7 @@ Once configured, the MCP server provides:
 
 ### Editing rules
 
-Simply edit the rules in the `rules/` folder and commit. No need to run any commands. These rules are in Markdown format with frontmatter. `modules` field in frontmatter is required and should be an array of module names. Module names should match Bürokratt module names but lowercase. Other fields are optional. An example:
+Simply edit the rules in the `rules/` folder and commit. Rules are loaded fresh on every request, **so no server restart is needed to get the changes**. These rules are in Markdown format with frontmatter. `modules` field in frontmatter is required and should be an array of module names. Module names should match Bürokratt module names but lowercase. Other fields are optional. An example:
 
 ```md
 ---
