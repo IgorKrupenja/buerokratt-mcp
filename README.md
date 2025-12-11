@@ -117,8 +117,8 @@ description: Description of the rule
 
 **⚠️ Important note on context size**. To ensure the MCP server works correctly, the rule set should not exceed the following limits:
 
-- **Individual files**: Safe < 10 KB, Warning < 20 KB
-- **Merged modules**: Safe < 50 KB, Warning < 100 KB
+- Individual files: Safe < 10 KB, Warning < 20 KB
+- Merged modules: Safe < 50 KB, Warning < 100 KB
 
 This can be with an npm script, see [checks](#checks) below.
 
