@@ -88,6 +88,29 @@ Once configured, the MCP server provides:
 
 ## Development
 
+### Editing rules
+
+Simply edit the rules in the `rules/` folder and commit. No need to run any commands. These rules are in Markdown format
+with frontmatter. `modules` field in frontmatter is required and should be an array of module names. Module names should
+match Bürokratt module names but lowercase. Example:
+
+```md
+---
+modules:
+  - service-module
+  - training-module
+  - analytics-module
+  - buerokratt-chatbot
+tags:
+  - backend
+  - sql
+  - database
+description: Description of the rule
+---
+```
+
+### Running the MCP server
+
 ```sh
 curl -fsSL https://bun.sh/install | bash # install Bun runtime
 bun install
@@ -99,7 +122,7 @@ bun start
 ```sh
 bun lint
 bun lint:markdown # Check markdown files (rules + readme)
-bun format:
+bun format
 ```
 
 ### Project Structure
