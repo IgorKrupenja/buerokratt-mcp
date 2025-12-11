@@ -67,61 +67,7 @@ In your project:
 }
 ```
 
-## Development
-
-### Project Structure
-
-```shell
-byrokratt-mcp/
-├── src/              # Source code
-├── rules/            # Rule files (markdown with frontmatter)
-│   ├── global/       # Global rules that apply to all modules
-│   │   ├── common.md
-│   │   └── typescript.md
-│   ├── service-module/    # Service Module specific rules
-│   │   └── rules.md
-│   ├── training-module/    # Training Module specific rules (and so on for other modules)
-│   │   └── rules.md
-│   ├── shared-backend/    # Shared backend rules (SQL, Ruuter)
-│   │   ├── sql-rules.md
-│   │   ├── sql-restrictions.md
-│   │   └── ruuter-rules.md
-│   └── shared-frontend/   # Shared frontend rules (React, CSS)
-│       ├── react-rules.md
-│       └── css-rules.md
-└── ...
-```
-
-### Prerequisites
-
-- Bun runtime (for local development)
-- Docker (for running via Docker)
-
-### Local Development
-
-```bash
-bun install
-bun run src/server.ts
-```
-
-### Docker
-
-Run the MCP server using Docker Compose:
-
-```bash
-docker-compose up
-```
-
-The `rules/` directory is volume-mounted, so changes to rule files will be reflected immediately after pulling updates
-from git. No container restart needed for rule changes.
-
-To rebuild the container after code changes:
-
-```bash
-docker-compose up --build
-```
-
-### Using the MCP Server
+### MCP Server Features
 
 Once configured, the MCP server provides:
 
@@ -133,13 +79,46 @@ Once configured, the MCP server provides:
 - **Prompts**:
   - `development-rules` - Get development rules as a system prompt for a specific module
 
-The AI assistant in Cursor will automatically use these resources and tools when relevant to provide context-aware coding
-guidance based on your module's rules.
-
 ### Available Modules
 
-- `service-module` - Service Module specific rules
-- `training-module` - Training Module specific rules
-- `analytics-module` - Analytics Module specific rules
-- `buerokratt-chatbot` - Bürokratt Chatbot specific rules
 - `global` - Global rules that apply to all modules
+- `service-module` - Service Module specific rules
+
+## Development
+
+```sh
+curl -fsSL https://bun.sh/install | bash # install Bun runtime
+bun install
+bun start
+```
+
+### Checks
+
+```sh
+bun lint
+bun lint:markdown # Check markdown files (rules + readme)
+bun format:
+```
+
+### Project Structure
+
+```shell
+byrokratt-mcp/
+├── src/              # Typescript source code
+├── rules/            # Rule files (markdown with frontmatter)
+│   ├── global/       # Global rules that apply to all modules
+│   │   ├── common.md
+│   │   └── typescript.md
+│   ├── service-module/    # Service Module specific rules
+│   │   └── rules.md
+│   ├── ...other-modules...    # Other modules specific rules
+│   │   └── rules.md
+│   ├── shared-backend/    # Shared backend rules (SQL, Ruuter)
+│   │   ├── sql-rules.md
+│   │   ├── sql-restrictions.md
+│   │   └── ruuter-rules.md
+│   └── shared-frontend/   # Shared frontend rules (React, CSS)
+│       ├── react-rules.md
+│       └── css-rules.md
+└── ...
+```
