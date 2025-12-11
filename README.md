@@ -15,6 +15,7 @@ Planned:
 
 - [ ] Add more module support
 - [ ] Add OAuth2 support for authentication
+- [ ] Cache rules in memory if needed
 
 ## Usage
 
