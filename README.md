@@ -6,16 +6,91 @@ This MCP server provides centralized access to development rules and guidelines 
 Rules are organized by module and can be queried by AI assistants (like Cursor) to provide
 context-aware coding guidance.
 
-## Project Structure
+## Usage
+
+In this repo folder:
+
+```bash
+docker-compose up -d
+```
+
+In your project:
+
+**Cursor**:
+
+`<project-root>/.cursor/mcp.json`
+
+```json
+{
+  "mcpServers": {
+    "byrokratt-mcp": {
+      "url": "http://localhost:3627/mcp",
+      "transport": {
+        "type": "sse"
+      }
+    }
+  }
+}
+```
+
+**VS Code**:
+
+`<project-root>/.vscode/settings.json`
+
+```json
+{
+  "mcp.servers": {
+    "byrokratt-mcp": {
+      "url": "http://localhost:3627/mcp",
+      "transport": {
+        "type": "sse"
+      }
+    }
+  }
+}
+```
+
+**JetBrains**:
+
+`<project-root>/.idea/mcp.json`
+
+```json
+{
+  "mcpServers": {
+    "byrokratt-mcp": {
+      "url": "http://localhost:3627/mcp",
+      "transport": {
+        "type": "sse"
+      }
+    }
+  }
+}
+```
+
+## Development
+
+### Project Structure
 
 ```shell
 byrokratt-mcp/
 ├── src/              # Source code
 ├── rules/            # Rule files (markdown with frontmatter)
+│   ├── global/       # Global rules that apply to all modules
+│   │   ├── common.md
+│   │   └── typescript.md
+│   ├── service-module/    # Service Module specific rules
+│   │   └── rules.md
+│   ├── training-module/    # Training Module specific rules (and so on for other modules)
+│   │   └── rules.md
+│   ├── shared-backend/    # Shared backend rules (SQL, Ruuter)
+│   │   ├── sql-rules.md
+│   │   ├── sql-restrictions.md
+│   │   └── ruuter-rules.md
+│   └── shared-frontend/   # Shared frontend rules (React, CSS)
+│       ├── react-rules.md
+│       └── css-rules.md
 └── ...
 ```
-
-## Development
 
 ### Prerequisites
 
@@ -46,71 +121,7 @@ To rebuild the container after code changes:
 docker-compose up --build
 ```
 
-## Configuring with Cursor
-
-To use this MCP server with Cursor, you need to add it to Cursor's MCP settings.
-
-### Option 1: Using Docker (Recommended)
-
-1. **Start the Docker container**:
-
-   ```bash
-   docker-compose up -d
-   ```
-
-   The server will be available at `http://localhost:3627/mcp`
-
-2. **Open Cursor Settings**:
-   - Go to `Cursor Settings` > `Features` > `MCP`
-
-3. **Add MCP Server Configuration**:
-   - Click `+ Add New MCP Server`
-   - Configure as follows:
-     - **Name**: `byrokratt-mcp` (or any name you prefer)
-     - **Type**: `sse` (Server-Sent Events)
-     - **URL**: `http://localhost:3627/mcp`
-
-### Option 2: Using Bun (Local Development)
-
-If you have Bun installed and prefer to run the server locally:
-
-1. **Start the server**:
-
-   ```bash
-   cd /absolute/path/to/byrokratt-mcp
-   bun run src/server.ts
-   ```
-
-   The server will be available at `http://localhost:3627/mcp`
-
-2. **Open Cursor Settings**:
-   - Go to `Cursor Settings` > `Features` > `MCP`
-
-3. **Add MCP Server Configuration**:
-   - Click `+ Add New MCP Server`
-   - Configure as follows:
-     - **Name**: `byrokratt-mcp`
-     - **Type**: `sse` (Server-Sent Events)
-     - **URL**: `http://localhost:3627/mcp`
-
-### Manual Configuration (JSON)
-
-`<project-root>/.cursor/mcp.json`
-
-```json
-{
-  "mcpServers": {
-    "byrokratt-mcp": {
-      "url": "http://localhost:3627/mcp",
-      "transport": {
-        "type": "sse"
-      }
-    }
-  }
-}
-```
-
-### Using the MCP Server in Cursor
+### Using the MCP Server
 
 Once configured, the MCP server provides:
 
@@ -135,4 +146,4 @@ guidance based on your module's rules.
 
 ## License
 
-[To be determined]
+MIT License - see [LICENSE](LICENSE) file for details.

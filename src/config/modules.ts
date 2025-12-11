@@ -14,6 +14,7 @@ export interface ModuleConfig {
  * Registry of available Bürokratt modules
  */
 export const MODULES: Record<string, ModuleConfig> = {
+  // todo more modules???
   'service-module': {
     name: 'service-module',
     displayName: 'Service Module',
