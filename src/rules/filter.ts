@@ -32,8 +32,7 @@ export function mergeRules(ruleSet: ModuleRuleSet): string {
 
   // Add global rules first
   if (ruleSet.globalRules.length > 0) {
-    // todo check heading level later
-    parts.push('## Global Rules\n\n');
+    parts.push('# Global Rules\n\n');
     for (const rule of ruleSet.globalRules) {
       parts.push(rule.content);
       parts.push('\n\n');

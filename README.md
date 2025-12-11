@@ -11,6 +11,11 @@ Currently available rules:
 - `shared-backend` - Shared backend rules (SQL, Ruuter)
 - `shared-frontend` - Shared frontend rules (React, CSS)
 
+Planned:
+
+- [ ] Add more module support
+- [ ] Add OAuth2 support for authentication
+
 ## Usage
 
 In this repo folder:
@@ -105,22 +110,6 @@ description: Description of the rule
 ---
 ```
 
-### Running the MCP server
-
-```sh
-curl -fsSL https://bun.sh/install | bash # install Bun runtime
-bun install
-bun start
-```
-
-### Checks
-
-```sh
-bun lint
-bun lint:markdown # Check markdown files (rules + readme)
-bun format
-```
-
 ### Project Structure
 
 ```shell
@@ -142,4 +131,20 @@ byrokratt-mcp/
 │       ├── react-rules.md
 │       └── css-rules.md
 └── ...
+```
+
+### Running the MCP server
+
+```sh
+curl -fsSL https://bun.sh/install | bash # install Bun runtime
+bun install
+bun start
+```
+
+### Checks
+
+```sh
+bun lint
+bun lint:markdown # Check markdown files (rules + readme)
+bun format
 ```

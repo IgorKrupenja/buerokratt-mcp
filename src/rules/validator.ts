@@ -7,7 +7,6 @@
 import { lint } from 'markdownlint/promise';
 
 import type { RuleFile, ValidationResult } from './types.ts';
-import { moduleExists } from '../config/modules.ts';
 
 /**
  * Validate frontmatter structure (Level 1)
@@ -30,13 +29,6 @@ export function validateFrontmatter(frontmatter: any, filePath: string): Validat
   if (frontmatter.modules.length === 0) {
     errors.push(`'modules' array cannot be empty in ${filePath}`);
     return { valid: false, errors };
-  }
-
-  // Validate module names exist in registry
-  for (const moduleName of frontmatter.modules) {
-    if (typeof moduleName === 'string' && moduleName !== 'global' && !moduleExists(moduleName)) {
-      warnings.push(`Unknown module '${moduleName}' in ${filePath} (not in module registry)`);
-    }
   }
 
   // Validate tags if present
