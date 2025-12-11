@@ -2,9 +2,7 @@
 
 MCP (Model Context Protocol) server for sharing Cursor rules across Bürokratt modules.
 
-This MCP server provides centralized access to development rules and guidelines for different Bürokratt modules.
-Rules are organized by module and can be queried by AI assistants (like Cursor) to provide
-context-aware coding guidance.
+This MCP server provides centralized access to development rules and guidelines for different Bürokratt modules. Rules are organized by module and can be queried by AI assistants (like Cursor) to provide context-aware coding guidance.
 
 Currently available rules:
 
@@ -90,9 +88,7 @@ Once configured, the MCP server provides:
 
 ### Editing rules
 
-Simply edit the rules in the `rules/` folder and commit. No need to run any commands. These rules are in Markdown format
-with frontmatter. `modules` field in frontmatter is required and should be an array of module names. Module names should
-match Bürokratt module names but lowercase. Example:
+Simply edit the rules in the `rules/` folder and commit. No need to run any commands. These rules are in Markdown format with frontmatter. `modules` field in frontmatter is required and should be an array of module names. Module names should match Bürokratt module names but lowercase. Other fields are optional. An example:
 
 ```md
 ---
