@@ -143,7 +143,3 @@ guidance based on your module's rules.
 - `analytics-module` - Analytics Module specific rules
 - `buerokratt-chatbot` - Bürokratt Chatbot specific rules
 - `global` - Global rules that apply to all modules
-
-## License
-
-MIT License - see [LICENSE](LICENSE) file for details.
