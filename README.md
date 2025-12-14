@@ -13,7 +13,7 @@ Currently available rules:
 
 Planned:
 
-- [ ] **Cursor known issue**: Sometimes Cursor reports "Failed to open SSE stream: Conflict" errors. This does not actually affect the usage of the MCP server.
+- [ ] **⚠️ Knwon issue in Cursor**: Sometimes Cursor reports "Failed to open SSE stream: Conflict" errors. This does not actually affect the usage of the MCP server.
 - [ ] Add support for more modules.
 - [ ] Add OAuth2 support for authentication.
 - [ ] Cache rules in memory if needed. Check with `measure-load-time` script. But this should be very fast with Bun.
@@ -185,10 +185,4 @@ bun validate
 bun check-context-size
 bun check-context-size <module-name>
 bun test
-```
-
-**Note**: The `validate` script includes module name validation which requires network access to query the GitHub API. It works with unauthenticated requests (60 requests/hour), but you can set the `GITHUB_TOKEN` environment variable for higher rate limits (5000 requests/hour):
-
-```sh
-GITHUB_TOKEN=your_token_here bun validate
 ```
