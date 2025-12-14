@@ -17,10 +17,13 @@ import { setupPrompts } from './mcp/prompts.ts';
 import { setupResources } from './mcp/resources.ts';
 import { setupTools } from './mcp/tools.ts';
 
+// Map to store transports by session ID (exported for testing)
+export const transports: Record<string, StreamableHTTPServerTransport> = {};
+
 /**
  * Create and configure the MCP server instance
  */
-function createServer(): McpServer {
+export function createServer(): McpServer {
   const server = new McpServer(
     {
       name: 'byrokratt-mcp',
@@ -46,16 +49,13 @@ function createServer(): McpServer {
   return server;
 }
 
-// Map to store transports by session ID
-const transports: Record<string, StreamableHTTPServerTransport> = {};
-
 const MCP_PORT = process.env.MCP_PORT ? parseInt(process.env.MCP_PORT, 10) : 3627;
 
 const app = express();
 app.use(express.json());
 
 // MCP POST endpoint (JSON-RPC messages)
-const mcpPostHandler = async (req: Request, res: Response): Promise<void> => {
+export const mcpPostHandler = async (req: Request, res: Response): Promise<void> => {
   const sessionId = (req.headers['mcp-session-id'] as string) || undefined;
   if (sessionId) {
     console.log(`Received MCP request for session: ${sessionId}`);
@@ -128,7 +128,7 @@ const mcpPostHandler = async (req: Request, res: Response): Promise<void> => {
 app.post('/mcp', mcpPostHandler);
 
 // Handle GET requests (SSE streams)
-const mcpGetHandler = async (req: Request, res: Response): Promise<void> => {
+export const mcpGetHandler = async (req: Request, res: Response): Promise<void> => {
   const sessionId = (req.headers['mcp-session-id'] as string) || undefined;
   if (!sessionId || !transports[sessionId]) {
     res.status(400).send('Invalid or missing session ID');
@@ -149,7 +149,7 @@ const mcpGetHandler = async (req: Request, res: Response): Promise<void> => {
 app.get('/mcp', mcpGetHandler);
 
 // Handle DELETE requests (session termination)
-const mcpDeleteHandler = async (req: Request, res: Response): Promise<void> => {
+export const mcpDeleteHandler = async (req: Request, res: Response): Promise<void> => {
   const sessionId = (req.headers['mcp-session-id'] as string) || undefined;
   if (!sessionId || !transports[sessionId]) {
     res.status(400).send('Invalid or missing session ID');
