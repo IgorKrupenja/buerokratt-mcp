@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: byrokratt-mcp
+    container_name: buerokratt-mcp
     volumes:
       # Volume mount rules directory for immediate changes after git pull
       - ./rules:/app/rules:ro

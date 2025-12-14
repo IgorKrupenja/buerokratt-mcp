@@ -16,7 +16,7 @@ import { setupTools } from '../mcp/tools.ts';
 export function createServer(): McpServer {
   const server = new McpServer(
     {
-      name: 'byrokratt-mcp',
+      name: 'buerokratt-mcp',
       version: '0.1.0',
     },
     {

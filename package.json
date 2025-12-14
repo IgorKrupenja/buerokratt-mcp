@@ -1,5 +1,5 @@
 {
-  "name": "byrokratt-mcp",
+  "name": "buerokratt-mcp",
   "version": "0.1.0",
   "description": "MCP server for sharing Cursor rules across Bürokratt modules",
   "module": "src/server.ts",

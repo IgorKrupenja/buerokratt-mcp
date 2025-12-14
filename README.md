@@ -35,7 +35,7 @@ In your project folder:
 ```json
 {
   "mcpServers": {
-    "byrokratt-mcp": {
+    "buerokratt-mcp": {
       "url": "http://localhost:3627/mcp",
       "transport": {
         "type": "sse"
@@ -45,7 +45,7 @@ In your project folder:
 }
 ```
 
-You might also want to add a simple rule to automatically load the rules for the module of the file you are editing. See `.cursor/rules/byrokratt-mcp.mdc` for an example. Place it in `<project-root>/.cursor/rules/byrokratt-mcp.mdc`.
+You might also want to add a simple rule to automatically load the rules for the module of the file you are editing. See `.cursor/rules/buerokratt-mcp.mdc` for an example. Place it in `<project-root>/.cursor/rules/buerokratt-mcp.mdc`.
 
 **VS Code**:
 
@@ -54,7 +54,7 @@ You might also want to add a simple rule to automatically load the rules for the
 ```json
 {
   "mcp.servers": {
-    "byrokratt-mcp": {
+    "buerokratt-mcp": {
       "url": "http://localhost:3627/mcp",
       "transport": {
         "type": "sse"
@@ -71,7 +71,7 @@ You might also want to add a simple rule to automatically load the rules for the
 ```json
 {
   "mcpServers": {
-    "byrokratt-mcp": {
+    "buerokratt-mcp": {
       "url": "http://localhost:3627/mcp",
       "transport": {
         "type": "sse"
@@ -130,7 +130,7 @@ This can be with an npm script, see [checks](#checks) below.
 ### Project Structure
 
 ```shell
-byrokratt-mcp/
+buerokratt-mcp/
 ├── src/              # Typescript source code
 ├── rules/            # Rule files (markdown with frontmatter)
 │   ├── global/       # Global rules that apply to all modules

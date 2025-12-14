@@ -92,7 +92,7 @@ export function validateFrontmatter(frontmatter: any, filePath: string): Validat
 async function fetchGitHubRepositories(org: string, token?: string): Promise<string[]> {
   const headers: Record<string, string> = {
     Accept: 'application/vnd.github.v3+json',
-    'User-Agent': 'byrokratt-mcp-validator',
+    'User-Agent': 'buerokratt-mcp-validator',
   };
 
   if (token) {
