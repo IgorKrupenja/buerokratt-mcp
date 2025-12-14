@@ -44,6 +44,8 @@ In your project folder:
 }
 ```
 
+You might also want to add a simple rule to automatically load the rules for the module of the file you are editing. See `.cursor/rules/byrokratt-mcp.mdc` for an example.
+
 **VS Code**:
 
 `<project-root>/.vscode/settings.json`
