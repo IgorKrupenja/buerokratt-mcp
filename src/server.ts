@@ -7,11 +7,7 @@
 
 import express from 'express';
 
-import { createServer } from './server/create-server.ts';
 import { mcpDeleteHandler, mcpGetHandler, mcpPostHandler } from './server/handlers.ts';
-
-// Re-export for backwards compatibility
-export { createServer };
 
 // ============================================================================
 // Express App Setup
