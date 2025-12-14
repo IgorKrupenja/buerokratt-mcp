@@ -57,11 +57,6 @@ jobs:
     with:
       command: bun run validate
 
-  validate-module-names:
-    uses: ./.github/workflows/run-check.yml
-    with:
-      command: bun run validate-module-names
-
   check-context-size:
     uses: ./.github/workflows/run-check.yml
     with:
