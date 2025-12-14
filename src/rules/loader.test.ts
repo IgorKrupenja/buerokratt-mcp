@@ -1,9 +1,9 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, it } from 'bun:test';
 
 import { findMarkdownFiles, loadAllRules, loadRuleFile } from './loader.ts';
 
 describe('loadRuleFile', () => {
-  test('loads and parses a valid rule file', async () => {
+  it('loads and parses a valid rule file', async () => {
     const testContent = `---\nmodules:\n  - service-module\ntags:\n  - backend\ndescription: Test rule\n---\n## Test Content\nThis is test content.`;
 
     // Create a temporary file
@@ -28,7 +28,7 @@ describe('loadRuleFile', () => {
     }
   });
 
-  test('throws error when modules field is missing', async () => {
+  it('throws error when modules field is missing', async () => {
     const invalidContent = `---\ntags:\n  - backend\n---\n## Test Content`;
 
     const tempPath = `/tmp/test-rule-invalid-${Date.now()}.md`;
@@ -45,13 +45,13 @@ describe('loadRuleFile', () => {
     }
   });
 
-  test('throws error when file does not exist', async () => {
+  it('throws error when file does not exist', async () => {
     await expect(loadRuleFile('/nonexistent/path/file.md')).rejects.toThrow();
   });
 });
 
 describe('findMarkdownFiles', () => {
-  test('finds all markdown files in a directory', async () => {
+  it('finds all markdown files in a directory', async () => {
     const tempDir = `/tmp/test-rules-${Date.now()}`;
     await Bun.write(`${tempDir}/file1.md`, 'Content 1');
     await Bun.write(`${tempDir}/subdir/file2.md`, 'Content 2');
@@ -76,13 +76,13 @@ describe('findMarkdownFiles', () => {
     }
   });
 
-  test('returns empty array when directory does not exist', async () => {
+  it('returns empty array when directory does not exist', async () => {
     const result = await findMarkdownFiles('/nonexistent/directory/path');
 
     expect(result).toEqual([]);
   });
 
-  test('returns empty array when directory has no markdown files', async () => {
+  it('returns empty array when directory has no markdown files', async () => {
     const tempDir = `/tmp/test-rules-empty-${Date.now()}`;
     await Bun.write(`${tempDir}/file.txt`, 'Not markdown');
 
@@ -101,7 +101,7 @@ describe('findMarkdownFiles', () => {
 });
 
 describe('loadAllRules', () => {
-  test('loads all rule files from rules directory', async () => {
+  it('loads all rule files from rules directory', async () => {
     const result = await loadAllRules();
 
     expect(Array.isArray(result)).toBe(true);
@@ -110,7 +110,7 @@ describe('loadAllRules', () => {
     expect(result.every((rule) => rule.path.endsWith('.md'))).toBe(true);
   });
 
-  test('parses all loaded rule files correctly', async () => {
+  it('parses all loaded rule files correctly', async () => {
     const result = await loadAllRules();
 
     for (const rule of result) {

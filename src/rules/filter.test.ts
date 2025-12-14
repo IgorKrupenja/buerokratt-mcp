@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, it } from 'bun:test';
 
 import { filterRulesByModule, getRulesForModule, mergeRules } from './filter.ts';
 import type { RuleFile } from './types.ts';
@@ -16,7 +16,7 @@ function createRuleFile(path: string, modules: string[], content: string, tags?:
 }
 
 describe('filterRulesByModule', () => {
-  test('filters rules by module name', () => {
+  it('filters rules by module name', () => {
     const rules: RuleFile[] = [
       createRuleFile('rules/service-module/rules.md', ['service-module'], 'Service rule'),
       createRuleFile('rules/training-module/rules.md', ['training-module'], 'Training rule'),
@@ -30,7 +30,7 @@ describe('filterRulesByModule', () => {
     expect(result[1]?.content).toBe('Shared rule');
   });
 
-  test('returns empty array when no rules match', () => {
+  it('returns empty array when no rules match', () => {
     const rules: RuleFile[] = [createRuleFile('rules/service-module/rules.md', ['service-module'], 'Service rule')];
 
     const result = filterRulesByModule(rules, 'nonexistent-module');
@@ -38,7 +38,7 @@ describe('filterRulesByModule', () => {
     expect(result).toHaveLength(0);
   });
 
-  test('handles rules with multiple modules', () => {
+  it('handles rules with multiple modules', () => {
     const rules: RuleFile[] = [
       createRuleFile('rules/shared/rules.md', ['service-module', 'training-module'], 'Shared rule'),
     ];
@@ -52,7 +52,7 @@ describe('filterRulesByModule', () => {
 });
 
 describe('getRulesForModule', () => {
-  test('filters rules for a specific module', () => {
+  it('filters rules for a specific module', () => {
     const allRules: RuleFile[] = [
       createRuleFile('rules/service-module/rules.md', ['service-module'], 'Service rule'),
       createRuleFile('rules/training-module/rules.md', ['training-module'], 'Training rule'),
@@ -68,7 +68,7 @@ describe('getRulesForModule', () => {
     expect(result.globalRules[0]?.content).toBe('Global rule');
   });
 
-  test('includes global rules for any module', () => {
+  it('includes global rules for any module', () => {
     const allRules: RuleFile[] = [
       createRuleFile('rules/global/common.md', ['global'], 'Global rule'),
       createRuleFile('rules/training-module/rules.md', ['training-module'], 'Training rule'),
@@ -80,7 +80,7 @@ describe('getRulesForModule', () => {
     expect(result.rules).toHaveLength(1);
   });
 
-  test('returns empty arrays when no rules match', () => {
+  it('returns empty arrays when no rules match', () => {
     const allRules: RuleFile[] = [createRuleFile('rules/service-module/rules.md', ['service-module'], 'Service rule')];
 
     const result = getRulesForModule(allRules, 'nonexistent-module');
@@ -91,7 +91,7 @@ describe('getRulesForModule', () => {
 });
 
 describe('mergeRules', () => {
-  test('merges global and module rules', () => {
+  it('merges global and module rules', () => {
     const ruleSet = {
       module: 'service-module',
       globalRules: [createRuleFile('rules/global/common.md', ['global'], 'Global content')],
@@ -107,7 +107,7 @@ describe('mergeRules', () => {
     expect(result).toContain('Service content');
   });
 
-  test('merges only global rules when no module rules', () => {
+  it('merges only global rules when no module rules', () => {
     const ruleSet = {
       module: 'service-module',
       globalRules: [createRuleFile('rules/global/common.md', ['global'], 'Global content')],
@@ -122,7 +122,7 @@ describe('mergeRules', () => {
     expect(result).not.toContain('## service-module Rules');
   });
 
-  test('merges only module rules when no global rules', () => {
+  it('merges only module rules when no global rules', () => {
     const ruleSet = {
       module: 'service-module',
       globalRules: [],
@@ -136,7 +136,7 @@ describe('mergeRules', () => {
     expect(result).toContain('Service content');
   });
 
-  test('returns empty string when no rules', () => {
+  it('returns empty string when no rules', () => {
     const ruleSet = {
       module: 'service-module',
       globalRules: [],

@@ -1,5 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { beforeEach, describe, expect, spyOn, test } from 'bun:test';
+import { beforeEach, describe, expect, it, spyOn } from 'bun:test';
 
 import { setupPrompts } from './prompts.ts';
 import * as managerModule from '../rules/manager.ts';
@@ -33,7 +33,7 @@ describe('setupPrompts', () => {
     getMergedRulesSpy = spyOn(managerModule, 'getMergedRules');
   });
 
-  test('registers development-rules prompt', () => {
+  it('registers development-rules prompt', () => {
     setupPrompts(server);
 
     expect(registeredPrompts.has('development-rules')).toBe(true);
@@ -44,7 +44,7 @@ describe('setupPrompts', () => {
     );
   });
 
-  test('development-rules prompt handler returns formatted message', async () => {
+  it('development-rules prompt handler returns formatted message', async () => {
     getMergedRulesSpy.mockResolvedValue('# Test Rules\n\nContent here');
 
     setupPrompts(server);
@@ -65,7 +65,7 @@ describe('setupPrompts', () => {
     getMergedRulesSpy.mockRestore();
   });
 
-  test('development-rules prompt handler includes module name in message', async () => {
+  it('development-rules prompt handler includes module name in message', async () => {
     getMergedRulesSpy.mockResolvedValue('Rules content');
 
     setupPrompts(server);

@@ -1,5 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { beforeEach, describe, expect, spyOn, test } from 'bun:test';
+import { beforeEach, describe, expect, it, spyOn } from 'bun:test';
 
 import { setupResources } from './resources.ts';
 import * as managerModule from '../rules/manager.ts';
@@ -33,7 +33,7 @@ describe('setupResources', () => {
     getMergedRulesSpy = spyOn(managerModule, 'getMergedRules');
   });
 
-  test('registers module-rules resource', () => {
+  it('registers module-rules resource', () => {
     setupResources(server);
 
     expect(registeredResources.has('module-rules')).toBe(true);
@@ -41,7 +41,7 @@ describe('setupResources', () => {
     expect(resourceConfig).toBeDefined();
   });
 
-  test('module-rules resource is registered with correct structure', () => {
+  it('module-rules resource is registered with correct structure', () => {
     setupResources(server);
 
     const resourceConfig = registeredResources.get('module-rules');
@@ -63,7 +63,7 @@ describe('setupResources', () => {
     expect(typeof readHandler).toBe('function');
   });
 
-  test('module-rules resource read handler returns merged rules for module', async () => {
+  it('module-rules resource read handler returns merged rules for module', async () => {
     getMergedRulesSpy.mockResolvedValue('# Test Rules\n\nContent here');
 
     setupResources(server);
@@ -90,7 +90,7 @@ describe('setupResources', () => {
     getMergedRulesSpy.mockRestore();
   });
 
-  test('module-rules resource read handler handles string module variable', async () => {
+  it('module-rules resource read handler handles string module variable', async () => {
     getMergedRulesSpy.mockResolvedValue('Rules content');
 
     setupResources(server);
@@ -113,7 +113,7 @@ describe('setupResources', () => {
     getMergedRulesSpy.mockRestore();
   });
 
-  test('module-rules resource read handler handles array module variable', async () => {
+  it('module-rules resource read handler handles array module variable', async () => {
     getMergedRulesSpy.mockResolvedValue('Rules content');
 
     setupResources(server);
@@ -136,7 +136,7 @@ describe('setupResources', () => {
     getMergedRulesSpy.mockRestore();
   });
 
-  test('module-rules resource read handler throws error when module is missing', async () => {
+  it('module-rules resource read handler throws error when module is missing', async () => {
     setupResources(server);
 
     const resourceConfig = registeredResources.get('module-rules');
@@ -149,7 +149,7 @@ describe('setupResources', () => {
     await expect(readHandler(uri, {})).rejects.toThrow('Module name is required');
   });
 
-  test('registers global-rules resource', () => {
+  it('registers global-rules resource', () => {
     setupResources(server);
 
     expect(registeredResources.has('global-rules')).toBe(true);
@@ -157,7 +157,7 @@ describe('setupResources', () => {
     expect(resourceConfig).toBeDefined();
   });
 
-  test('global-rules resource is registered with correct structure', () => {
+  it('global-rules resource is registered with correct structure', () => {
     setupResources(server);
 
     const resourceConfig = registeredResources.get('global-rules');

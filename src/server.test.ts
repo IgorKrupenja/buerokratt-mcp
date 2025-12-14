@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, spyOn, test } from 'bun:test';
+import { beforeEach, describe, expect, it, spyOn } from 'bun:test';
 import type { Request, Response } from 'express';
 
 import * as promptsModule from './mcp/prompts.ts';
@@ -61,7 +61,7 @@ function createMockFn(impl?: (...args: unknown[]) => unknown): MockFn {
 }
 
 describe('createServer', () => {
-  test('creates MCP server with correct configuration', () => {
+  it('creates MCP server with correct configuration', () => {
     const server = createServer();
 
     expect(server).toBeDefined();
@@ -69,7 +69,7 @@ describe('createServer', () => {
     expect(server.server).toBeDefined();
   });
 
-  test('sets up error handler', () => {
+  it('sets up error handler', () => {
     const consoleErrorSpy = spyOn(console, 'error').mockImplementation(() => {});
     const server = createServer();
 
@@ -82,7 +82,7 @@ describe('createServer', () => {
     consoleErrorSpy.mockRestore();
   });
 
-  test('calls setup functions', () => {
+  it('calls setup functions', () => {
     const setupResourcesSpy = spyOn(resourcesModule, 'setupResources');
     const setupToolsSpy = spyOn(toolsModule, 'setupTools');
     const setupPromptsSpy = spyOn(promptsModule, 'setupPrompts');
@@ -130,7 +130,7 @@ describe('mcpPostHandler', () => {
     };
   });
 
-  test('handles request with existing session ID successfully', async () => {
+  it('handles request with existing session ID successfully', async () => {
     const sessionId = 'existing-session-id';
     const mockHandleRequest = createMockFn().mockResolvedValue(undefined);
     const mockTransport = {
@@ -156,7 +156,7 @@ describe('mcpPostHandler', () => {
     delete transports[sessionId];
   });
 
-  test('returns 400 when no session ID and not initialization request', async () => {
+  it('returns 400 when no session ID and not initialization request', async () => {
     mockReq.body = { jsonrpc: '2.0', method: 'test', id: 1 };
 
     await mcpPostHandler(mockReq as Request, mockRes as Response);
@@ -175,7 +175,7 @@ describe('mcpPostHandler', () => {
     );
   });
 
-  test('returns 400 when session ID provided but transport does not exist', async () => {
+  it('returns 400 when session ID provided but transport does not exist', async () => {
     mockReq.headers = { 'mcp-session-id': 'non-existent-session' };
     mockReq.body = { jsonrpc: '2.0', method: 'test', id: 1 };
 
@@ -185,7 +185,7 @@ describe('mcpPostHandler', () => {
     expect(statusSpy.calls[0]?.[0]).toBe(400);
   });
 
-  test('handles errors and returns 500', async () => {
+  it('handles errors and returns 500', async () => {
     // Create a request that will cause an error
     mockReq.body = null; // This might cause issues
 
@@ -222,7 +222,7 @@ describe('mcpGetHandler', () => {
     };
   });
 
-  test('handles GET request with valid session ID successfully', async () => {
+  it('handles GET request with valid session ID successfully', async () => {
     const sessionId = 'valid-session-id';
     const mockHandleRequest = createMockFn().mockResolvedValue(undefined);
     const mockTransport = {
@@ -246,7 +246,7 @@ describe('mcpGetHandler', () => {
     delete transports[sessionId];
   });
 
-  test('handles GET request with Last-Event-ID header for reconnection', async () => {
+  it('handles GET request with Last-Event-ID header for reconnection', async () => {
     const sessionId = 'valid-session-id';
     const lastEventId = 'event-123';
     const mockHandleRequest = createMockFn().mockResolvedValue(undefined);
@@ -272,7 +272,7 @@ describe('mcpGetHandler', () => {
     delete transports[sessionId];
   });
 
-  test('returns 400 when session ID is missing', async () => {
+  it('returns 400 when session ID is missing', async () => {
     await mcpGetHandler(mockReq as Request, mockRes as Response);
 
     expect(statusSpy.calls.length).toBeGreaterThan(0);
@@ -281,7 +281,7 @@ describe('mcpGetHandler', () => {
     expect(sendSpy.calls[0]?.[0]).toBe('Invalid or missing session ID');
   });
 
-  test('returns 400 when session ID does not exist in transports', async () => {
+  it('returns 400 when session ID does not exist in transports', async () => {
     mockReq.headers = { 'mcp-session-id': 'non-existent-session' };
 
     await mcpGetHandler(mockReq as Request, mockRes as Response);
@@ -319,7 +319,7 @@ describe('mcpDeleteHandler', () => {
     };
   });
 
-  test('handles DELETE request with valid session ID successfully', async () => {
+  it('handles DELETE request with valid session ID successfully', async () => {
     const sessionId = 'valid-session-id';
     const mockHandleRequest = createMockFn().mockResolvedValue(undefined);
     const mockTransport = {
@@ -343,7 +343,7 @@ describe('mcpDeleteHandler', () => {
     delete transports[sessionId];
   });
 
-  test('returns 400 when session ID is missing', async () => {
+  it('returns 400 when session ID is missing', async () => {
     await mcpDeleteHandler(mockReq as Request, mockRes as Response);
 
     expect(statusSpy.calls.length).toBeGreaterThan(0);
@@ -352,7 +352,7 @@ describe('mcpDeleteHandler', () => {
     expect(sendSpy.calls[0]?.[0]).toBe('Invalid or missing session ID');
   });
 
-  test('returns 400 when session ID does not exist in transports', async () => {
+  it('returns 400 when session ID does not exist in transports', async () => {
     mockReq.headers = { 'mcp-session-id': 'non-existent-session' };
 
     await mcpDeleteHandler(mockReq as Request, mockRes as Response);

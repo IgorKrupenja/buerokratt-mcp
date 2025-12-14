@@ -1,5 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { beforeEach, describe, expect, spyOn, test } from 'bun:test';
+import { beforeEach, describe, expect, it, spyOn } from 'bun:test';
 
 import { setupTools } from './tools.ts';
 import * as loaderModule from '../rules/loader.ts';
@@ -38,7 +38,7 @@ describe('setupTools', () => {
     loadAllRulesSpy = spyOn(loaderModule, 'loadAllRules');
   });
 
-  test('registers get_rules tool', () => {
+  it('registers get_rules tool', () => {
     setupTools(server);
 
     expect(registeredTools.has('get_rules')).toBe(true);
@@ -47,7 +47,7 @@ describe('setupTools', () => {
     expect(toolConfig[0].description).toBe('Get cursor rules for a specific module');
   });
 
-  test('get_rules tool handler returns merged rules', async () => {
+  it('get_rules tool handler returns merged rules', async () => {
     getMergedRulesSpy.mockResolvedValue('# Test Rules\n\nContent here');
 
     setupTools(server);
@@ -65,7 +65,7 @@ describe('setupTools', () => {
     getMergedRulesSpy.mockRestore();
   });
 
-  test('registers list_modules tool', () => {
+  it('registers list_modules tool', () => {
     setupTools(server);
 
     expect(registeredTools.has('list_modules')).toBe(true);
@@ -74,7 +74,7 @@ describe('setupTools', () => {
     expect(toolConfig[0].description).toBe('List all available modules that have rules');
   });
 
-  test('list_modules tool handler returns formatted module list', async () => {
+  it('list_modules tool handler returns formatted module list', async () => {
     getAvailableModulesSpy.mockResolvedValue(['service-module', 'global', 'shared-backend']);
 
     setupTools(server);
@@ -93,7 +93,7 @@ describe('setupTools', () => {
     getAvailableModulesSpy.mockRestore();
   });
 
-  test('registers search_rules tool', () => {
+  it('registers search_rules tool', () => {
     setupTools(server);
 
     expect(registeredTools.has('search_rules')).toBe(true);
@@ -102,7 +102,7 @@ describe('setupTools', () => {
     expect(toolConfig[0].description).toBe('Search for rules containing a specific keyword across all modules');
   });
 
-  test('search_rules tool handler finds matching rules', async () => {
+  it('search_rules tool handler finds matching rules', async () => {
     loadAllRulesSpy.mockResolvedValue([
       {
         path: 'rules/test1.md',
@@ -131,7 +131,7 @@ describe('setupTools', () => {
     loadAllRulesSpy.mockRestore();
   });
 
-  test('search_rules tool handler filters by module when specified', async () => {
+  it('search_rules tool handler filters by module when specified', async () => {
     loadAllRulesSpy.mockResolvedValue([
       {
         path: 'rules/test1.md',
@@ -167,7 +167,7 @@ describe('setupTools', () => {
     loadAllRulesSpy.mockRestore();
   });
 
-  test('search_rules tool handler returns no results message when nothing found', async () => {
+  it('search_rules tool handler returns no results message when nothing found', async () => {
     loadAllRulesSpy.mockResolvedValue([
       {
         path: 'rules/test1.md',
@@ -189,7 +189,7 @@ describe('setupTools', () => {
     loadAllRulesSpy.mockRestore();
   });
 
-  test('search_rules tool handler searches in description', async () => {
+  it('search_rules tool handler searches in description', async () => {
     loadAllRulesSpy.mockResolvedValue([
       {
         path: 'rules/test1.md',

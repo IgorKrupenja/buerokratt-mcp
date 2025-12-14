@@ -1,4 +1,4 @@
-import { describe, expect, spyOn, test } from 'bun:test';
+import { describe, expect, it, spyOn } from 'bun:test';
 
 import * as loaderModule from './loader.ts';
 import { getAvailableModules, getMergedRules, getModuleRules } from './manager.ts';
@@ -16,7 +16,7 @@ function createRuleFile(path: string, modules: string[], content: string): RuleF
 }
 
 describe('getModuleRules', () => {
-  test('returns rules for a specific module with global rules', async () => {
+  it('returns rules for a specific module with global rules', async () => {
     const mockRules: RuleFile[] = [
       createRuleFile('rules/global/common.md', ['global'], 'Global rule'),
       createRuleFile('rules/service-module/rules.md', ['service-module'], 'Service rule'),
@@ -38,7 +38,7 @@ describe('getModuleRules', () => {
 });
 
 describe('getAvailableModules', () => {
-  test('returns sorted list of available modules', async () => {
+  it('returns sorted list of available modules', async () => {
     const mockRules: RuleFile[] = [
       createRuleFile('rules/global/common.md', ['global'], 'Global rule'),
       createRuleFile('rules/service-module/rules.md', ['service-module'], 'Service rule'),
@@ -57,7 +57,7 @@ describe('getAvailableModules', () => {
     spy.mockRestore();
   });
 
-  test('returns empty array when no modules found', async () => {
+  it('returns empty array when no modules found', async () => {
     const mockRules: RuleFile[] = [createRuleFile('rules/global/common.md', ['global'], 'Global rule')];
 
     const spy = spyOn(loaderModule, 'loadAllRules').mockResolvedValue(mockRules);
@@ -72,7 +72,7 @@ describe('getAvailableModules', () => {
 });
 
 describe('getMergedRules', () => {
-  test('returns merged markdown for a module', async () => {
+  it('returns merged markdown for a module', async () => {
     const mockRules: RuleFile[] = [
       createRuleFile('rules/global/common.md', ['global'], 'Global content'),
       createRuleFile('rules/service-module/rules.md', ['service-module'], 'Service content'),

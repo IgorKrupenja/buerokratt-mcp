@@ -1,10 +1,10 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, it } from 'bun:test';
 
 import { estimateTokens, formatSize, getFileStatus, getModuleStatus } from './check-context-size.ts';
 
 describe('check-context-size utilities', () => {
   // Test estimateTokens
-  test('estimateTokens calculates tokens correctly', () => {
+  it('estimateTokens calculates tokens correctly', () => {
     // ~4 chars per token
     expect(estimateTokens(400)).toBe(100);
     expect(estimateTokens(1000)).toBe(250);
@@ -12,7 +12,7 @@ describe('check-context-size utilities', () => {
   });
 
   // Test formatSize
-  test('formatSize formats bytes correctly', () => {
+  it('formatSize formats bytes correctly', () => {
     expect(formatSize(0)).toBe('0 B');
     expect(formatSize(512)).toBe('512 B');
     expect(formatSize(1024)).toBe('1.00 KB');
@@ -22,7 +22,7 @@ describe('check-context-size utilities', () => {
   });
 
   // Test getFileStatus
-  test('getFileStatus returns correct status for file sizes', () => {
+  it('getFileStatus returns correct status for file sizes', () => {
     const safe = getFileStatus(5 * 1024); // 5 KB
     expect(safe.label).toBe('OK');
     expect(safe.emoji).toBe('🟢');
@@ -37,7 +37,7 @@ describe('check-context-size utilities', () => {
   });
 
   // Test getModuleStatus
-  test('getModuleStatus returns correct status for module sizes', () => {
+  it('getModuleStatus returns correct status for module sizes', () => {
     const safe = getModuleStatus(30 * 1024); // 30 KB
     expect(safe.label).toBe('OK');
     expect(safe.emoji).toBe('🟢');
