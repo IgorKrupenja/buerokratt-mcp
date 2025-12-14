@@ -45,7 +45,7 @@ In your project folder:
 }
 ```
 
-You might also want to add a simple rule to automatically load the rules for the module of the file you are editing. See `.cursor/rules/byrokratt-mcp.mdc` for an example.
+You might also want to add a simple rule to automatically load the rules for the module of the file you are editing. See `.cursor/rules/byrokratt-mcp.mdc` for an example. Place it in `<project-root>/.cursor/rules/byrokratt-mcp.mdc`.
 
 **VS Code**:
 
