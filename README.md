@@ -1,8 +1,8 @@
 # Bürokratt MCP Server
 
-MCP (Model Context Protocol) server for sharing Cursor rules across Bürokratt modules.
+MCP (Model Context Protocol) server for sharing AI coding assistant rules for [Bürokratt modules](https://github.com/buerokratt).
 
-Rationale: The Buerokratt tech stack, especially the DSL-based backend, is quite unique and is difficult to use with AI coding assistants. This MCP server provides a way to share rules and guidelines for different Bürokratt modules in a way that is easy to use with different IDEs and AI coding assistants. It is based on an initial `.cursorrules` setup that is also [provided](docs/examples/service-module-cursorrules.md) in this repo for legacy purposes.
+Rationale: The Buerokratt tech stack, especially the DSL-based backend, is quite unique and is difficult to use with AI coding assistants. This MCP server provides a way to share rules and guidelines for different [Bürokratt modules](https://github.com/buerokratt) in a way that is easy to use with different IDEs and AI coding assistants. It is based on an initial `.cursorrules` setup that is also [provided](docs/examples/service-module-cursorrules.md) in this repo for legacy purposes.
 
 Currently available rules:
 
