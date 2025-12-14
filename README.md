@@ -13,7 +13,7 @@ Currently available rules:
 
 Planned:
 
-- [ ] Add more module support.
+- [ ] Add support for more modules.
 - [ ] Add OAuth2 support for authentication.
 - [ ] Cache rules in memory if needed. Check with `measure-load-time` script. But this should be very fast with Bun.
 
