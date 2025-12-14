@@ -153,7 +153,9 @@ async function fetchGitHubRepositories(org: string, token?: string): Promise<str
 /**
  * Validate module names against GitHub repositories
  */
-async function validateModuleNames(allRules: Awaited<ReturnType<typeof loadAllRules>>): Promise<ValidationResult> {
+export async function validateModuleNames(
+  allRules: Awaited<ReturnType<typeof loadAllRules>>,
+): Promise<ValidationResult> {
   const errors: string[] = [];
   const warnings: string[] = [];
 
