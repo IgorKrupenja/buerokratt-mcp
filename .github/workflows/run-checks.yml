@@ -61,8 +61,6 @@ jobs:
     uses: ./.github/workflows/run-check.yml
     with:
       command: bun run validate-module-names
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   check-context-size:
     uses: ./.github/workflows/run-check.yml
