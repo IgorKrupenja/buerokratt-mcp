@@ -65,7 +65,7 @@ async function fetchGitHubRepositories(org: string, token?: string): Promise<str
         throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
       }
 
-      const data: GitHubRepository[] = await response.json();
+      const data = (await response.json()) as GitHubRepository[];
 
       if (data.length === 0) {
         break;
