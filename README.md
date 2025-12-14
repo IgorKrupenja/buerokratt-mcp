@@ -55,10 +55,7 @@ You might also want to add a simple rule to automatically load the rules for the
 {
   "mcp.servers": {
     "buerokratt-mcp": {
-      "url": "http://localhost:3627/mcp",
-      "transport": {
-        "type": "sse"
-      }
+      "url": "http://localhost:3627/mcp"
     }
   }
 }
