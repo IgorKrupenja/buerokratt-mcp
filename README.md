@@ -13,6 +13,7 @@ Currently available rules:
 
 Planned:
 
+- [ ] **Cursor known issue**: Sometimes Cursor reports "Failed to open SSE stream: Conflict" errors. This does not actually affect the usage of the MCP server.
 - [ ] Add support for more modules.
 - [ ] Add OAuth2 support for authentication.
 - [ ] Cache rules in memory if needed. Check with `measure-load-time` script. But this should be very fast with Bun.
