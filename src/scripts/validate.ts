@@ -50,7 +50,7 @@ const colors = {
 /**
  * Validate frontmatter structure (Level 1)
  */
-function validateFrontmatter(frontmatter: any, filePath: string): ValidationResult {
+export function validateFrontmatter(frontmatter: any, filePath: string): ValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
 
@@ -87,7 +87,7 @@ function validateFrontmatter(frontmatter: any, filePath: string): ValidationResu
  *
  * Uses markdownlint to validate markdown syntax and structure.
  */
-async function validateMarkdown(content: string, filePath: string): Promise<ValidationResult> {
+export async function validateMarkdown(content: string, filePath: string): Promise<ValidationResult> {
   const errors: string[] = [];
   const warnings: string[] = [];
 
