@@ -26,6 +26,7 @@ describe('validate-module-names', () => {
       },
     ];
 
+    // todo why?
     spyOn(loaderModule, 'loadAllRules').mockResolvedValue(mockRules as any);
 
     // Test that we can load rules and extract module names
