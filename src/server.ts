@@ -9,10 +9,6 @@ import express from 'express';
 
 import { mcpDeleteHandler, mcpGetHandler, mcpPostHandler } from './server/handlers.ts';
 
-// ============================================================================
-// Express App Setup
-// ============================================================================
-
 const app = express();
 app.use(express.json());
 
