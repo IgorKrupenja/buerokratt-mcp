@@ -168,8 +168,7 @@ The following checks run automatically in CI on push and pull requests:
 - **lint**: Runs ESLint to check code quality and style
 - **lint-markdown**: Lints markdown files (rules and README) using markdownlint
 - **typecheck**: Validates TypeScript types without emitting files
-- **validate**: Validates rule files (frontmatter structure and markdown syntax)
-- **validate-module-names**: Validates that module names in rule files match actual GitHub repositories in the buerokratt organization
+- **validate**: Validates rule files (frontmatter structure, markdown syntax, and module names against GitHub repositories)
 - **check-context-size**: Checks that rule files don't exceed safe token limits
 - **test**: Runs tests
 
@@ -183,14 +182,13 @@ bun lint
 bun lint:markdown
 bun typecheck
 bun validate
-bun validate-module-names
 bun check-context-size
 bun check-context-size <module-name>
 bun test
 ```
 
-**Note**: The `validate-module-names` script requires network access to query the GitHub API. It works with unauthenticated requests (60 requests/hour), but you can set the `GITHUB_TOKEN` environment variable for higher rate limits (5000 requests/hour):
+**Note**: The `validate` script includes module name validation which requires network access to query the GitHub API. It works with unauthenticated requests (60 requests/hour), but you can set the `GITHUB_TOKEN` environment variable for higher rate limits (5000 requests/hour):
 
 ```sh
-GITHUB_TOKEN=your_token_here bun validate-module-names
+GITHUB_TOKEN=your_token_here bun validate
 ```
