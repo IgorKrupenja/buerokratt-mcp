@@ -4,7 +4,7 @@ import { findMarkdownFiles, loadAllRules, loadRuleFile } from './loader.ts';
 
 describe('loadRuleFile', () => {
   it('loads and parses a valid rule file', async () => {
-    const testContent = `---\nmodules:\n  - service-module\ntags:\n  - backend\ndescription: Test rule\n---\n## Test Content\nThis is test content.`;
+    const testContent = `---\nmodules:\n  - Service-Module\ntags:\n  - backend\ndescription: Test rule\n---\n## Test Content\nThis is test content.`;
 
     // Create a temporary file
     const tempPath = `/tmp/test-rule-${Date.now()}.md`;
@@ -14,7 +14,7 @@ describe('loadRuleFile', () => {
       const result = await loadRuleFile(tempPath);
 
       expect(result.path).toBe(tempPath);
-      expect(result.frontmatter.modules).toEqual(['service-module']);
+      expect(result.frontmatter.modules).toEqual(['Service-Module']);
       expect(result.frontmatter.tags).toEqual(['backend']);
       expect(result.frontmatter.description).toBe('Test rule');
       expect(result.content).toContain('## Test Content');

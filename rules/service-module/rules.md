@@ -1,6 +1,6 @@
 ---
 modules:
-  - service-module
+  - Service-Module
 tags:
   - service-module
   - overview
@@ -45,7 +45,7 @@ This repository contains a Service Module with two main parts:
   for modifying and removing data. When updating records, use direct identifiers (e.g., `service_id`, `endpoint_id`) in
   WHERE clauses.
 - **UPDATE and DELETE Statements for `training/` and `analytics/` folders**: UPDATE and DELETE statements are NOT
-  ALLOWED (see shared-backend/sql-restrictions.md for details). This is an exception - service-module allows
+  ALLOWED (see shared-backend/sql-restrictions.md for details). This is an exception - Service-Module allows
   UPDATE/DELETE in the `services/` folder only.
 
 ## Utils

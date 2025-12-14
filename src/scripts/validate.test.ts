@@ -6,7 +6,7 @@ describe('validate utilities', () => {
   describe('validateFrontmatter', () => {
     it('validates correct frontmatter', () => {
       const frontmatter = {
-        modules: ['service-module', 'global'],
+        modules: ['Service-Module', 'global'],
         tags: ['backend'],
         description: 'Test rule',
       };
@@ -30,7 +30,7 @@ describe('validate utilities', () => {
 
     it('rejects non-array modules field', () => {
       const frontmatter = {
-        modules: 'service-module',
+        modules: 'Service-Module',
       };
 
       const result = validateFrontmatter(frontmatter, 'test.md');
@@ -52,7 +52,7 @@ describe('validate utilities', () => {
 
     it('warns about non-array tags', () => {
       const frontmatter = {
-        modules: ['service-module'],
+        modules: ['Service-Module'],
         tags: 'backend',
       };
 
@@ -64,7 +64,7 @@ describe('validate utilities', () => {
 
     it('accepts valid tags array', () => {
       const frontmatter = {
-        modules: ['service-module'],
+        modules: ['Service-Module'],
         tags: ['backend', 'api'],
       };
 

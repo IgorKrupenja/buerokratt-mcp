@@ -52,14 +52,14 @@ describe('setupPrompts', () => {
     const promptConfig = registeredPrompts.get('development-rules');
     const handler = promptConfig[1]; // Handler is the second argument
 
-    const result = await handler({ module: 'service-module' });
+    const result = await handler({ module: 'Service-Module' });
 
-    expect(getMergedRulesSpy).toHaveBeenCalledWith('service-module');
+    expect(getMergedRulesSpy).toHaveBeenCalledWith('Service-Module');
     expect(result.messages).toBeDefined();
     expect(result.messages.length).toBe(1);
     expect(result.messages[0].role).toBe('user');
     expect(result.messages[0].content.type).toBe('text');
-    expect(result.messages[0].content.text).toContain('Here are the development rules for service-module:');
+    expect(result.messages[0].content.text).toContain('Here are the development rules for Service-Module:');
     expect(result.messages[0].content.text).toContain('# Test Rules\n\nContent here');
 
     getMergedRulesSpy.mockRestore();

@@ -7,7 +7,7 @@ Rationale: The Buerokratt tech stack, especially the DSL-based backend, is quite
 Currently available rules:
 
 - `global` - Global rules that apply to all modules
-- `service-module` - Service Module specific rules
+- `Service-Module` - Service Module specific rules
 - `shared-backend` - Shared backend rules (SQL, Ruuter)
 - `shared-frontend` - Shared frontend rules (React, CSS)
 
@@ -82,7 +82,7 @@ In your project folder:
 
 Once configured, the MCP server provides:
 
-- **Resources**: Access to module-specific rules via `rules://{module}` (e.g., `rules://service-module`)
+- **Resources**: Access to module-specific rules via `rules://{module}` (e.g., `rules://Service-Module`)
 - **Tools**:
   - `get_rules` - Get rules for a specific module
   - `list_modules` - List all available modules
@@ -96,15 +96,15 @@ Once configured, the MCP server provides:
 
 Simply edit the rules in the `rules/` folder and commit. Rules are loaded fresh on every request, **so no server restart is needed to get the changes**.
 
-These rules are in Markdown format with frontmatter. `modules` field in frontmatter is required and should be an array of module names. Module names should match Bürokratt module names but lowercase. Other fields are optional. An example:
+These rules are in Markdown format with frontmatter. `modules` field in frontmatter is required and should be an array of module names. Module names should match Bürokratt repository folder names exactly (e.g., `Service-Module`, `Training-Module`, `Analytics-Module`, `Buerokratt-Chatbot`). Other fields are optional. An example:
 
 ```md
 ---
 modules:
-  - service-module
-  - training-module
-  - analytics-module
-  - buerokratt-chatbot
+  - Service-Module
+  - Training-Module
+  - Analytics-Module
+  - Buerokratt-Chatbot
 tags:
   - backend
   - sql
@@ -133,7 +133,7 @@ byrokratt-mcp/
 │   ├── global/       # Global rules that apply to all modules
 │   │   ├── common.md
 │   │   └── typescript.md
-│   ├── service-module/    # Service Module specific rules
+│   ├── Service-Module/    # Service Module specific rules
 │   │   └── rules.md
 │   ├── ...other-modules...    # Other modules specific rules
 │   │   └── rules.md
