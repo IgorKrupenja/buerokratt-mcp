@@ -1,7 +1,7 @@
 {
   "name": "buerokratt-mcp",
   "version": "0.1.0",
-  "description": "MCP server for sharing Cursor rules across Bürokratt modules",
+  "description": "MCP server for Bürokratt AI coding assistant rules",
   "module": "src/server.ts",
   "type": "module",
   "private": true,
