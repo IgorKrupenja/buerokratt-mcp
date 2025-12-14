@@ -7,12 +7,13 @@ Rationale: The Buerokratt tech stack, especially the DSL-based backend, is quite
 Currently available rules:
 
 - `global` - Global rules that apply to all modules
-- `service-module` - Service Module specific rules
+- `Service-Module` - Service Module specific rules
 - `shared-backend` - Shared backend rules (SQL, Ruuter)
 - `shared-frontend` - Shared frontend rules (React, CSS)
 
 Planned:
 
+- [ ] **Cursor known issue**: Sometimes Cursor reports "Failed to open SSE stream: Conflict" errors. This does not actually affect the usage of the MCP server.
 - [ ] Add support for more modules.
 - [ ] Add OAuth2 support for authentication.
 - [ ] Cache rules in memory if needed. Check with `measure-load-time` script. But this should be very fast with Bun.
@@ -43,6 +44,8 @@ In your project folder:
   }
 }
 ```
+
+You might also want to add a simple rule to automatically load the rules for the module of the file you are editing. See `.cursor/rules/byrokratt-mcp.mdc` for an example. Place it in `<project-root>/.cursor/rules/byrokratt-mcp.mdc`.
 
 **VS Code**:
 
@@ -82,7 +85,7 @@ In your project folder:
 
 Once configured, the MCP server provides:
 
-- **Resources**: Access to module-specific rules via `rules://{module}` (e.g., `rules://service-module`)
+- **Resources**: Access to module-specific rules via `rules://{module}` (e.g., `rules://Service-Module`)
 - **Tools**:
   - `get_rules` - Get rules for a specific module
   - `list_modules` - List all available modules
@@ -96,15 +99,15 @@ Once configured, the MCP server provides:
 
 Simply edit the rules in the `rules/` folder and commit. Rules are loaded fresh on every request, **so no server restart is needed to get the changes**.
 
-These rules are in Markdown format with frontmatter. `modules` field in frontmatter is required and should be an array of module names. Module names should match Bürokratt module names but lowercase. Other fields are optional. An example:
+These rules are in Markdown format with frontmatter. `modules` field in frontmatter is required and should be an array of module names. Module names should match Bürokratt repository folder names exactly (e.g., `Service-Module`, `Training-Module`, `Analytics-Module`, `Buerokratt-Chatbot`). Other fields are optional. An example:
 
 ```md
 ---
 modules:
-  - service-module
-  - training-module
-  - analytics-module
-  - buerokratt-chatbot
+  - Service-Module
+  - Training-Module
+  - Analytics-Module
+  - Buerokratt-Chatbot
 tags:
   - backend
   - sql
@@ -133,7 +136,7 @@ byrokratt-mcp/
 │   ├── global/       # Global rules that apply to all modules
 │   │   ├── common.md
 │   │   └── typescript.md
-│   ├── service-module/    # Service Module specific rules
+│   ├── Service-Module/    # Service Module specific rules
 │   │   └── rules.md
 │   ├── ...other-modules...    # Other modules specific rules
 │   │   └── rules.md
@@ -165,7 +168,7 @@ The following checks run automatically in CI on push and pull requests:
 - **lint**: Runs ESLint to check code quality and style
 - **lint-markdown**: Lints markdown files (rules and README) using markdownlint
 - **typecheck**: Validates TypeScript types without emitting files
-- **validate**: Validates rule files (frontmatter structure and markdown syntax)
+- **validate**: Validates rule files (frontmatter structure, markdown syntax, and module names against GitHub repositories)
 - **check-context-size**: Checks that rule files don't exceed safe token limits
 - **test**: Runs tests
 
@@ -182,4 +185,10 @@ bun validate
 bun check-context-size
 bun check-context-size <module-name>
 bun test
+```
+
+**Note**: The `validate` script includes module name validation which requires network access to query the GitHub API. It works with unauthenticated requests (60 requests/hour), but you can set the `GITHUB_TOKEN` environment variable for higher rate limits (5000 requests/hour):
+
+```sh
+GITHUB_TOKEN=your_token_here bun validate
 ```

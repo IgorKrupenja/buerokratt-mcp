@@ -18,3 +18,5 @@ jobs:
           bun-version: latest
       - run: bun install --frozen-lockfile
       - run: ${{ inputs.command }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

@@ -1,6 +1,6 @@
 ---
 modules:
-  - service-module
+  - Service-Module
 tags:
   - backend
   - database
@@ -37,9 +37,9 @@ description: SQL rules for DSL-based backends (migrations and queries)
 - **Parameter Format**: Use colon-prefixed parameters: `:page_size`, `:search`, `:sorting`, `:page`, `:id`
 - **Type Casting**: Use PostgreSQL type casting: `:value::uuid`, `:state::service_state`, `:data::json`
 - **UPDATE and DELETE Statements**:
-  - Most modules (training-module, analytics-module, buerokratt-chatbot) do NOT allow UPDATE/DELETE statements (see
+  - Most modules (Training-Module, Analytics-Module, Buerokratt-Chatbot) do NOT allow UPDATE/DELETE statements (see
     sql-restrictions.md)
-  - service-module is an exception and allows UPDATE/DELETE in the `services/` folder (see service-module rules)
+  - Service-Module is an exception and allows UPDATE/DELETE in the `services/` folder (see Service-Module rules)
 - **Query Structure**:
   - Use CTEs (WITH clauses) for complex queries
   - Include pagination with `OFFSET` and `LIMIT`

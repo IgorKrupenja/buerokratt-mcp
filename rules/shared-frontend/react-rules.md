@@ -1,6 +1,6 @@
 ---
 modules:
-  - service-module
+  - Service-Module
 tags:
   - frontend
   - react

@@ -18,12 +18,12 @@ function createRuleFile(path: string, modules: string[], content: string, tags?:
 describe('filterRulesByModule', () => {
   it('filters rules by module name', () => {
     const rules: RuleFile[] = [
-      createRuleFile('rules/service-module/rules.md', ['service-module'], 'Service rule'),
-      createRuleFile('rules/training-module/rules.md', ['training-module'], 'Training rule'),
-      createRuleFile('rules/shared/rules.md', ['service-module', 'training-module'], 'Shared rule'),
+      createRuleFile('rules/service-module/rules.md', ['Service-Module'], 'Service rule'),
+      createRuleFile('rules/training-module/rules.md', ['Training-Module'], 'Training rule'),
+      createRuleFile('rules/shared/rules.md', ['Service-Module', 'Training-Module'], 'Shared rule'),
     ];
 
-    const result = filterRulesByModule(rules, 'service-module');
+    const result = filterRulesByModule(rules, 'Service-Module');
 
     expect(result).toHaveLength(2);
     expect(result[0]?.content).toBe('Service rule');
@@ -31,7 +31,7 @@ describe('filterRulesByModule', () => {
   });
 
   it('returns empty array when no rules match', () => {
-    const rules: RuleFile[] = [createRuleFile('rules/service-module/rules.md', ['service-module'], 'Service rule')];
+    const rules: RuleFile[] = [createRuleFile('rules/service-module/rules.md', ['Service-Module'], 'Service rule')];
 
     const result = filterRulesByModule(rules, 'nonexistent-module');
 
@@ -40,11 +40,11 @@ describe('filterRulesByModule', () => {
 
   it('handles rules with multiple modules', () => {
     const rules: RuleFile[] = [
-      createRuleFile('rules/shared/rules.md', ['service-module', 'training-module'], 'Shared rule'),
+      createRuleFile('rules/shared/rules.md', ['Service-Module', 'Training-Module'], 'Shared rule'),
     ];
 
-    const result1 = filterRulesByModule(rules, 'service-module');
-    const result2 = filterRulesByModule(rules, 'training-module');
+    const result1 = filterRulesByModule(rules, 'Service-Module');
+    const result2 = filterRulesByModule(rules, 'Training-Module');
 
     expect(result1).toHaveLength(1);
     expect(result2).toHaveLength(1);
@@ -54,14 +54,14 @@ describe('filterRulesByModule', () => {
 describe('getRulesForModule', () => {
   it('filters rules for a specific module', () => {
     const allRules: RuleFile[] = [
-      createRuleFile('rules/service-module/rules.md', ['service-module'], 'Service rule'),
-      createRuleFile('rules/training-module/rules.md', ['training-module'], 'Training rule'),
+      createRuleFile('rules/service-module/rules.md', ['Service-Module'], 'Service rule'),
+      createRuleFile('rules/training-module/rules.md', ['Training-Module'], 'Training rule'),
       createRuleFile('rules/global/common.md', ['global'], 'Global rule'),
     ];
 
-    const result = getRulesForModule(allRules, 'service-module');
+    const result = getRulesForModule(allRules, 'Service-Module');
 
-    expect(result.module).toBe('service-module');
+    expect(result.module).toBe('Service-Module');
     expect(result.rules).toHaveLength(1);
     expect(result.rules[0]?.content).toBe('Service rule');
     expect(result.globalRules).toHaveLength(1);
@@ -71,17 +71,17 @@ describe('getRulesForModule', () => {
   it('includes global rules for any module', () => {
     const allRules: RuleFile[] = [
       createRuleFile('rules/global/common.md', ['global'], 'Global rule'),
-      createRuleFile('rules/training-module/rules.md', ['training-module'], 'Training rule'),
+      createRuleFile('rules/training-module/rules.md', ['Training-Module'], 'Training rule'),
     ];
 
-    const result = getRulesForModule(allRules, 'training-module');
+    const result = getRulesForModule(allRules, 'Training-Module');
 
     expect(result.globalRules).toHaveLength(1);
     expect(result.rules).toHaveLength(1);
   });
 
   it('returns empty arrays when no rules match', () => {
-    const allRules: RuleFile[] = [createRuleFile('rules/service-module/rules.md', ['service-module'], 'Service rule')];
+    const allRules: RuleFile[] = [createRuleFile('rules/service-module/rules.md', ['Service-Module'], 'Service rule')];
 
     const result = getRulesForModule(allRules, 'nonexistent-module');
 
@@ -93,9 +93,9 @@ describe('getRulesForModule', () => {
 describe('mergeRules', () => {
   it('merges global and module rules', () => {
     const ruleSet = {
-      module: 'service-module',
+      module: 'Service-Module',
       globalRules: [createRuleFile('rules/global/common.md', ['global'], 'Global content')],
-      rules: [createRuleFile('rules/service-module/rules.md', ['service-module'], 'Service content')],
+      rules: [createRuleFile('rules/service-module/rules.md', ['Service-Module'], 'Service content')],
     };
 
     const result = mergeRules(ruleSet);
@@ -103,13 +103,13 @@ describe('mergeRules', () => {
     expect(result).toContain('# Global Rules');
     expect(result).toContain('Global content');
     expect(result).toContain('---');
-    expect(result).toContain('## service-module Rules');
+    expect(result).toContain('## Service-Module Rules');
     expect(result).toContain('Service content');
   });
 
   it('merges only global rules when no module rules', () => {
     const ruleSet = {
-      module: 'service-module',
+      module: 'Service-Module',
       globalRules: [createRuleFile('rules/global/common.md', ['global'], 'Global content')],
       rules: [],
     };
@@ -124,21 +124,21 @@ describe('mergeRules', () => {
 
   it('merges only module rules when no global rules', () => {
     const ruleSet = {
-      module: 'service-module',
+      module: 'Service-Module',
       globalRules: [],
-      rules: [createRuleFile('rules/service-module/rules.md', ['service-module'], 'Service content')],
+      rules: [createRuleFile('rules/service-module/rules.md', ['Service-Module'], 'Service content')],
     };
 
     const result = mergeRules(ruleSet);
 
     expect(result).not.toContain('# Global Rules');
-    expect(result).toContain('## service-module Rules');
+    expect(result).toContain('## Service-Module Rules');
     expect(result).toContain('Service content');
   });
 
   it('returns empty string when no rules', () => {
     const ruleSet = {
-      module: 'service-module',
+      module: 'Service-Module',
       globalRules: [],
       rules: [],
     };

@@ -76,10 +76,10 @@ describe('setupResources', () => {
     ) => Promise<{ contents: Array<{ uri: string; mimeType: string; text: string }> }>;
     expect(typeof readHandler).toBe('function');
 
-    const uri = new URL('rules://service-module');
-    const result = await readHandler(uri, { module: 'service-module' });
+    const uri = new URL('rules://Service-Module');
+    const result = await readHandler(uri, { module: 'Service-Module' });
 
-    expect(getMergedRulesSpy).toHaveBeenCalledWith('service-module');
+    expect(getMergedRulesSpy).toHaveBeenCalledWith('Service-Module');
     expect(result.contents).toBeDefined();
     expect(result.contents.length).toBe(1);
     const content = result.contents[0]!;

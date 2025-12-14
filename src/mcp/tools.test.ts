@@ -55,9 +55,9 @@ describe('setupTools', () => {
     const toolConfig = registeredTools.get('get_rules');
     const handler = toolConfig[1]; // Handler is the second argument
 
-    const result = await handler({ module: 'service-module' });
+    const result = await handler({ module: 'Service-Module' });
 
-    expect(getMergedRulesSpy).toHaveBeenCalledWith('service-module');
+    expect(getMergedRulesSpy).toHaveBeenCalledWith('Service-Module');
     expect(result.content).toBeDefined();
     expect(result.content[0].type).toBe('text');
     expect(result.content[0].text).toBe('# Test Rules\n\nContent here');
@@ -75,7 +75,7 @@ describe('setupTools', () => {
   });
 
   it('list_modules tool handler returns formatted module list', async () => {
-    getAvailableModulesSpy.mockResolvedValue(['service-module', 'global', 'shared-backend']);
+    getAvailableModulesSpy.mockResolvedValue(['Service-Module', 'global', 'shared-backend']);
 
     setupTools(server);
 
@@ -86,7 +86,7 @@ describe('setupTools', () => {
 
     expect(getAvailableModulesSpy).toHaveBeenCalled();
     expect(result.content[0].text).toContain('Available modules:');
-    expect(result.content[0].text).toContain('- service-module');
+    expect(result.content[0].text).toContain('- Service-Module');
     expect(result.content[0].text).toContain('- global');
     expect(result.content[0].text).toContain('- shared-backend');
 
@@ -106,7 +106,7 @@ describe('setupTools', () => {
     loadAllRulesSpy.mockResolvedValue([
       {
         path: 'rules/test1.md',
-        frontmatter: { modules: ['service-module'], description: 'Test rule' },
+        frontmatter: { modules: ['Service-Module'], description: 'Test rule' },
         content: 'This is a test rule about SQL queries',
       },
       {
@@ -135,7 +135,7 @@ describe('setupTools', () => {
     loadAllRulesSpy.mockResolvedValue([
       {
         path: 'rules/test1.md',
-        frontmatter: { modules: ['service-module'] },
+        frontmatter: { modules: ['Service-Module'] },
         content: 'This is a test rule about SQL',
       },
       {
@@ -155,7 +155,7 @@ describe('setupTools', () => {
     const toolConfig = registeredTools.get('search_rules');
     const handler = toolConfig[1];
 
-    const result = await handler({ keyword: 'SQL', module: 'service-module' });
+    const result = await handler({ keyword: 'SQL', module: 'Service-Module' });
 
     // The filter logic includes 'global' rules even when filtering by a specific module
     // So we should get both service-module and global rules
@@ -171,7 +171,7 @@ describe('setupTools', () => {
     loadAllRulesSpy.mockResolvedValue([
       {
         path: 'rules/test1.md',
-        frontmatter: { modules: ['service-module'] },
+        frontmatter: { modules: ['Service-Module'] },
         content: 'This is a test rule',
       },
     ]);
@@ -193,7 +193,7 @@ describe('setupTools', () => {
     loadAllRulesSpy.mockResolvedValue([
       {
         path: 'rules/test1.md',
-        frontmatter: { modules: ['service-module'], description: 'This is about SQL queries' },
+        frontmatter: { modules: ['Service-Module'], description: 'This is about SQL queries' },
         content: 'Some content here',
       },
     ]);
