@@ -48,7 +48,7 @@ export async function loadRuleFile(filePath: string): Promise<RuleFile> {
 /**
  * Recursively find all markdown files in a directory
  */
-async function findMarkdownFiles(dir: string): Promise<string[]> {
+export async function findMarkdownFiles(dir: string): Promise<string[]> {
   const files: string[] = [];
 
   try {
@@ -85,11 +85,4 @@ export async function loadAllRules(): Promise<RuleFile[]> {
   } catch (error) {
     throw new Error(`Failed to load rules: ${error instanceof Error ? error.message : String(error)}`);
   }
-}
-
-/**
- * Filter rules by module name
- */
-export function filterRulesByModule(rules: RuleFile[], moduleName: string): RuleFile[] {
-  return rules.filter((rule) => rule.frontmatter.modules.includes(moduleName));
 }

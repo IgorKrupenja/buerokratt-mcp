@@ -5,218 +5,18 @@
  * across Bürokratt modules.
  */
 
-import { randomUUID } from 'node:crypto';
+import express from 'express';
 
-import { InMemoryEventStore } from '@modelcontextprotocol/sdk/examples/shared/inMemoryEventStore.js';
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
-import express, { type Request, type Response } from 'express';
-
-import { setupPrompts } from './mcp/prompts.ts';
-import { setupResources } from './mcp/resources.ts';
-import { setupTools } from './mcp/tools.ts';
-
-/**
- * Create and configure the MCP server instance
- */
-function createServer(): McpServer {
-  const server = new McpServer(
-    {
-      name: 'byrokratt-mcp',
-      version: '0.1.0',
-    },
-    {
-      capabilities: {
-        resources: {},
-        tools: {},
-        prompts: {},
-      },
-    },
-  );
-
-  server.server.onerror = (error) => {
-    console.error('[MCP Error]', error);
-  };
-
-  setupResources(server);
-  setupTools(server);
-  setupPrompts(server);
-
-  return server;
-}
-
-// Map to store transports by session ID
-const transports: Record<string, StreamableHTTPServerTransport> = {};
-
-const MCP_PORT = process.env.MCP_PORT ? parseInt(process.env.MCP_PORT, 10) : 3627;
+import { mcpDeleteHandler, mcpGetHandler, mcpPostHandler } from './server/handlers.ts';
 
 const app = express();
 app.use(express.json());
 
-// Middleware to handle SSE reconnection conflicts gracefully
-// Intercepts 409 responses from SSE connections and converts them to success
-app.use((req, res, next) => {
-  // Only intercept GET requests to /mcp (SSE connections)
-  if (req.method === 'GET' && req.path === '/mcp') {
-    const originalStatus = res.status.bind(res);
-    res.status = function (code: number) {
-      // Convert 409 conflicts to 200 for SSE reconnection attempts
-      // This prevents Cursor from showing errors for normal reconnection behavior
-      if (code === 409) {
-        console.log(
-          `SSE reconnection conflict intercepted for session ${req.headers['mcp-session-id']} - treating as success`,
-        );
-        return originalStatus(200);
-      }
-      return originalStatus(code);
-    };
-  }
-  next();
-});
-
-// MCP POST endpoint (JSON-RPC messages)
-const mcpPostHandler = async (req: Request, res: Response): Promise<void> => {
-  const sessionId = (req.headers['mcp-session-id'] as string) || undefined;
-  if (sessionId) {
-    console.log(`Received MCP request for session: ${sessionId}`);
-  }
-
-  try {
-    let transport: StreamableHTTPServerTransport;
-
-    if (sessionId && transports[sessionId]) {
-      // Reuse existing transport
-      transport = transports[sessionId];
-    } else if (!sessionId && isInitializeRequest(req.body)) {
-      // New initialization request
-      const eventStore = new InMemoryEventStore();
-      transport = new StreamableHTTPServerTransport({
-        sessionIdGenerator: () => randomUUID(),
-        eventStore, // Enable resumability
-        onsessioninitialized: (sid) => {
-          console.log(`Session initialized with ID: ${sid}`);
-          transports[sid] = transport;
-        },
-      });
-
-      // Set up onclose handler to clean up transport when closed
-      transport.onclose = () => {
-        const sid = transport.sessionId;
-        if (sid && transports[sid]) {
-          console.log(`Transport closed for session ${sid}, removing from transports map`);
-          delete transports[sid];
-        }
-      };
-
-      // Connect the transport to the MCP server
-      const mcpServer = createServer();
-      await mcpServer.connect(transport);
-
-      // Handle the request
-      await transport.handleRequest(req, res, req.body);
-      return;
-    } else {
-      // Invalid request - no session ID or not initialization request
-      res.status(400).json({
-        jsonrpc: '2.0',
-        error: {
-          code: -32000,
-          message: 'Bad Request: No valid session ID provided',
-        },
-        id: null,
-      });
-      return;
-    }
-
-    // Handle the request with existing transport
-    await transport.handleRequest(req, res, req.body);
-  } catch (error) {
-    console.error('Error handling MCP request:', error);
-    if (!res.headersSent) {
-      res.status(500).json({
-        jsonrpc: '2.0',
-        error: {
-          code: -32603,
-          message: 'Internal server error',
-        },
-        id: null,
-      });
-    }
-  }
-};
-
 app.post('/mcp', mcpPostHandler);
-
-// Handle GET requests (SSE streams)
-const mcpGetHandler = async (req: Request, res: Response): Promise<void> => {
-  const sessionId = (req.headers['mcp-session-id'] as string) || undefined;
-  if (!sessionId || !transports[sessionId]) {
-    res.status(400).send('Invalid or missing session ID');
-    return;
-  }
-
-  const lastEventId = (req.headers['last-event-id'] as string) || undefined;
-  if (lastEventId) {
-    console.log(`Client reconnecting with Last-Event-ID: ${lastEventId}`);
-  } else {
-    console.log(`Establishing new SSE stream for session ${sessionId}`);
-  }
-
-  try {
-    const transport = transports[sessionId];
-    await transport.handleRequest(req, res);
-  } catch (error) {
-    // Handle SSE connection conflicts gracefully (e.g., when client reconnects)
-    // The transport may throw if there's already an active connection
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    if (errorMessage.includes('Conflict') || errorMessage.includes('409')) {
-      // Log but don't treat as error - this is normal during reconnections
-      console.log(`SSE reconnection attempt for session ${sessionId} (conflict is normal)`);
-      // If headers not sent, return a success response to avoid showing error in UI
-      if (!res.headersSent) {
-        // Return 200 with a message indicating the connection is already active
-        res.status(200).json({
-          status: 'ok',
-          message: 'SSE connection already active for this session',
-        });
-      }
-      return;
-    }
-    // Log other errors but don't expose details
-    console.error(`Error handling SSE request for session ${sessionId}:`, errorMessage);
-    if (!res.headersSent) {
-      res.status(500).json({
-        error: 'Internal server error',
-      });
-    }
-  }
-};
-
 app.get('/mcp', mcpGetHandler);
-
-// Handle DELETE requests (session termination)
-const mcpDeleteHandler = async (req: Request, res: Response): Promise<void> => {
-  const sessionId = (req.headers['mcp-session-id'] as string) || undefined;
-  if (!sessionId || !transports[sessionId]) {
-    res.status(400).send('Invalid or missing session ID');
-    return;
-  }
-
-  console.log(`Received session termination request for session ${sessionId}`);
-
-  try {
-    const transport = transports[sessionId];
-    await transport.handleRequest(req, res);
-  } catch (error) {
-    console.error('Error handling session termination:', error);
-    if (!res.headersSent) {
-      res.status(500).send('Error processing session termination');
-    }
-  }
-};
-
 app.delete('/mcp', mcpDeleteHandler);
+
+const MCP_PORT = process.env.MCP_PORT ? parseInt(process.env.MCP_PORT, 10) : 3627;
 
 // Start server - bind to 0.0.0.0 to accept connections from outside the container
 app.listen(MCP_PORT, '0.0.0.0', () => {
@@ -228,6 +28,7 @@ process.on('SIGINT', async () => {
   console.log('Shutting down server...');
 
   // Close all active transports to properly clean up resources
+  const { transports } = await import('./server/handlers.ts');
   for (const sessionId in transports) {
     try {
       const transport = transports[sessionId];

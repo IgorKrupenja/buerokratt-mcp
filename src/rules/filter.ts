@@ -4,7 +4,6 @@
  * Filters and merges rules for specific modules
  */
 
-import { filterRulesByModule } from './loader.ts';
 import type { ModuleRuleSet, RuleFile } from './types.ts';
 
 /**
@@ -22,6 +21,13 @@ export function getRulesForModule(allRules: RuleFile[], moduleName: string): Mod
     rules: moduleRules,
     globalRules,
   };
+}
+
+/**
+ * Filter rules by module name
+ */
+export function filterRulesByModule(rules: RuleFile[], moduleName: string): RuleFile[] {
+  return rules.filter((rule) => rule.frontmatter.modules.includes(moduleName));
 }
 
 /**

@@ -2,7 +2,7 @@
 
 MCP (Model Context Protocol) server for sharing Cursor rules across Bürokratt modules.
 
-This MCP server provides centralized access to development rules and guidelines for different Bürokratt modules. Rules are organized by module and can be queried by AI assistants (like Cursor) to provide context-aware coding guidance.
+Rationale: The Buerokratt tech stack, especially the DSL-based backend, is quite unique and is difficult to use with AI coding assistants. This MCP server provides a way to share rules and guidelines for different Bürokratt modules in a way that is easy to use with different IDEs and AI coding assistants. It is based on an initial `.cursorrules` setup that is also [provided](docs/examples/service-module-cursorrules.md) in this repo for legacy purposes.
 
 Currently available rules:
 
@@ -13,7 +13,7 @@ Currently available rules:
 
 Planned:
 
-- [ ] Add more module support.
+- [ ] Add support for more modules.
 - [ ] Add OAuth2 support for authentication.
 - [ ] Cache rules in memory if needed. Check with `measure-load-time` script. But this should be very fast with Bun.
 
@@ -157,21 +157,29 @@ bun start
 
 ### Checks
 
-```sh
-bun lint
-bun lint:markdown # Check markdown files (rules + readme)
-bun format
-bun check-context-size # Check context size of all rule files and modules
-bun check-context-size <module-name> # Check context size for a specific module
-```
+#### CI
 
-### CI Checks
-
-The following checks run automatically on push and pull requests:
+The following checks run automatically in CI on push and pull requests:
 
 - **format**: Checks code formatting with Prettier
 - **lint**: Runs ESLint to check code quality and style
-- **typecheck**: Validates TypeScript types without emitting files
 - **lint-markdown**: Lints markdown files (rules and README) using markdownlint
+- **typecheck**: Validates TypeScript types without emitting files
 - **validate**: Validates rule files (frontmatter structure and markdown syntax)
 - **check-context-size**: Checks that rule files don't exceed safe token limits
+- **test**: Runs tests
+
+#### Local
+
+These can also be run manually with npm scripts:
+
+```sh
+bun format
+bun lint
+bun lint:markdown
+bun typecheck
+bun validate
+bun check-context-size
+bun check-context-size <module-name>
+bun test
+```

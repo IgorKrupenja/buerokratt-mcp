@@ -9,7 +9,6 @@ import { lint } from 'markdownlint/promise';
 import { loadAllRules } from '../rules/loader.ts';
 import type { ValidationResult } from '../rules/types.ts';
 
-// Load markdownlint config
 const MARKDOWNLINT_CONFIG_PATH = `${import.meta.dir}/../../.markdownlint.json`;
 let markdownlintConfig: Record<string, any> | undefined;
 
@@ -25,7 +24,6 @@ async function loadMarkdownlintConfig(): Promise<Record<string, any> | undefined
       return markdownlintConfig;
     }
   } catch (error) {
-    // Config file doesn't exist or is invalid, use default
     console.warn(
       `Warning: Could not load markdownlint config: ${error instanceof Error ? error.message : String(error)}`,
     );
@@ -50,11 +48,10 @@ const colors = {
 /**
  * Validate frontmatter structure (Level 1)
  */
-function validateFrontmatter(frontmatter: any, filePath: string): ValidationResult {
+export function validateFrontmatter(frontmatter: any, filePath: string): ValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  // Check if modules field exists and is an array
   if (!frontmatter.modules) {
     errors.push(`Missing 'modules' field in ${filePath}`);
     return { valid: false, errors };
@@ -70,7 +67,6 @@ function validateFrontmatter(frontmatter: any, filePath: string): ValidationResu
     return { valid: false, errors };
   }
 
-  // Validate tags if present
   if (frontmatter.tags && !Array.isArray(frontmatter.tags)) {
     warnings.push(`'tags' field should be an array in ${filePath}`);
   }
@@ -87,16 +83,14 @@ function validateFrontmatter(frontmatter: any, filePath: string): ValidationResu
  *
  * Uses markdownlint to validate markdown syntax and structure.
  */
-async function validateMarkdown(content: string, filePath: string): Promise<ValidationResult> {
+export async function validateMarkdown(content: string, filePath: string): Promise<ValidationResult> {
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  // Basic checks
   if (content.trim().length === 0) {
     warnings.push(`Empty content in ${filePath}`);
   }
 
-  // Use markdownlint to validate markdown syntax
   try {
     const config = await loadMarkdownlintConfig();
     const results = await lint({
@@ -147,13 +141,10 @@ async function main() {
       const relativePath = rule.path.replace(/^.*\/rules\//, 'rules/');
       console.log(`${colors.cyan}Checking ${relativePath}...${colors.reset}`);
 
-      // Validate frontmatter
       const frontmatterResult = validateFrontmatter(rule.frontmatter, relativePath);
 
-      // Validate markdown
       const markdownResult = await validateMarkdown(rule.content, relativePath);
 
-      // Collect all errors and warnings
       const errors = [...(frontmatterResult.errors || []), ...(markdownResult.errors || [])];
       const warnings = [...(frontmatterResult.warnings || []), ...(markdownResult.warnings || [])];
 

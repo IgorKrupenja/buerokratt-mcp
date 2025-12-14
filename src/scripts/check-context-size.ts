@@ -34,14 +34,14 @@ const MODULE_THRESHOLDS = {
 /**
  * Estimate tokens from bytes (rough approximation: ~4 chars per token)
  */
-function estimateTokens(bytes: number): number {
+export function estimateTokens(bytes: number): number {
   return Math.round(bytes / 4);
 }
 
 /**
  * Format bytes to human-readable size
  */
-function formatSize(bytes: number): string {
+export function formatSize(bytes: number): string {
   if (bytes < 1024) {
     return `${bytes} B`;
   }
@@ -54,7 +54,7 @@ function formatSize(bytes: number): string {
 /**
  * Get status color and emoji for file size
  */
-function getFileStatus(size: number): { color: string; emoji: string; label: string } {
+export function getFileStatus(size: number): { color: string; emoji: string; label: string } {
   if (size >= FILE_THRESHOLDS.warning) {
     return { color: colors.red, emoji: '🔴', label: 'RISK' };
   }
@@ -67,7 +67,7 @@ function getFileStatus(size: number): { color: string; emoji: string; label: str
 /**
  * Get status color and emoji for module size
  */
-function getModuleStatus(size: number): { color: string; emoji: string; label: string } {
+export function getModuleStatus(size: number): { color: string; emoji: string; label: string } {
   if (size >= MODULE_THRESHOLDS.warning) {
     return { color: colors.red, emoji: '🔴', label: 'RISK' };
   }

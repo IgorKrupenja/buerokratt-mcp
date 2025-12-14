@@ -21,7 +21,7 @@ const colors = {
 /**
  * Format milliseconds to human-readable time
  */
-function formatTime(ms: number): string {
+export function formatTime(ms: number): string {
   if (ms < 1) {
     return `${(ms * 1000).toFixed(2)} μs`;
   }
