@@ -8,6 +8,7 @@
   "scripts": {
     "start": "bun run --watch src/server.ts",
     "validate": "bun run src/scripts/validate.ts",
+    "validate-module-names": "bun run src/scripts/validate-module-names.ts",
     "check-context-size": "bun run src/scripts/check-context-size.ts",
     "measure-load-time": "bun run src/scripts/measure-load-time.ts",
     "lint:markdown": "markdownlint-cli2 \"rules/**/*.md\" \"README.md\"",

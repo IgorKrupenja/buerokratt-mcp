@@ -5,6 +5,9 @@ on:
       command:
         required: true
         type: string
+    secrets:
+      GITHUB_TOKEN:
+        required: false
 
 jobs:
   run-check:
@@ -18,3 +21,5 @@ jobs:
           bun-version: latest
       - run: bun install --frozen-lockfile
       - run: ${{ inputs.command }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN || github.token }}
