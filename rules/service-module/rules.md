@@ -60,3 +60,9 @@ This repository contains a Service Module with two main parts:
   - **Object Translation**: `translateObjectKeys()` for translating object keys using translation paths
 - **Import Pattern**: Import specific functions: `import { functionName } from 'utils/filename'`
 - **Usage Context**: String utils are used in components, services, and form elements for data processing
+
+<!-- TODO BELOW -->
+
+ok this is good. now i want to add another rule specific to service module. service module allows to create services that are saved as yaml files e.g. in @Service-Module/DSL/Ruuter/services/POST/services/active/.guard:1-5 . depends on servce status.
+
+the services can then be called

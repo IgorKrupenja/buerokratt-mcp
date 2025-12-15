@@ -10,7 +10,7 @@ COPY src ./src
 COPY tsconfig.json ./
 
 # Rules directory will be volume-mounted, so we don't copy it
-# This allows changes to reflect immediately after git pull
+# This allows changes to reflect immediately after git pull or on rule edit
 
 EXPOSE 3627
 
