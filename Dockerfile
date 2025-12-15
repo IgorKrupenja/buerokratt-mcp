@@ -1,10 +1,10 @@
-FROM oven/bun:latest
+FROM oven/bun:1.3.4
 
 WORKDIR /app
 
 COPY package.json bun.lock* ./
 
-RUN bun install --frozen-lockfile
+RUN bun install --frozen-lockfile --production
 
 COPY src ./src
 COPY tsconfig.json ./
