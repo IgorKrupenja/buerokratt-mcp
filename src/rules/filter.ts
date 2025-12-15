@@ -48,7 +48,7 @@ export function mergeRules(ruleSet: ModuleRuleSet): string {
 
   // Add global rules first
   if (ruleSet.globalRules.length > 0) {
-    parts.push('## Global Rules\n\n');
+    parts.push('# Global Rules\n\n');
     for (const rule of ruleSet.globalRules) {
       parts.push(rule.content);
       parts.push('\n\n');
@@ -60,7 +60,7 @@ export function mergeRules(ruleSet: ModuleRuleSet): string {
     if (ruleSet.globalRules.length > 0) {
       parts.push('---\n\n');
     }
-    parts.push(`## ${ruleSet.module} Rules\n\n`);
+    parts.push(`# ${ruleSet.module} Rules\n\n`);
     for (const rule of ruleSet.rules) {
       parts.push(rule.content);
       parts.push('\n\n');
