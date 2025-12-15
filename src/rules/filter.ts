@@ -13,6 +13,16 @@ export function getRulesForModule(allRules: RuleFile[], moduleName: string): Mod
   // Get global rules (rules that apply to all modules)
   const globalRules = allRules.filter((rule) => rule.frontmatter.modules.includes('global'));
 
+  // Special case: when requesting global rules, only return global rules
+  // to avoid duplication (global rules would match both filters)
+  if (moduleName === 'global') {
+    return {
+      module: moduleName,
+      rules: [],
+      globalRules,
+    };
+  }
+
   // Get module-specific rules
   const moduleRules = filterRulesByModule(allRules, moduleName);
 
@@ -38,7 +48,7 @@ export function mergeRules(ruleSet: ModuleRuleSet): string {
 
   // Add global rules first
   if (ruleSet.globalRules.length > 0) {
-    parts.push('# Global Rules\n\n');
+    parts.push('## Global Rules\n\n');
     for (const rule of ruleSet.globalRules) {
       parts.push(rule.content);
       parts.push('\n\n');

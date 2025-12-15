@@ -88,6 +88,19 @@ describe('getRulesForModule', () => {
     expect(result.rules).toHaveLength(0);
     expect(result.globalRules).toHaveLength(0);
   });
+
+  it('does not duplicate global rules when requesting global module', () => {
+    const allRules: RuleFile[] = [
+      createRuleFile('rules/global/common.md', ['global'], 'Global rule'),
+      createRuleFile('rules/global/another.md', ['global'], 'Another global rule'),
+    ];
+
+    const result = getRulesForModule(allRules, 'global');
+
+    expect(result.module).toBe('global');
+    expect(result.globalRules).toHaveLength(2);
+    expect(result.rules).toHaveLength(0); // Should be empty to avoid duplication
+  });
 });
 
 describe('mergeRules', () => {
@@ -146,5 +159,21 @@ describe('mergeRules', () => {
     const result = mergeRules(ruleSet);
 
     expect(result).toBe('');
+  });
+
+  it('does not duplicate global rules when module is global', () => {
+    const ruleSet = {
+      module: 'global',
+      globalRules: [createRuleFile('rules/global/common.md', ['global'], 'Global content')],
+      rules: [], // Should be empty for global module
+    };
+
+    const result = mergeRules(ruleSet);
+
+    // Should only appear once
+    const globalCount = (result.match(/Global content/g) || []).length;
+    expect(globalCount).toBe(1);
+    expect(result).toContain('# Global Rules');
+    expect(result).not.toContain('## global Rules');
   });
 });
