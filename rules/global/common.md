@@ -49,16 +49,8 @@ description: Global code quality rules and development best practices
 - **Sync Command**: When the user says "sync" or asks to sync with upstream, automatically run the `sync-upstream.sh` script from `buerokratt-mcp/scripts/sync-upstream.sh`
 - **Script Location**: The `sync-upstream.sh` script is located at `buerokratt-mcp/scripts/sync-upstream.sh` (single source of truth, not duplicated in module repos)
 - **Execution**: When syncing, determine the current module directory from the workspace path and run: `buerokratt-mcp/scripts/sync-upstream.sh <module-directory>` (e.g., `buerokratt-mcp/scripts/sync-upstream.sh Training-Module`)
+- **Permissions**: **ALWAYS** run the sync script with `required_permissions: ['all']` to avoid permission errors with git operations (fetching, merging, pushing, and updating remote URLs)
 - **Usage Examples**:
-  - Sync and push: `buerokratt-mcp/scripts/sync-upstream.sh Training-Module`
-  - Sync without pushing: `buerokratt-mcp/scripts/sync-upstream.sh Training-Module no-push`
+  - Sync and push: `buerokratt-mcp/scripts/sync-upstream.sh Training-Module` (with `required_permissions: ['all']`)
+  - Sync without pushing: `buerokratt-mcp/scripts/sync-upstream.sh Training-Module no-push` (with `required_permissions: ['all']`)
   - If run from within a module directory, can use relative path: `../buerokratt-mcp/scripts/sync-upstream.sh` (script will use current directory)
-- **Sync Behavior**: The sync script:
-  - Automatically detects the repository name from the target directory
-  - Fetches from the upstream repository at `https://github.com/buerokratt/{repo-name}`
-  - Switches to the `dev` branch (if not already on it)
-  - Merges `upstream/dev` into local `dev` branch
-  - Pushes to `origin/dev` by default
-  - Preserves any uncommitted changes by stashing them before sync and restoring after
-  - Switches back to the original branch if it was different
-- **All Modules**: This works for all Bürokratt modules (Training-Module, Service-Module, Analytics-Module, Buerokratt-Chatbot, Chat-Widget, etc.) as they are all forks of repositories under `https://github.com/buerokratt`
