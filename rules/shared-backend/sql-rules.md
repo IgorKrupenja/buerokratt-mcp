@@ -44,3 +44,4 @@ description: SQL rules for DSL-based backends (migrations and queries)
   - Use CTEs (WITH clauses) for complex queries
   - Include pagination with `OFFSET` and `LIMIT`
 - **HTTP Method Folders**: Organize by HTTP method (`GET/`, `POST/`) within database folders
+- **Container Restart**: After making any changes to SQL files in `DSL/Resql/`, you MUST restart the Docker container named "resql" running in docker compose. Use `docker compose restart resql` to apply the changes
