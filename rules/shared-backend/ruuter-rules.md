@@ -128,6 +128,29 @@ return_error:
   next: end
 ```
 
+### Debugging with Log Steps
+
+For debugging purposes, you can use `log` steps to output values at any point in the execution flow. Log steps will output to the container logs.
+
+```yaml
+logVariable:
+  log: ${variableName}
+  next: next_step
+
+logHttpResponse:
+  log: ${results.createdService.response.body}
+  next: next_step
+```
+
+**Examples:**
+
+- Log incoming request body: `log: ${incoming.body}`
+- Log URL parameters: `log: ${incoming.params}`
+- Log headers: `log: ${incoming.headers}`
+- Log assigned variables: `log: ${variableName}`
+- Log HTTP call results: `log: ${results.resultName.response.body}`
+- Log multiple values: Use `$= ... =` syntax with object literals to log multiple values at once
+
 ### Key Rules
 
 - **JavaScript in ${}**: Everything inside `${}` is JavaScript code executed by Ruuter
@@ -144,3 +167,4 @@ return_error:
   - `result` is REQUIRED for all HTTP calls (endpoint fails without it). Always include `result` even if you don't plan
     to use the response
   - `next` is optional but useful for flow control
+- **Container Restart**: After making any changes to Ruuter YAML files, you MUST restart the Docker container named "ruuter" running in docker compose. Use `docker compose restart ruuter` to apply the changes

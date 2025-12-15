@@ -28,6 +28,8 @@ docker-compose up -d
 
 In your project folder:
 
+Note that `<project-root>` can also be a folder with several Bürokratt modules.
+
 **Cursor**:
 
 `<project-root>/.cursor/mcp.json`

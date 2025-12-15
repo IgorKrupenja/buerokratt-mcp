@@ -6,8 +6,8 @@
 
 import { lint } from 'markdownlint/promise';
 
-import { loadAllRules } from '../rules/loader.ts';
-import type { ValidationResult } from '../rules/types.ts';
+import { loadAllRules } from '../src/rules/loader.ts';
+import type { ValidationResult } from '../src/rules/types.ts';
 
 // Special module names that don't correspond to repositories
 const SPECIAL_MODULES = new Set(['global', 'shared-backend', 'shared-frontend']);
@@ -17,7 +17,7 @@ interface GitHubRepository {
   full_name: string;
 }
 
-const MARKDOWNLINT_CONFIG_PATH = `${import.meta.dir}/../../.markdownlint.json`;
+const MARKDOWNLINT_CONFIG_PATH = `${import.meta.dir}/../.markdownlint.json`;
 let markdownlintConfig: Record<string, any> | undefined;
 
 async function loadMarkdownlintConfig(): Promise<Record<string, any> | undefined> {

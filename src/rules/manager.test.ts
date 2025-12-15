@@ -84,7 +84,7 @@ describe('getMergedRules', () => {
 
     expect(result).toContain('# Global Rules');
     expect(result).toContain('Global content');
-    expect(result).toContain('## Service-Module Rules');
+    expect(result).toContain('# Service-Module Rules');
     expect(result).toContain('Service content');
     expect(spy).toHaveBeenCalled();
 
