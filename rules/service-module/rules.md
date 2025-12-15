@@ -61,8 +61,29 @@ This repository contains a Service Module with two main parts:
 - **Import Pattern**: Import specific functions: `import { functionName } from 'utils/filename'`
 - **Usage Context**: String utils are used in components, services, and form elements for data processing
 
-<!-- TODO BELOW -->
+## Service Testing
 
-ok this is good. now i want to add another rule specific to service module. service module allows to create services that are saved as yaml files e.g. in @Service-Module/DSL/Ruuter/services/POST/services/active/.guard:1-5 . depends on servce status.
+- **Service Storage**: Services are saved as YAML files in `DSL/Ruuter/services/POST/services/{status}/{serviceName}.yml` where `{status}` is one of: `active`, `inactive`, `draft`, `ready`
+- **Programmatic Service Testing**: Services can be tested programmatically using curl or HTTP requests to Ruuter:
+  - **Endpoint Format**: `{baseUrl}/services/{state}/{serviceName}` (e.g., `http://localhost:8086/services/services/active/igor_837`)
+    - **Note**: The path includes double "services" prefix: `{baseUrl}` already contains `/services`, and the endpoint adds `/services/{state}/{serviceName}`
+  - **Method**: POST
+  - **Required Headers**:
+    - `Content-Type: application/json`
+    - `x-ruuter-testing: {testingKey}` (default: `voorshpellhappilo` from `REACT_APP_RUUTER_SERVICES_TESTING_HEADER`)
+  - **Request Body**: Format depends on the service's `allowList` declaration. Common fields include:
+    - `chatId` (string): The chat ID for the message
+    - `authorId` (string): The author ID for the message
+    - `input` (string): Can only be a string, separated by commas. E.g. `value1,value2,value3` or just `value`.
+  - **Example curl command**:
 
-the services can then be called
+    ```bash
+    curl -X POST http://localhost:8086/services/services/active/igor_837 \
+      -H "Content-Type: application/json" \
+      -H "x-ruuter-testing: voorshpellhappilo" \
+      -d '{"chatId": "test-chat-123", "authorId": "test-author-456", "input": {"test": "data"}}'
+    ```
+
+  - **Base URL**: Default is `http://localhost:8086/services` (from `REACT_APP_API_URL` environment variable)
+  - **Service States**: Use lowercase state names: `active`, `inactive`, `draft`, `ready`
+  - **Testing Header**: The `x-ruuter-testing` header enables detailed error responses from Ruuter during testing
