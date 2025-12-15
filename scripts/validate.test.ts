@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, spyOn } from 'bun:test';
 
 import { validateFrontmatter, validateMarkdown, validateModuleNames } from './validate.ts';
-import type { RuleFile } from '../rules/types.ts';
+import type { RuleFile } from '../src/rules/types.ts';
 
 describe('validate utilities', () => {
   describe('validateFrontmatter', () => {

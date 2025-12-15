@@ -5,8 +5,8 @@
  * Helps ensure rules don't exceed safe token limits
  */
 
-import { loadAllRules } from '../rules/loader.ts';
-import { getAvailableModules, getMergedRules } from '../rules/manager.ts';
+import { loadAllRules } from '../src/rules/loader.ts';
+import { getAvailableModules, getMergedRules } from '../src/rules/manager.ts';
 
 // ANSI color codes
 const colors = {
