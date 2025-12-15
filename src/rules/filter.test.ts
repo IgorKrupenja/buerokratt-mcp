@@ -116,7 +116,7 @@ describe('mergeRules', () => {
     expect(result).toContain('# Global Rules');
     expect(result).toContain('Global content');
     expect(result).toContain('---');
-    expect(result).toContain('## Service-Module Rules');
+    expect(result).toContain('# Service-Module Rules');
     expect(result).toContain('Service content');
   });
 
@@ -145,7 +145,7 @@ describe('mergeRules', () => {
     const result = mergeRules(ruleSet);
 
     expect(result).not.toContain('# Global Rules');
-    expect(result).toContain('## Service-Module Rules');
+    expect(result).toContain('# Service-Module Rules');
     expect(result).toContain('Service content');
   });
 
