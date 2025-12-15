@@ -72,7 +72,6 @@ export function validateFrontmatter(frontmatter: any, filePath: string): Validat
 
   if (frontmatter.modules.length === 0) {
     errors.push(`'modules' array cannot be empty in ${filePath}`);
-    return { valid: false, errors };
   }
 
   if (frontmatter.tags && !Array.isArray(frontmatter.tags)) {
