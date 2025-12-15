@@ -2,13 +2,10 @@ FROM oven/bun:latest
 
 WORKDIR /app
 
-# Copy package files
 COPY package.json bun.lock* ./
 
-# Install dependencies
 RUN bun install --frozen-lockfile
 
-# Copy source code
 COPY src ./src
 COPY tsconfig.json ./
 
@@ -17,6 +14,5 @@ COPY tsconfig.json ./
 
 EXPOSE 3627
 
-# Run the MCP server
 CMD ["bun", "run", "src/server.ts"]
 
