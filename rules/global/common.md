@@ -39,6 +39,12 @@ description: Global code quality rules and development best practices
 - **Proposal Mode**: If asked to only propose changes WITHOUT implementing them, this is valid for this message ONLY.
   For next thing asked, feel free to implement without asking for approval
 
+### Git Commit Messages
+
+- **One-liner Only**: Commit messages MUST be a single line with no body
+- **Character Limit**: Keep commit messages under 72 characters
+- **Format**: Use imperative mood (e.g., "Fix bug" not "Fixed bug" or "Fixes bug")
+
 ### Development Environment
 
 - **Node Version**: Always do `nvm use` before running npm commands
