@@ -7,6 +7,7 @@
   "private": true,
   "scripts": {
     "start": "bun run --watch src/server.ts",
+    "inspect": "bunx @modelcontextprotocol/inspector --config inspector.json",
     "validate": "bun run scripts/validate.ts",
     "check-context-size": "bun run scripts/check-context-size.ts",
     "measure-load-time": "bun run scripts/measure-load-time.ts",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
+    "@modelcontextprotocol/inspector": "^0.18.0",
     "@types/bun": "latest",
     "@types/express": "^5.0.6",
     "eslint": "^9.39.2",
