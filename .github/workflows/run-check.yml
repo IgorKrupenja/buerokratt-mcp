@@ -17,6 +17,9 @@ jobs:
         with:
           bun-version: latest
       - run: bun install --frozen-lockfile
-      - run: ${{ inputs.command }}
+      # Use env var to prevent script injection
+      - name: Run command
         env:
+          COMMAND: ${{ inputs.command }}
           GITHUB_TOKEN: ${{ github.token }}
+        run: $COMMAND
