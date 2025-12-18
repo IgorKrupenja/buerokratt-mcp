@@ -13,13 +13,11 @@ Currently available rules:
 
 ## Highlights
 
-<!-- TODO not ready yet -->
-
-- **Fork synchronization**: Can sync Bürokratt module forks with upstream repositories
-- **Browser debugging**: Opens browser to debug issues with full console access and automatic cookie authentication
-- **Service testing**: Tests and debugs services directly (similar to the test widget on service edit page)
-- **DSL expertise**: Knows how to write migrations, SQL queries, and Ruuter YAML DSL
-- **Frontend testing**: Knows how to write frontend tests for Service Module
+- **Backend expertise**: Knows how to write migrations, SQL queries, and Ruuter YAML DSL.
+- **Browser debugging**: Can open browser to debug frontend issues with full console access and automatic cookie authentication. **For now, this only works with Cursor!**
+- **Fork synchronization**: Can sync Bürokratt module forks with upstream repositories.
+- **Service testing**: in Service Module, can test and debug services directly (similar to the test widget on service edit page).
+- **Frontend testing**: Knows how to write frontend tests for Service Module.
 
 ## Planned
 
