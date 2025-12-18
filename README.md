@@ -11,7 +11,17 @@ Currently available rules:
 - `shared-backend` - Shared backend rules (SQL, Ruuter)
 - `shared-frontend` - Shared frontend rules (React, CSS)
 
-Planned:
+## Highlights
+
+<!-- TODO not ready yet -->
+
+- **Fork synchronization**: Can sync Bürokratt module forks with upstream repositories
+- **Browser debugging**: Opens browser to debug issues with full console access and automatic cookie authentication
+- **Service testing**: Tests and debugs services directly (similar to the test widget on service edit page)
+- **DSL expertise**: Knows how to write migrations, SQL queries, and Ruuter YAML DSL
+- **Frontend testing**: Knows how to write frontend tests for Service Module
+
+## Planned
 
 - [ ] **⚠️ Knwon issue in Cursor**: Sometimes Cursor reports "Failed to open SSE stream: Conflict" errors. This does not actually affect the usage of the MCP server.
 - [ ] Add support for more modules.
@@ -92,6 +102,7 @@ Once configured, the MCP server provides:
   - `search_rules` - Search rules by keyword
 - **Prompts**:
   - `development-rules` - Get development rules as a system prompt for a specific module
+- **Testing with MCP Inspector**: `bun inspect`.
 
 ## Development
 
@@ -156,12 +167,6 @@ buerokratt-mcp/
 curl -fsSL https://bun.sh/install | bash # install Bun runtime
 bun install
 bun start
-```
-
-#### Testing with MCP Inspector
-
-```sh
-bun inspect
 ```
 
 ### Checks
