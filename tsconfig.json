@@ -14,7 +14,7 @@
     "noEmit": true,
 
     // Type definitions
-    "types": ["bun-types"],
+    "types": ["node"],
 
     // Path mappings for cleaner imports
     "baseUrl": ".",

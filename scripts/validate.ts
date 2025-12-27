@@ -4,6 +4,8 @@
  * CLI tool to validate rule files (frontmatter and markdown)
  */
 
+import path from 'path';
+import { promises as fs } from 'fs';
 import { lint } from 'markdownlint/promise';
 
 import { loadAllRules } from '../src/rules/loader.ts';
@@ -17,7 +19,7 @@ interface GitHubRepository {
   full_name: string;
 }
 
-const MARKDOWNLINT_CONFIG_PATH = `${import.meta.dir}/../.markdownlint.json`;
+const MARKDOWNLINT_CONFIG_PATH = path.join(__dirname, '..', '.markdownlint.json');
 let markdownlintConfig: Record<string, any> | undefined;
 
 async function loadMarkdownlintConfig(): Promise<Record<string, any> | undefined> {
@@ -26,20 +28,22 @@ async function loadMarkdownlintConfig(): Promise<Record<string, any> | undefined
   }
 
   try {
-    const configFile = Bun.file(MARKDOWNLINT_CONFIG_PATH);
-    if (await configFile.exists()) {
-      markdownlintConfig = await configFile.json();
-      return markdownlintConfig;
-    }
+    const configContent = await fs.readFile(MARKDOWNLINT_CONFIG_PATH, 'utf8');
+    markdownlintConfig = JSON.parse(configContent);
+    return markdownlintConfig;
   } catch (error) {
-    console.warn(
-      `Warning: Could not load markdownlint config: ${error instanceof Error ? error.message : String(error)}`,
-    );
+    // If the file doesn't exist, readFile will throw an error, which is fine
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+      console.warn(
+        `Warning: Could not load markdownlint config: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
   }
 
   markdownlintConfig = undefined;
   return undefined;
 }
+
 
 // ANSI color codes
 const colors = {
@@ -350,7 +354,7 @@ async function main() {
 }
 
 // Run if executed directly
-if (import.meta.main) {
+if (require.main === module) {
   main().catch((error) => {
     console.error(`${colors.red}Error: ${error instanceof Error ? error.message : String(error)}${colors.reset}`);
     process.exit(1);

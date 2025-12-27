@@ -4,11 +4,14 @@
  * Loads and parses rule files from the rules directory
  */
 
+import * as glob from 'glob';
+import path from 'path';
+import { promises as fs } from 'fs';
 import matter from 'gray-matter';
 
 import type { RuleFile, RuleFrontmatter } from './types.ts';
 
-const RULES_DIR = `${import.meta.dir}/../../rules`;
+const RULES_DIR = path.join(__dirname, '..', '..', 'rules');
 
 /**
  * Load and parse a single rule file
@@ -16,8 +19,7 @@ const RULES_DIR = `${import.meta.dir}/../../rules`;
 export async function loadRuleFile(filePath: string): Promise<RuleFile> {
   try {
     // Read file content
-    const file = Bun.file(filePath);
-    const raw = await file.text();
+    const raw = await fs.readFile(filePath, 'utf8');
 
     // Parse frontmatter using gray-matter
     const parsed = matter(raw);
@@ -49,25 +51,18 @@ export async function loadRuleFile(filePath: string): Promise<RuleFile> {
  * Recursively find all markdown files in a directory
  */
 export async function findMarkdownFiles(dir: string): Promise<string[]> {
-  const files: string[] = [];
-
   try {
-    // Use Bun's Glob to find all markdown files recursively
-    const glob = new Bun.Glob('**/*.md');
-    for await (const file of glob.scan(dir)) {
-      files.push(`${dir}/${file}`);
-    }
+    // Use the 'glob' package to find all markdown files recursively
+    const files = await glob.glob('**/*.md', { cwd: dir, absolute: true });
+    return files;
   } catch (error) {
-    // If directory doesn't exist or can't be read, return empty array
-    if (error instanceof Error && 'code' in error && (error as any).code === 'ENOENT') {
-      return [];
-    }
+    // The glob package usually returns an empty array if no files are found or the directory doesn't exist
+    // It doesn't typically throw ENOENT for non-existent directories.
+    // If there's an error, it's likely a real issue, so re-throw.
     throw new Error(
       `Failed to find markdown files in ${dir}: ${error instanceof Error ? error.message : String(error)}`,
     );
   }
-
-  return files;
 }
 
 /**
