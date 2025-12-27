@@ -4,8 +4,9 @@
  * CLI tool to validate rule files (frontmatter and markdown)
  */
 
-import path from 'path';
 import { promises as fs } from 'fs';
+import path from 'path';
+
 import { lint } from 'markdownlint/promise';
 
 import { loadAllRules } from '../src/rules/loader.ts';
@@ -33,7 +34,7 @@ async function loadMarkdownlintConfig(): Promise<Record<string, any> | undefined
     return markdownlintConfig;
   } catch (error) {
     // If the file doesn't exist, readFile will throw an error, which is fine
-    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+    if ((error as unknown as { code: string }).code !== 'ENOENT') {
       console.warn(
         `Warning: Could not load markdownlint config: ${error instanceof Error ? error.message : String(error)}`,
       );
@@ -43,7 +44,6 @@ async function loadMarkdownlintConfig(): Promise<Record<string, any> | undefined
   markdownlintConfig = undefined;
   return undefined;
 }
-
 
 // ANSI color codes
 const colors = {

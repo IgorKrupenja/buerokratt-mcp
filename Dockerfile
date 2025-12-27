@@ -1,10 +1,10 @@
-FROM oven/bun:1.3.4
+FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package.json bun.lock* ./
+COPY package.json pnpm-lock.yaml ./
 
-RUN bun install --frozen-lockfile --production
+RUN npm install -g pnpm && pnpm install --frozen-lockfile --prod
 
 COPY src ./src
 COPY tsconfig.json ./
@@ -14,5 +14,7 @@ COPY tsconfig.json ./
 
 EXPOSE 3627
 
-CMD ["bun", "run", "src/server.ts"]
+CMD ["pnpm", "run", "start"]
+
+
 

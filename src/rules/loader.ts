@@ -4,9 +4,10 @@
  * Loads and parses rule files from the rules directory
  */
 
-import * as glob from 'glob';
-import path from 'path';
 import { promises as fs } from 'fs';
+import path from 'path';
+
+import * as glob from 'glob';
 import matter from 'gray-matter';
 
 import type { RuleFile, RuleFrontmatter } from './types.ts';
