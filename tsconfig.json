@@ -3,18 +3,18 @@
     // Environment setup & latest features
     "lib": ["ESNext"],
     "target": "ESNext",
-    "module": "Preserve",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "moduleDetection": "force",
     "allowJs": true,
 
-    // Bundler mode (Bun-specific)
-    "moduleResolution": "bundler",
+    // Node.js mode
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
 
     // Type definitions
-    "types": ["bun-types"],
+    "types": ["node"],
 
     // Path mappings for cleaner imports
     "baseUrl": ".",

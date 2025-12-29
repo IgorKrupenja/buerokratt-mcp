@@ -1,10 +1,10 @@
-FROM oven/bun:1.3.4
+FROM node:24-alpine
 
 WORKDIR /app
 
-COPY package.json bun.lock* ./
+COPY package.json package-lock.json* ./
 
-RUN bun install --frozen-lockfile --production
+RUN npm ci --omit=dev
 
 COPY src ./src
 COPY tsconfig.json ./
@@ -14,5 +14,5 @@ COPY tsconfig.json ./
 
 EXPOSE 3627
 
-CMD ["bun", "run", "src/server.ts"]
+CMD ["npx", "tsx", "src/server.ts"]
 
