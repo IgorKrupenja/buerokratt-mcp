@@ -14,7 +14,6 @@ export default [
       globals: {
         ...globals.node,
         ...globals.es2021,
-        Bun: 'readonly',
       },
       ecmaVersion: 2023,
       sourceType: 'module',
