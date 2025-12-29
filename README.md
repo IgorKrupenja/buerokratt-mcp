@@ -170,6 +170,12 @@ pnpm install
 pnpm start
 ```
 
+After you are done with the code changes, rebuild the image and restart the container:
+
+```sh
+docker compose up -d --build --force-recreate
+```
+
 ### Checks
 
 #### CI
