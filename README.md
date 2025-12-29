@@ -24,7 +24,7 @@ Currently available rules:
 - [ ] Add support for more modules.
 - [ ] Add OAuth2 support for authentication.
 - [ ] Consider using several MCP servers for different modules **if** context size is an issue. There is a CI check for this, see [checks](#checks) below.
-- [ ] Cache rules in memory if needed. Check with `measure-load-time` script. But this should be very fast with pnpm.
+- [ ] Cache rules in memory if needed. Check with `measure-load-time` script.
 
 ## Usage
 
