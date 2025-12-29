@@ -1,6 +1,7 @@
 ---
 modules:
   - Service-Module
+  - Buerokratt-Chatbot
 tags:
   - frontend
   - react
@@ -9,8 +10,32 @@ tags:
   - types
   - i18n
   - internationalization
-description: React frontend rules (architecture, types, i18n)
+  - testing
+description: React frontend rules (architecture, types, i18n, testing)
 ---
+
+## Tests
+
+- **Tests are ONLY in GUI folder**: All tests are located in the `GUI/` directory
+- **Run tests from GUI directory**: Always `cd GUI` before running `npm run test:run`
+- **Testing Framework**: Use Vitest + @testing-library/react (NOT Jest)
+- **Test Execution**: Use `npm run test:run` for running tests (NOT `npm test` which is watch mode)
+- **Test File Naming**: Test files must be named `*.test.ts` (not `.spec.ts` or other variations)
+- **Test File Location**: Test files are collocated with the code they test (same directory as source files)
+- **Test File Names**: Test file names should match the name of the file from where tested stuff is exported
+  (e.g., `utils.ts` → `utils.test.ts`)
+- **Always suggest adding tests** for new code (new files, new functions in existing files)
+- **Avoid test duplication**: Be reasonable when creating tests and avoid testing the same functionality multiple times
+- **Export Requirements**: If a function under test is not exported, add export so that tests can be added successfully
+- **Test Coverage**: Ensure comprehensive test coverage for all new functionality
+- **Coverage Commands**: Use `npm run test:run -- --coverage --reporter=verbose` with:
+  - Specific test files: `src/utils/object-util.test.ts`
+  - Pattern matching: `--run object-util` (matches `object-util.test.ts`)
+  - Directory coverage: `src/utils/` (runs all tests in directory)
+- **ALWAYS run tests until they pass** before proceeding with other tasks
+- **Test-First Approach**: ONLY fix linter issues after all tests pass
+- **Step-by-Step Tests**: When you have several functions, create tests step by step. First for one function, so it
+  can be reviewed. Only after that, create tests for second function, review + so on
 
 ## Component Architecture
 
@@ -59,11 +84,16 @@ description: React frontend rules (architecture, types, i18n)
   i18next
 - **Import Pattern**: `import { t } from 'i18next';` (NOT `useTranslation` hook)
 - **Usage Context**: Use in utility functions, constants, services, handlers, and other non-React code
-- **Examples**:
-  - Utility functions: `src/utils/constants.ts`
-  - Service files: `src/services/service-builder.ts`
-  - Handler files: `src/handlers/unsavedChangesDialog.tsx`
-  - Component files with non-hook functions: `src/components/FlowElementsPopup/AssignBuilder/AssignElement.tsx`
+- **Example - Using `t` in a utility function**:
+
+```typescript
+import { t } from 'i18next';
+
+export const getErrorMessage = (errorCode: string): string => {
+  return t(`errors.${errorCode}`, { defaultValue: t('errors.unknown') });
+};
+```
+
 - **Hook vs Direct Import**:
   - **React Components**: Use `useTranslation()` hook inside React components
   - **Non-React Code**: Use direct `import { t } from 'i18next'` for utility functions, services, constants, etc.
