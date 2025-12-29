@@ -1,76 +1,22 @@
-import { beforeEach, describe, expect, it } from 'bun:test';
 import type { Request, Response } from 'express';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { mcpDeleteHandler, mcpGetHandler, mcpPostHandler, transports } from './handlers.ts';
-
-// Simple mock function type
-type MockFn = {
-  (...args: unknown[]): unknown;
-  mockReturnThis: () => MockFn;
-  mockReturnValue: (value: unknown) => MockFn;
-  mockImplementation: (fn: (...args: unknown[]) => unknown) => MockFn;
-  mockResolvedValue: (value: unknown) => MockFn;
-  mockRejectedValue: (value: unknown) => MockFn;
-  mockClear: () => void;
-  mockReset: () => void;
-  calls: unknown[][];
-};
-
-function createMockFn(impl?: (...args: unknown[]) => unknown): MockFn {
-  const fn = ((...args: unknown[]) => {
-    fn.calls.push(args);
-    if (impl) {
-      return impl(...args);
-    }
-    return undefined;
-  }) as MockFn;
-
-  fn.calls = [];
-  fn.mockReturnThis = () => {
-    impl = () => fn;
-    return fn;
-  };
-  fn.mockReturnValue = (value: unknown) => {
-    impl = () => value;
-    return fn;
-  };
-  fn.mockImplementation = (newImpl: (...args: unknown[]) => unknown) => {
-    impl = newImpl;
-    return fn;
-  };
-  fn.mockResolvedValue = (value: unknown) => {
-    impl = () => Promise.resolve(value);
-    return fn;
-  };
-  fn.mockRejectedValue = (value: unknown) => {
-    impl = () => Promise.reject(value);
-    return fn;
-  };
-  fn.mockClear = () => {
-    fn.calls = [];
-  };
-  fn.mockReset = () => {
-    fn.calls = [];
-    impl = undefined;
-  };
-
-  return fn;
-}
 
 describe('mcpPostHandler', () => {
   let mockReq: Partial<Request>;
   let mockRes: Partial<Response>;
-  let statusSpy: MockFn;
-  let jsonSpy: MockFn;
-  let sendSpy: MockFn;
+  let statusSpy: ReturnType<typeof vi.fn>;
+  let jsonSpy: ReturnType<typeof vi.fn>;
+  let sendSpy: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     // Clear transports before each test
     Object.keys(transports).forEach((key) => delete transports[key]);
 
-    jsonSpy = createMockFn().mockReturnThis();
-    sendSpy = createMockFn().mockReturnThis();
-    statusSpy = createMockFn().mockReturnValue({
+    jsonSpy = vi.fn().mockReturnThis();
+    sendSpy = vi.fn().mockReturnThis();
+    statusSpy = vi.fn().mockReturnValue({
       json: jsonSpy,
       send: sendSpy,
     });
@@ -90,7 +36,7 @@ describe('mcpPostHandler', () => {
 
   it('handles request with existing session ID successfully', async () => {
     const sessionId = 'existing-session-id';
-    const mockHandleRequest = createMockFn().mockResolvedValue(undefined);
+    const mockHandleRequest = vi.fn().mockResolvedValue(undefined);
     const mockTransport = {
       handleRequest: mockHandleRequest,
       sessionId,
@@ -105,10 +51,10 @@ describe('mcpPostHandler', () => {
     await mcpPostHandler(mockReq as Request, mockRes as Response);
 
     // Verify transport.handleRequest was called
-    expect(mockHandleRequest.calls.length).toBeGreaterThan(0);
-    expect(mockHandleRequest.calls[0]?.[0]).toBe(mockReq);
-    expect(mockHandleRequest.calls[0]?.[1]).toBe(mockRes);
-    expect(mockHandleRequest.calls[0]?.[2]).toBe(mockReq.body);
+    expect(mockHandleRequest).toHaveBeenCalled();
+    expect(mockHandleRequest.mock.calls[0]?.[0]).toBe(mockReq);
+    expect(mockHandleRequest.mock.calls[0]?.[1]).toBe(mockRes);
+    expect(mockHandleRequest.mock.calls[0]?.[2]).toBe(mockReq.body);
 
     // Cleanup
     delete transports[sessionId];
@@ -119,10 +65,10 @@ describe('mcpPostHandler', () => {
 
     await mcpPostHandler(mockReq as Request, mockRes as Response);
 
-    expect(statusSpy.calls.length).toBeGreaterThan(0);
-    expect(statusSpy.calls[0]?.[0]).toBe(400);
-    expect(jsonSpy.calls.length).toBeGreaterThan(0);
-    expect(jsonSpy.calls[0]?.[0]).toEqual(
+    expect(statusSpy).toHaveBeenCalled();
+    expect(statusSpy.mock.calls[0]?.[0]).toBe(400);
+    expect(jsonSpy).toHaveBeenCalled();
+    expect(jsonSpy.mock.calls[0]?.[0]).toEqual(
       expect.objectContaining({
         jsonrpc: '2.0',
         error: expect.objectContaining({
@@ -139,8 +85,8 @@ describe('mcpPostHandler', () => {
 
     await mcpPostHandler(mockReq as Request, mockRes as Response);
 
-    expect(statusSpy.calls.length).toBeGreaterThan(0);
-    expect(statusSpy.calls[0]?.[0]).toBe(400);
+    expect(statusSpy).toHaveBeenCalled();
+    expect(statusSpy.mock.calls[0]?.[0]).toBe(400);
   });
 
   it('handles errors and returns 500', async () => {
@@ -150,22 +96,22 @@ describe('mcpPostHandler', () => {
     await mcpPostHandler(mockReq as Request, mockRes as Response);
 
     // Should handle error gracefully
-    expect(statusSpy.calls.length).toBeGreaterThan(0);
+    expect(statusSpy).toHaveBeenCalled();
   });
 });
 
 describe('mcpGetHandler', () => {
   let mockReq: Partial<Request>;
   let mockRes: Partial<Response>;
-  let statusSpy: MockFn;
-  let sendSpy: MockFn;
+  let statusSpy: ReturnType<typeof vi.fn>;
+  let sendSpy: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     // Clear transports before each test
     Object.keys(transports).forEach((key) => delete transports[key]);
 
-    sendSpy = createMockFn().mockReturnThis();
-    statusSpy = createMockFn().mockReturnValue({
+    sendSpy = vi.fn().mockReturnThis();
+    statusSpy = vi.fn().mockReturnValue({
       send: sendSpy,
     });
 
@@ -182,7 +128,7 @@ describe('mcpGetHandler', () => {
 
   it('handles GET request with valid session ID successfully', async () => {
     const sessionId = 'valid-session-id';
-    const mockHandleRequest = createMockFn().mockResolvedValue(undefined);
+    const mockHandleRequest = vi.fn().mockResolvedValue(undefined);
     const mockTransport = {
       handleRequest: mockHandleRequest,
       sessionId,
@@ -196,9 +142,9 @@ describe('mcpGetHandler', () => {
     await mcpGetHandler(mockReq as Request, mockRes as Response);
 
     // Verify transport.handleRequest was called
-    expect(mockHandleRequest.calls.length).toBeGreaterThan(0);
-    expect(mockHandleRequest.calls[0]?.[0]).toBe(mockReq);
-    expect(mockHandleRequest.calls[0]?.[1]).toBe(mockRes);
+    expect(mockHandleRequest).toHaveBeenCalled();
+    expect(mockHandleRequest.mock.calls[0]?.[0]).toBe(mockReq);
+    expect(mockHandleRequest.mock.calls[0]?.[1]).toBe(mockRes);
 
     // Cleanup
     delete transports[sessionId];
@@ -207,7 +153,7 @@ describe('mcpGetHandler', () => {
   it('handles GET request with Last-Event-ID header for reconnection', async () => {
     const sessionId = 'valid-session-id';
     const lastEventId = 'event-123';
-    const mockHandleRequest = createMockFn().mockResolvedValue(undefined);
+    const mockHandleRequest = vi.fn().mockResolvedValue(undefined);
     const mockTransport = {
       handleRequest: mockHandleRequest,
       sessionId,
@@ -224,7 +170,7 @@ describe('mcpGetHandler', () => {
     await mcpGetHandler(mockReq as Request, mockRes as Response);
 
     // Verify transport.handleRequest was called
-    expect(mockHandleRequest.calls.length).toBeGreaterThan(0);
+    expect(mockHandleRequest).toHaveBeenCalled();
 
     // Cleanup
     delete transports[sessionId];
@@ -233,10 +179,10 @@ describe('mcpGetHandler', () => {
   it('returns 400 when session ID is missing', async () => {
     await mcpGetHandler(mockReq as Request, mockRes as Response);
 
-    expect(statusSpy.calls.length).toBeGreaterThan(0);
-    expect(statusSpy.calls[0]?.[0]).toBe(400);
-    expect(sendSpy.calls.length).toBeGreaterThan(0);
-    expect(sendSpy.calls[0]?.[0]).toBe('Invalid or missing session ID');
+    expect(statusSpy).toHaveBeenCalled();
+    expect(statusSpy.mock.calls[0]?.[0]).toBe(400);
+    expect(sendSpy).toHaveBeenCalled();
+    expect(sendSpy.mock.calls[0]?.[0]).toBe('Invalid or missing session ID');
   });
 
   it('returns 400 when session ID does not exist in transports', async () => {
@@ -244,25 +190,25 @@ describe('mcpGetHandler', () => {
 
     await mcpGetHandler(mockReq as Request, mockRes as Response);
 
-    expect(statusSpy.calls.length).toBeGreaterThan(0);
-    expect(statusSpy.calls[0]?.[0]).toBe(400);
-    expect(sendSpy.calls.length).toBeGreaterThan(0);
-    expect(sendSpy.calls[0]?.[0]).toBe('Invalid or missing session ID');
+    expect(statusSpy).toHaveBeenCalled();
+    expect(statusSpy.mock.calls[0]?.[0]).toBe(400);
+    expect(sendSpy).toHaveBeenCalled();
+    expect(sendSpy.mock.calls[0]?.[0]).toBe('Invalid or missing session ID');
   });
 });
 
 describe('mcpDeleteHandler', () => {
   let mockReq: Partial<Request>;
   let mockRes: Partial<Response>;
-  let statusSpy: MockFn;
-  let sendSpy: MockFn;
+  let statusSpy: ReturnType<typeof vi.fn>;
+  let sendSpy: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     // Clear transports before each test
     Object.keys(transports).forEach((key) => delete transports[key]);
 
-    sendSpy = createMockFn().mockReturnThis();
-    statusSpy = createMockFn().mockReturnValue({
+    sendSpy = vi.fn().mockReturnThis();
+    statusSpy = vi.fn().mockReturnValue({
       send: sendSpy,
     });
 
@@ -279,7 +225,7 @@ describe('mcpDeleteHandler', () => {
 
   it('handles DELETE request with valid session ID successfully', async () => {
     const sessionId = 'valid-session-id';
-    const mockHandleRequest = createMockFn().mockResolvedValue(undefined);
+    const mockHandleRequest = vi.fn().mockResolvedValue(undefined);
     const mockTransport = {
       handleRequest: mockHandleRequest,
       sessionId,
@@ -293,9 +239,9 @@ describe('mcpDeleteHandler', () => {
     await mcpDeleteHandler(mockReq as Request, mockRes as Response);
 
     // Verify transport.handleRequest was called
-    expect(mockHandleRequest.calls.length).toBeGreaterThan(0);
-    expect(mockHandleRequest.calls[0]?.[0]).toBe(mockReq);
-    expect(mockHandleRequest.calls[0]?.[1]).toBe(mockRes);
+    expect(mockHandleRequest).toHaveBeenCalled();
+    expect(mockHandleRequest.mock.calls[0]?.[0]).toBe(mockReq);
+    expect(mockHandleRequest.mock.calls[0]?.[1]).toBe(mockRes);
 
     // Cleanup
     delete transports[sessionId];
@@ -304,10 +250,10 @@ describe('mcpDeleteHandler', () => {
   it('returns 400 when session ID is missing', async () => {
     await mcpDeleteHandler(mockReq as Request, mockRes as Response);
 
-    expect(statusSpy.calls.length).toBeGreaterThan(0);
-    expect(statusSpy.calls[0]?.[0]).toBe(400);
-    expect(sendSpy.calls.length).toBeGreaterThan(0);
-    expect(sendSpy.calls[0]?.[0]).toBe('Invalid or missing session ID');
+    expect(statusSpy).toHaveBeenCalled();
+    expect(statusSpy.mock.calls[0]?.[0]).toBe(400);
+    expect(sendSpy).toHaveBeenCalled();
+    expect(sendSpy.mock.calls[0]?.[0]).toBe('Invalid or missing session ID');
   });
 
   it('returns 400 when session ID does not exist in transports', async () => {
@@ -315,9 +261,9 @@ describe('mcpDeleteHandler', () => {
 
     await mcpDeleteHandler(mockReq as Request, mockRes as Response);
 
-    expect(statusSpy.calls.length).toBeGreaterThan(0);
-    expect(statusSpy.calls[0]?.[0]).toBe(400);
-    expect(sendSpy.calls.length).toBeGreaterThan(0);
-    expect(sendSpy.calls[0]?.[0]).toBe('Invalid or missing session ID');
+    expect(statusSpy).toHaveBeenCalled();
+    expect(statusSpy.mock.calls[0]?.[0]).toBe(400);
+    expect(sendSpy).toHaveBeenCalled();
+    expect(sendSpy.mock.calls[0]?.[0]).toBe('Invalid or missing session ID');
   });
 });

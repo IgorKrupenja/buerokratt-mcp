@@ -1,4 +1,4 @@
-import { describe, expect, it, spyOn } from 'bun:test';
+import { describe, expect, it, vi } from 'vitest';
 
 import { createServer } from './create-server.ts';
 import * as promptsModule from '../mcp/prompts.ts';
@@ -15,7 +15,7 @@ describe('createServer', () => {
   });
 
   it('sets up error handler', () => {
-    const consoleErrorSpy = spyOn(console, 'error').mockImplementation(() => {});
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const server = createServer();
 
     // Trigger error handler
@@ -28,9 +28,9 @@ describe('createServer', () => {
   });
 
   it('calls setup functions', () => {
-    const setupResourcesSpy = spyOn(resourcesModule, 'setupResources');
-    const setupToolsSpy = spyOn(toolsModule, 'setupTools');
-    const setupPromptsSpy = spyOn(promptsModule, 'setupPrompts');
+    const setupResourcesSpy = vi.spyOn(resourcesModule, 'setupResources');
+    const setupToolsSpy = vi.spyOn(toolsModule, 'setupTools');
+    const setupPromptsSpy = vi.spyOn(promptsModule, 'setupPrompts');
 
     createServer();
 
