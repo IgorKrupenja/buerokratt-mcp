@@ -151,6 +151,33 @@ logHttpResponse:
 - Log HTTP call results: `log: ${results.resultName.response.body}`
 - Log multiple values: Use `$= ... =` syntax with object literals to log multiple values at once
 
+### Environment Variables and Configuration
+
+- **Configuration File**: All environment variables and secrets for DSL/Ruuter projects are stored in `constants.ini` file at the root of each repository. They use use the format `KEY=value`.
+- **Accessing in YAML**: Reference environment variables using `[#VARIABLE_NAME]` syntax (e.g., `[#SERVICE_RESQL]`, `[#CHATBOT_DMAPPER]`)
+
+### Base64 Encoding with DataMapper
+
+When you need to encode strings to base64 in Ruuter DSL (e.g., for Authorization headers), use the DataMapper encryption endpoint:
+
+```yaml
+encode_to_base64:
+  call: http.post
+  args:
+    url: '[#CHATBOT_DMAPPER]/encryption/base64'
+    body:
+      content: ${stringToEncode}
+  result: base64_result
+  next: use_encoded_value
+
+use_encoded_value:
+  assign:
+    encodedString: ${base64_result.response.body.cipher}
+  next: next_step
+```
+
+Please note that the variable name (#CHATBOT_DMAPPER in the example above) varies depending on the module.
+
 ### Key Rules
 
 - **JavaScript in ${}**: Everything inside `${}` is JavaScript code executed by Ruuter
