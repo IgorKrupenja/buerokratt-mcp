@@ -25,7 +25,7 @@ Currently available rules:
 - [ ] Add support for more modules.
 - [ ] Add OAuth2 support for authentication.
 - [ ] Consider using several MCP servers for different modules **if** context size is an issue. There is a CI check for this, see [checks](#checks) below.
-- [ ] Cache rules in memory if needed. Check with `measure-load-time` script. But this should be very fast with Bun.
+- [ ] Cache rules in memory if needed. Check with `measure-load-time` script. But this should be very fast with pnpm.
 
 ## Usage
 
@@ -100,7 +100,7 @@ Once configured, the MCP server provides:
   - `search_rules` - Search rules by keyword
 - **Prompts**:
   - `development-rules` - Get development rules as a system prompt for a specific module
-- **Testing with MCP Inspector**: `bun inspect`.
+- **Testing with MCP Inspector**: `pnpm inspect`.
 
 ## Development
 
@@ -159,12 +159,16 @@ buerokratt-mcp/
 └── ...
 ```
 
-### Running the MCP server
+### Running the project for local development
 
 ```sh
-curl -fsSL https://bun.sh/install | bash # install Bun runtime
-bun install
-bun start
+# Install the correct Node version
+nvm install
+# Install the correct pnpm version
+corepack enable pnpm
+corepack use
+pnpm install
+pnpm start
 ```
 
 ### Checks
@@ -186,12 +190,12 @@ The following checks run automatically in CI on push and pull requests:
 These can also be run manually with npm scripts:
 
 ```sh
-bun format
-bun lint
-bun lint:markdown
-bun typecheck
-bun validate
-bun check-context-size
-bun check-context-size <module-name>
-bun test
+pnpm format
+pnpm lint
+pnpm lint:markdown
+pnpm typecheck
+pnpm validate
+pnpm check-context-size
+pnpm check-context-size <module-name>
+pnpm test
 ```

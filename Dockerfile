@@ -1,10 +1,12 @@
-FROM node:24-alpine
+FROM node:24.12-alpine
 
 WORKDIR /app
 
-COPY package.json package-lock.json* ./
+COPY package.json pnpm-lock.yaml* ./
 
-RUN npm ci --omit=dev
+RUN corepack enable pnpm \
+    && corepack install \
+    && pnpm install --frozen-lockfile --prod
 
 COPY src ./src
 COPY tsconfig.json ./
@@ -14,5 +16,5 @@ COPY tsconfig.json ./
 
 EXPOSE 3627
 
-CMD ["npx", "tsx", "src/server.ts"]
+CMD ["pnpm", "exec", "tsx", "src/server.ts"]
 

@@ -4,9 +4,14 @@
   "description": "MCP server for Bürokratt AI coding assistant rules",
   "type": "module",
   "private": true,
+  "packageManager": "pnpm@10.26.2",
+  "engines": {
+    "node": "^24.12.0",
+    "pnpm": "^10.26.2"
+  },
   "scripts": {
     "start": "tsx --watch src/server.ts",
-    "inspect": "npx @modelcontextprotocol/inspector --config inspector.json",
+    "inspect": "pnpm exec mcp-inspector --config inspector.json",
     "validate": "tsx scripts/validate.ts",
     "check-context-size": "tsx scripts/check-context-size.ts",
     "measure-load-time": "tsx scripts/measure-load-time.ts",
@@ -34,17 +39,17 @@
     "markdownlint": "^0.40.0",
     "markdownlint-cli2": "^0.20.0",
     "prettier": "^3.7.4",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.3",
-    "typescript-eslint": "^8.49.0"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.50.1"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.24.3",
-    "express": "^4.21.2",
+    "@modelcontextprotocol/sdk": "^1.25.1",
+    "express": "^5.2.1",
     "gray-matter": "^4.0.3",
     "remark": "^15.0.1",
     "remark-gfm": "^4.0.1",
     "remark-parse": "^11.0.0",
-    "zod": "^4.1.13"
+    "tsx": "^4.21.0",
+    "zod": "^4.2.1"
   }
 }
