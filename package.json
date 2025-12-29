@@ -10,7 +10,7 @@
     "pnpm": "^10.26.2"
   },
   "scripts": {
-    "start": "tsx --watch src/server.ts",
+    "start": "tsx --watch src/main.ts",
     "inspect": "pnpm exec mcp-inspector --config inspector.json",
     "validate": "tsx scripts/validate.ts",
     "check-context-size": "tsx scripts/check-context-size.ts",

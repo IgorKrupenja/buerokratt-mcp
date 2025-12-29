@@ -16,5 +16,5 @@ COPY tsconfig.json ./
 
 EXPOSE 3627
 
-CMD ["pnpm", "exec", "tsx", "src/server.ts"]
+CMD ["pnpm", "exec", "tsx", "src/main.ts"]
 

@@ -35,6 +35,6 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
   },
-  "include": ["src/**/*", "scripts/**/*", "vitest.config.tsgs"],
+  "include": ["src/**/*", "scripts/**/*", "vitest.config.ts"],
   "exclude": ["node_modules", "dist", "rules"]
 }
