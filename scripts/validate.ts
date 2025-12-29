@@ -4,10 +4,17 @@
  * CLI tool to validate rule files (frontmatter and markdown)
  */
 
+import { readFile } from 'fs/promises';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+
 import { lint } from 'markdownlint/promise';
 
 import { loadAllRules } from '../src/rules/loader.ts';
 import type { ValidationResult } from '../src/rules/types.ts';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Special module names that don't correspond to repositories
 const SPECIAL_MODULES = new Set(['global', 'shared-backend', 'shared-frontend']);
@@ -17,7 +24,7 @@ interface GitHubRepository {
   full_name: string;
 }
 
-const MARKDOWNLINT_CONFIG_PATH = `${import.meta.dir}/../.markdownlint.json`;
+const MARKDOWNLINT_CONFIG_PATH = join(__dirname, '../.markdownlint.json');
 let markdownlintConfig: Record<string, any> | undefined;
 
 async function loadMarkdownlintConfig(): Promise<Record<string, any> | undefined> {
@@ -26,11 +33,9 @@ async function loadMarkdownlintConfig(): Promise<Record<string, any> | undefined
   }
 
   try {
-    const configFile = Bun.file(MARKDOWNLINT_CONFIG_PATH);
-    if (await configFile.exists()) {
-      markdownlintConfig = await configFile.json();
-      return markdownlintConfig;
-    }
+    const configContent = await readFile(MARKDOWNLINT_CONFIG_PATH, 'utf-8');
+    markdownlintConfig = JSON.parse(configContent);
+    return markdownlintConfig;
   } catch (error) {
     console.warn(
       `Warning: Could not load markdownlint config: ${error instanceof Error ? error.message : String(error)}`,

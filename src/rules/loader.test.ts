@@ -1,4 +1,6 @@
-import { describe, expect, it } from 'bun:test';
+import { mkdir, unlink, writeFile } from 'fs/promises';
+
+import { describe, expect, it } from 'vitest';
 
 import { findMarkdownFiles, loadAllRules, loadRuleFile } from './loader.ts';
 
@@ -8,7 +10,7 @@ describe('loadRuleFile', () => {
 
     // Create a temporary file
     const tempPath = `/tmp/test-rule-${Date.now()}.md`;
-    await Bun.write(tempPath, testContent);
+    await writeFile(tempPath, testContent);
 
     try {
       const result = await loadRuleFile(tempPath);
@@ -21,7 +23,7 @@ describe('loadRuleFile', () => {
     } finally {
       // Cleanup
       try {
-        await Bun.file(tempPath).unlink();
+        await unlink(tempPath);
       } catch {
         // Ignore cleanup errors
       }
@@ -32,13 +34,13 @@ describe('loadRuleFile', () => {
     const invalidContent = `---\ntags:\n  - backend\n---\n## Test Content`;
 
     const tempPath = `/tmp/test-rule-invalid-${Date.now()}.md`;
-    await Bun.write(tempPath, invalidContent);
+    await writeFile(tempPath, invalidContent);
 
     try {
       await expect(loadRuleFile(tempPath)).rejects.toThrow("missing or invalid 'modules' field");
     } finally {
       try {
-        await Bun.file(tempPath).unlink();
+        await unlink(tempPath);
       } catch {
         // Ignore cleanup errors
       }
@@ -53,9 +55,11 @@ describe('loadRuleFile', () => {
 describe('findMarkdownFiles', () => {
   it('finds all markdown files in a directory', async () => {
     const tempDir = `/tmp/test-rules-${Date.now()}`;
-    await Bun.write(`${tempDir}/file1.md`, 'Content 1');
-    await Bun.write(`${tempDir}/subdir/file2.md`, 'Content 2');
-    await Bun.write(`${tempDir}/file.txt`, 'Not a markdown file');
+    await mkdir(tempDir, { recursive: true });
+    await mkdir(`${tempDir}/subdir`, { recursive: true });
+    await writeFile(`${tempDir}/file1.md`, 'Content 1');
+    await writeFile(`${tempDir}/subdir/file2.md`, 'Content 2');
+    await writeFile(`${tempDir}/file.txt`, 'Not a markdown file');
 
     try {
       const result = await findMarkdownFiles(tempDir);
@@ -67,9 +71,9 @@ describe('findMarkdownFiles', () => {
     } finally {
       // Cleanup
       try {
-        await Bun.file(`${tempDir}/file1.md`).unlink();
-        await Bun.file(`${tempDir}/subdir/file2.md`).unlink();
-        await Bun.file(`${tempDir}/file.txt`).unlink();
+        await unlink(`${tempDir}/file1.md`);
+        await unlink(`${tempDir}/subdir/file2.md`);
+        await unlink(`${tempDir}/file.txt`);
       } catch {
         // Ignore cleanup errors
       }
@@ -84,7 +88,8 @@ describe('findMarkdownFiles', () => {
 
   it('returns empty array when directory has no markdown files', async () => {
     const tempDir = `/tmp/test-rules-empty-${Date.now()}`;
-    await Bun.write(`${tempDir}/file.txt`, 'Not markdown');
+    await mkdir(tempDir, { recursive: true });
+    await writeFile(`${tempDir}/file.txt`, 'Not markdown');
 
     try {
       const result = await findMarkdownFiles(tempDir);
@@ -92,7 +97,7 @@ describe('findMarkdownFiles', () => {
       expect(result).toEqual([]);
     } finally {
       try {
-        await Bun.file(`${tempDir}/file.txt`).unlink();
+        await unlink(`${tempDir}/file.txt`);
       } catch {
         // Ignore cleanup errors
       }

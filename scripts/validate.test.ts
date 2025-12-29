@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, spyOn } from 'bun:test';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { validateFrontmatter, validateMarkdown, validateModuleNames } from './validate.ts';
 import type { RuleFile } from '../src/rules/types.ts';
@@ -123,7 +123,7 @@ Content here.
   });
 
   describe('validateModuleNames', () => {
-    const mockFetch = spyOn(global, 'fetch');
+    const mockFetch = vi.spyOn(global, 'fetch');
 
     beforeEach(() => {
       mockFetch.mockClear();

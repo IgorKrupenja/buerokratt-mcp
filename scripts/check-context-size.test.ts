@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'bun:test';
+import { describe, expect, it } from 'vitest';
 
 import { estimateTokens, formatSize, getFileStatus, getModuleStatus } from './check-context-size.ts';
 

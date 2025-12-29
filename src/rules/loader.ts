@@ -4,11 +4,17 @@
  * Loads and parses rule files from the rules directory
  */
 
+import { readdir, readFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import matter from 'gray-matter';
 
 import type { RuleFile, RuleFrontmatter } from './types.ts';
 
-const RULES_DIR = `${import.meta.dir}/../../rules`;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const RULES_DIR = join(__dirname, '../../rules');
 
 /**
  * Load and parse a single rule file
@@ -16,8 +22,7 @@ const RULES_DIR = `${import.meta.dir}/../../rules`;
 export async function loadRuleFile(filePath: string): Promise<RuleFile> {
   try {
     // Read file content
-    const file = Bun.file(filePath);
-    const raw = await file.text();
+    const raw = await readFile(filePath, 'utf-8');
 
     // Parse frontmatter using gray-matter
     const parsed = matter(raw);
@@ -51,17 +56,31 @@ export async function loadRuleFile(filePath: string): Promise<RuleFile> {
 export async function findMarkdownFiles(dir: string): Promise<string[]> {
   const files: string[] = [];
 
+  async function scanDir(currentDir: string): Promise<void> {
+    try {
+      const entries = await readdir(currentDir, { withFileTypes: true });
+
+      for (const entry of entries) {
+        const fullPath = join(currentDir, entry.name);
+
+        if (entry.isDirectory()) {
+          await scanDir(fullPath);
+        } else if (entry.isFile() && entry.name.endsWith('.md')) {
+          files.push(fullPath);
+        }
+      }
+    } catch (error) {
+      // If directory doesn't exist or can't be read, return empty array
+      if (error instanceof Error && 'code' in error && (error as any).code === 'ENOENT') {
+        return;
+      }
+      throw error;
+    }
+  }
+
   try {
-    // Use Bun's Glob to find all markdown files recursively
-    const glob = new Bun.Glob('**/*.md');
-    for await (const file of glob.scan(dir)) {
-      files.push(`${dir}/${file}`);
-    }
+    await scanDir(dir);
   } catch (error) {
-    // If directory doesn't exist or can't be read, return empty array
-    if (error instanceof Error && 'code' in error && (error as any).code === 'ENOENT') {
-      return [];
-    }
     throw new Error(
       `Failed to find markdown files in ${dir}: ${error instanceof Error ? error.message : String(error)}`,
     );

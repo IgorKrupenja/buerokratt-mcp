@@ -1,4 +1,4 @@
-import { describe, expect, it, spyOn } from 'bun:test';
+import { describe, expect, it, vi } from 'vitest';
 
 import * as loaderModule from './loader.ts';
 import { getAvailableModules, getMergedRules, getModuleRules } from './manager.ts';
@@ -23,7 +23,7 @@ describe('getModuleRules', () => {
       createRuleFile('rules/training-module/rules.md', ['Training-Module'], 'Training rule'),
     ];
 
-    const spy = spyOn(loaderModule, 'loadAllRules').mockResolvedValue(mockRules);
+    const spy = vi.spyOn(loaderModule, 'loadAllRules').mockResolvedValue(mockRules);
 
     const result = await getModuleRules('Service-Module');
 
@@ -46,7 +46,7 @@ describe('getAvailableModules', () => {
       createRuleFile('rules/analytics-module/rules.md', ['Analytics-Module'], 'Analytics rule'),
     ];
 
-    const spy = spyOn(loaderModule, 'loadAllRules').mockResolvedValue(mockRules);
+    const spy = vi.spyOn(loaderModule, 'loadAllRules').mockResolvedValue(mockRules);
 
     const result = await getAvailableModules();
 
@@ -60,7 +60,7 @@ describe('getAvailableModules', () => {
   it('returns empty array when no modules found', async () => {
     const mockRules: RuleFile[] = [createRuleFile('rules/global/common.md', ['global'], 'Global rule')];
 
-    const spy = spyOn(loaderModule, 'loadAllRules').mockResolvedValue(mockRules);
+    const spy = vi.spyOn(loaderModule, 'loadAllRules').mockResolvedValue(mockRules);
 
     const result = await getAvailableModules();
 
@@ -78,7 +78,7 @@ describe('getMergedRules', () => {
       createRuleFile('rules/service-module/rules.md', ['Service-Module'], 'Service content'),
     ];
 
-    const spy = spyOn(loaderModule, 'loadAllRules').mockResolvedValue(mockRules);
+    const spy = vi.spyOn(loaderModule, 'loadAllRules').mockResolvedValue(mockRules);
 
     const result = await getMergedRules('Service-Module');
 

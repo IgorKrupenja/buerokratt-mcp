@@ -1,5 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { beforeEach, describe, expect, it, spyOn } from 'bun:test';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setupTools } from './tools.ts';
 import * as loaderModule from '../rules/loader.ts';
@@ -8,9 +8,9 @@ import * as managerModule from '../rules/manager.ts';
 describe('setupTools', () => {
   let server: McpServer;
   let registeredTools: Map<string, any>;
-  let getAvailableModulesSpy: ReturnType<typeof spyOn>;
-  let getMergedRulesSpy: ReturnType<typeof spyOn>;
-  let loadAllRulesSpy: ReturnType<typeof spyOn>;
+  let getAvailableModulesSpy: ReturnType<typeof vi.spyOn>;
+  let getMergedRulesSpy: ReturnType<typeof vi.spyOn>;
+  let loadAllRulesSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     server = new McpServer(
@@ -33,9 +33,9 @@ describe('setupTools', () => {
       return (originalRegisterTool as any)(name, ...args);
     };
 
-    getAvailableModulesSpy = spyOn(managerModule, 'getAvailableModules');
-    getMergedRulesSpy = spyOn(managerModule, 'getMergedRules');
-    loadAllRulesSpy = spyOn(loaderModule, 'loadAllRules');
+    getAvailableModulesSpy = vi.spyOn(managerModule, 'getAvailableModules');
+    getMergedRulesSpy = vi.spyOn(managerModule, 'getMergedRules');
+    loadAllRulesSpy = vi.spyOn(loaderModule, 'loadAllRules');
   });
 
   it('registers get_rules tool', () => {

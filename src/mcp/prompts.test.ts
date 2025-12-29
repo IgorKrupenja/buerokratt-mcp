@@ -1,5 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { beforeEach, describe, expect, it, spyOn } from 'bun:test';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setupPrompts } from './prompts.ts';
 import * as managerModule from '../rules/manager.ts';
@@ -7,7 +7,7 @@ import * as managerModule from '../rules/manager.ts';
 describe('setupPrompts', () => {
   let server: McpServer;
   let registeredPrompts: Map<string, any>;
-  let getMergedRulesSpy: ReturnType<typeof spyOn>;
+  let getMergedRulesSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     server = new McpServer(
@@ -30,7 +30,7 @@ describe('setupPrompts', () => {
       return (originalRegisterPrompt as any)(name, ...args);
     };
 
-    getMergedRulesSpy = spyOn(managerModule, 'getMergedRules');
+    getMergedRulesSpy = vi.spyOn(managerModule, 'getMergedRules');
   });
 
   it('registers development-rules prompt', () => {

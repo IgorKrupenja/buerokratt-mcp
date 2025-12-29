@@ -2,30 +2,36 @@
   "name": "buerokratt-mcp",
   "version": "0.1.0",
   "description": "MCP server for Bürokratt AI coding assistant rules",
-  "module": "src/server.ts",
   "type": "module",
   "private": true,
+  "packageManager": "pnpm@10.26.2",
+  "engines": {
+    "node": "^24.12.0",
+    "pnpm": "^10.26.2"
+  },
   "scripts": {
-    "start": "bun run --watch src/server.ts",
-    "inspect": "bunx @modelcontextprotocol/inspector --config inspector.json",
-    "validate": "bun run scripts/validate.ts",
-    "check-context-size": "bun run scripts/check-context-size.ts",
-    "measure-load-time": "bun run scripts/measure-load-time.ts",
+    "start": "tsx --watch src/main.ts",
+    "inspect": "pnpm exec mcp-inspector --config inspector.json",
+    "validate": "tsx scripts/validate.ts",
+    "check-context-size": "tsx scripts/check-context-size.ts",
+    "measure-load-time": "tsx scripts/measure-load-time.ts",
     "lint:markdown": "markdownlint-cli2 \"rules/**/*.md\" \"README.md\"",
     "lint:markdown:fix": "markdownlint-cli2 --fix \"rules/**/*.md\" \"README.md\"",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix --max-warnings 0",
-    "typecheck": "bunx tsc --noEmit",
-    "test": "bun test",
-    "test:coverage": "bun test --coverage",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "format": "prettier --check .",
     "format:fix": "prettier --write ."
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@modelcontextprotocol/inspector": "^0.18.0",
-    "@types/bun": "latest",
     "@types/express": "^5.0.6",
+    "@types/node": "^24.0.0",
+    "@vitest/ui": "^4.0.16",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
@@ -35,17 +41,18 @@
     "markdownlint": "^0.40.0",
     "markdownlint-cli2": "^0.20.0",
     "prettier": "^3.7.4",
-    "typescript-eslint": "^8.49.0"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.50.1",
+    "vitest": "^4.0.16"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.24.3",
+    "@modelcontextprotocol/sdk": "^1.25.1",
+    "express": "^5.2.1",
     "gray-matter": "^4.0.3",
     "remark": "^15.0.1",
     "remark-gfm": "^4.0.1",
     "remark-parse": "^11.0.0",
-    "zod": "^4.1.13"
+    "tsx": "^4.21.0",
+    "zod": "^4.2.1"
   }
 }

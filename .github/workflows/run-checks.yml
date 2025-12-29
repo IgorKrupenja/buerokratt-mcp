@@ -7,7 +7,7 @@ on:
       - 'rules/**'
       - '.github/**'
       - 'package.json'
-      - 'bun.lock'
+      - 'pnpm-lock.yaml'
       - 'eslint.config.mjs'
       - '.markdownlint.json'
       - 'tsconfig.json'
@@ -18,7 +18,7 @@ on:
       - 'rules/**'
       - '.github/**'
       - 'package.json'
-      - 'bun.lock'
+      - 'pnpm-lock.yaml'
       - 'eslint.config.mjs'
       - '.markdownlint.json'
       - 'tsconfig.json'
@@ -30,34 +30,34 @@ jobs:
   format:
     uses: ./.github/workflows/run-check.yml
     with:
-      command: bun run format
+      command: pnpm run format
 
   lint:
     uses: ./.github/workflows/run-check.yml
     with:
-      command: bun run lint
+      command: pnpm run lint
 
   typecheck:
     uses: ./.github/workflows/run-check.yml
     with:
-      command: bun run typecheck
+      command: pnpm run typecheck
 
   test:
     uses: ./.github/workflows/run-check.yml
     with:
-      command: bun run test
+      command: pnpm run test
 
   lint-markdown:
     uses: ./.github/workflows/run-check.yml
     with:
-      command: bun run lint:markdown
+      command: pnpm run lint:markdown
 
   validate:
     uses: ./.github/workflows/run-check.yml
     with:
-      command: bun run validate
+      command: pnpm run validate
 
   check-context-size:
     uses: ./.github/workflows/run-check.yml
     with:
-      command: bun run check-context-size
+      command: pnpm run check-context-size

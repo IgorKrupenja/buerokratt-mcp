@@ -7,14 +7,12 @@ import prettier from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
 
 export default [
-  // TypeScript files configuration
   {
     files: ['**/*.ts'],
     languageOptions: {
       globals: {
         ...globals.node,
         ...globals.es2021,
-        Bun: 'readonly',
       },
       ecmaVersion: 2023,
       sourceType: 'module',
@@ -70,13 +68,11 @@ export default [
           ignoreDeclarationSort: true,
         },
       ],
-      // Prettier integration
       'prettier/prettier': 'error',
       ...prettierConfig.rules,
     },
   },
 
-  // Global ignores
   {
     ignores: ['eslint.config.mjs', 'dist', 'build', 'node_modules', 'coverage', 'rules'],
   },
