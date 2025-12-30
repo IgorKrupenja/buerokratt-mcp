@@ -29,8 +29,7 @@ description: Global code quality rules and development best practices
 
 ### Linting
 
-- **Full Lint**: Run lint with `npm lint` for the entire project
-- **Single File/Directory**: When linting specific files or directories, always use `--max-warnings 0`
+- **Single File/Directory**: When linting, always use `--max-warnings 0`
 - **Always Check**: ALWAYS check for lint and format issues when done with code (INCLUDING tests) changes
 
 ## Development Workflow

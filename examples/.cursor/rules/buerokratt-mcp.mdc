@@ -4,23 +4,26 @@ alwaysApply: true
 
 # Buerokratt MCP server integration
 
-## ⚠️ MANDATORY FIRST ACTION - DO NOT SKIP ⚠️
+## Loading Module Rules
 
-**BEFORE making ANY other tool calls or actions**, you MUST load the module rules using the `buerokratt-mcp` MCP server. This is the **FIRST** action in every chat session.
+When instructed to load rules (from MCP), use the `buerokratt-mcp` MCP server to retrieve context-specific guidelines.
 
 ### Steps to follow
 
-1. **Determine the module name** from the file path you're working with:
-   - Extract the module name from the file path (e.g., `/Users/igor/Projects/devtailor/byk/Service-Module/...` → `Service-Module`)
-   - Module names match repository folder names exactly: `Service-Module`, `Training-Module`, `Analytics-Module`, `Buerokratt-Chatbot`, `Chat-Widget`
-   - **Exception**: If working in the `buerokratt-mcp` repository itself, use module name `global`
+1. **Get the list of available modules**:
+   - Call `mcp_buerokratt-mcp_list_modules` to retrieve all available module names
 
-2. **Immediately call** `mcp_byk-buerokratt-mcp_get_rules` with the determined module name
+2. **Determine which module to load**:
+   - Extract the module name from the current file path (e.g., `/Users/igor/Projects/devtailor/burokratt/Service-Module/...` → `Service-Module`)
+   - Check if the extracted module name matches any module from the list
+   - If there is a match, use that module name
+   - If there is no match, use `global` as the module name
 
-3. **Only after** loading the rules, proceed with other tool calls
+3. **Load the rules**:
+   - Call `mcp_buerokratt-mcp_get_rules` with the determined module name
+   - Apply the loaded rules to your work in that module
 
 ### Important
 
-- This rule applies to **EVERY chat session**, regardless of context
-- Do NOT read files, search code, or perform any other actions before loading rules
-- The rules provide essential context and guidelines for the module you're working with
+- Only load rules when explicitly instructed by the user
+- The rules provide essential context and guidelines for the specific module or global workspace

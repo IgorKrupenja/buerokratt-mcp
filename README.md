@@ -52,7 +52,7 @@ Note that `<project-root>` can also be a folder with several Bürokratt modules.
 }
 ```
 
-You might also want to add a simple rule to automatically load the rules for the module of the file you are editing. See `.cursor/rules/buerokratt-mcp.mdc` for an example. Place it in `<project-root>/.cursor/rules/buerokratt-mcp.mdc`.
+You might also want to add a simple rule to load the rules for the module based on path. See `.cursor/rules/buerokratt-mcp.mdc` for an example. Place it in `<project-root>/.cursor/rules/buerokratt-mcp.mdc`.
 
 **VS Code**:
 

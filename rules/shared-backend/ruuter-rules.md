@@ -47,6 +47,8 @@ declaration:
         description: 'Header field'
 ```
 
+**Note**: parameter names should be camelCase.
+
 ### Variable Assignment Pattern
 
 ```yaml
