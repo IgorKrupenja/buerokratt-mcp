@@ -48,19 +48,30 @@ description: SQL rules for DSL-based backends (migrations and queries)
 
 ## Database Connection
 
-To connect to the PostgreSQL database for debugging or direct queries, extract connection details from the `resql` service configuration in the relevant `docker-compose.yml` file:
+**IMPORTANT**: When you need to connect to the database for debugging or direct queries, **ALWAYS check the `resql` service configuration first**. The `resql` service's JDBC URL is the authoritative source for the active database connection, regardless of what local database containers may exist in the docker-compose file.
 
-1. **Find the JDBC URL**: Look for `sqlms.datasources.[0].jdbcUrl` in the `resql` service environment variables
-2. **Extract connection details**: Parse the JDBC URL format: `jdbc:postgresql://[host]:[port]/[database][?params]`
-3. **Get credentials**: Find `sqlms.datasources.[0].username` and `sqlms.datasources.[0].password` in the same service
+**Steps to extract connection details:**
+
+1. **Find the `resql` service**: Locate the `resql` service in the `docker-compose.yml` file
+2. **Find the JDBC URL**: Look for `sqlms.datasources.[0].jdbcUrl` in the `resql` service environment variables
+3. **Extract connection details**: Parse the JDBC URL format: `jdbc:postgresql://[host]:[port]/[database][?params]`
+4. **Get credentials**: Find `sqlms.datasources.[0].username` and `sqlms.datasources.[0].password` in the same `resql` service
 
 **Connection Methods:**
 
-- **From Host Machine** (for local Docker connections):
-  - If JDBC URL uses `database:5432`, the database is accessible from host at `localhost` with the mapped port
-  - Check the `database` service `ports` mapping (e.g., `5433:5432` means use port `5433` from host)
-  - Connect using: `PGPASSWORD=[password] psql -h localhost -p [mapped_port] -U [username] -d [database]`
-
-- **Remote Connections**:
-  - If JDBC URL uses an IP address (e.g., `171.22.247.13:5435`), connect directly:
+- **Remote Database** (most common):
+  - If JDBC URL uses an IP address or remote hostname (e.g., `171.22.247.13:5433`), connect directly using the host and port from the JDBC URL:
   - `PGPASSWORD=[password] psql -h [host] -p [port] -U [username] -d [database]`
+  - **Note**: Do NOT try to map ports or use localhost - use the exact host and port from the JDBC URL
+
+- **Local Docker Database** (less common):
+  - If JDBC URL uses a container name like `database:5432` or `users_db:5432`, the database is running in a local Docker container
+  - Check the corresponding database service `ports` mapping in docker-compose (e.g., `5433:5432` means use port `5433` from host)
+  - Connect using: `PGPASSWORD=[password] psql -h localhost -p [mapped_port] -U [username] -d [database]`
+  - **Alternative**: Use `docker exec` to connect directly to the container: `docker exec [container_name] psql -U [username] -d [database]`
+
+**Example**: If `resql` service has `jdbc:postgresql://171.22.247.13:5433/byk?sslmode=require`, connect with:
+
+```bash
+PGPASSWORD=2nH09n6Gly psql -h 171.22.247.13 -p 5433 -U byk -d byk
+```
