@@ -1,0 +1,30 @@
+name: Run rules checks
+on:
+  push:
+    branches: [main, dev]
+    paths:
+      - '**/*.md'
+  pull_request:
+    types: [opened, ready_for_review, reopened, synchronize]
+    paths:
+      - '**/*.md'
+concurrency:
+  group: ${{ github.ref }}-rules-checks
+  cancel-in-progress: true
+
+jobs:
+  lint-markdown:
+    uses: ./.github/workflows/run-check.yml
+    with:
+      command: pnpm run lint:markdown
+
+  validate:
+    uses: ./.github/workflows/run-check.yml
+    with:
+      command: pnpm run validate
+
+  check-context-size:
+    uses: ./.github/workflows/run-check.yml
+    with:
+      command: pnpm run check-context-size
+
