@@ -1,41 +1,41 @@
-name: Run checks
+name: Run code checks
 on:
   push:
     branches: [main, dev]
     paths:
       - 'src/**'
-      - 'rules/**'
+      - 'scripts/**'
       - '.github/**'
       - 'package.json'
       - 'pnpm-lock.yaml'
       - 'eslint.config.mjs'
-      - '.markdownlint.json'
       - 'tsconfig.json'
+      - 'vitest.config.ts'
   pull_request:
     types: [opened, ready_for_review, reopened, synchronize]
     paths:
       - 'src/**'
-      - 'rules/**'
+      - 'scripts/**'
       - '.github/**'
       - 'package.json'
       - 'pnpm-lock.yaml'
       - 'eslint.config.mjs'
-      - '.markdownlint.json'
       - 'tsconfig.json'
+      - 'vitest.config.ts'
 concurrency:
-  group: ${{ github.ref }}-checks
+  group: ${{ github.ref }}-code-checks
   cancel-in-progress: true
 
 jobs:
   format:
     uses: ./.github/workflows/run-check.yml
     with:
-      command: pnpm run format
+      command: pnpm run format:check
 
   lint:
     uses: ./.github/workflows/run-check.yml
     with:
-      command: pnpm run lint
+      command: pnpm run lint:check
 
   typecheck:
     uses: ./.github/workflows/run-check.yml
@@ -46,18 +46,3 @@ jobs:
     uses: ./.github/workflows/run-check.yml
     with:
       command: pnpm run test
-
-  lint-markdown:
-    uses: ./.github/workflows/run-check.yml
-    with:
-      command: pnpm run lint:markdown
-
-  validate:
-    uses: ./.github/workflows/run-check.yml
-    with:
-      command: pnpm run validate
-
-  check-context-size:
-    uses: ./.github/workflows/run-check.yml
-    with:
-      command: pnpm run check-context-size
