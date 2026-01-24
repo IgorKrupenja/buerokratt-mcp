@@ -8,6 +8,7 @@ Currently available rules:
 
 - `global` - Global rules that apply to all modules
 - `Service-Module` - Service Module specific rules
+- `Buerokratt-Chatbot` - Chatbot Module specific rules
 - `shared-backend` - Shared backend rules (SQL, Ruuter)
 - `shared-frontend` - Shared frontend rules (React, CSS)
 
