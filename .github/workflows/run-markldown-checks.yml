@@ -9,14 +9,19 @@ on:
     paths:
       - '**/*.md'
 concurrency:
-  group: ${{ github.ref }}-rules-checks
+  group: ${{ github.ref }}-markdown-checks
   cancel-in-progress: true
 
 jobs:
+  format:
+    uses: ./.github/workflows/run-check.yml
+    with:
+      command: pnpm run format:check
+
   lint-markdown:
     uses: ./.github/workflows/run-check.yml
     with:
-      command: pnpm run lint:markdown
+      command: pnpm run lint:markdown:check
 
   validate:
     uses: ./.github/workflows/run-check.yml
@@ -27,4 +32,3 @@ jobs:
     uses: ./.github/workflows/run-check.yml
     with:
       command: pnpm run check-context-size
-

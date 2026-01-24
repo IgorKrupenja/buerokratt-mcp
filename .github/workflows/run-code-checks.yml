@@ -30,12 +30,12 @@ jobs:
   format:
     uses: ./.github/workflows/run-check.yml
     with:
-      command: pnpm run format
+      command: pnpm run format:check
 
   lint:
     uses: ./.github/workflows/run-check.yml
     with:
-      command: pnpm run lint
+      command: pnpm run lint:check
 
   typecheck:
     uses: ./.github/workflows/run-check.yml
@@ -46,4 +46,3 @@ jobs:
     uses: ./.github/workflows/run-check.yml
     with:
       command: pnpm run test
-
