@@ -1,6 +1,7 @@
 ---
-modules:
-  - global
+appliesTo:
+  languages:
+    - typescript
 tags:
   - typescript
   - code-quality

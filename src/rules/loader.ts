@@ -28,13 +28,13 @@ export async function loadRuleFile(filePath: string): Promise<RuleFile> {
     const parsed = matter(raw);
 
     // Validate that frontmatter has required fields
-    if (!parsed.data.modules || !Array.isArray(parsed.data.modules)) {
-      throw new Error(`Invalid frontmatter in ${filePath}: missing or invalid 'modules' field`);
+    if (!parsed.data.appliesTo || typeof parsed.data.appliesTo !== 'object') {
+      throw new Error(`Invalid frontmatter in ${filePath}: missing or invalid 'appliesTo' field`);
     }
 
     // Convert frontmatter to our type
     const frontmatter: RuleFrontmatter = {
-      modules: parsed.data.modules,
+      appliesTo: parsed.data.appliesTo,
       tags: parsed.data.tags,
       description: parsed.data.description,
     };

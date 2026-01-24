@@ -1,0 +1,65 @@
+version: 1
+
+languages:
+  typescript:
+    description: TypeScript base rules
+
+techs:
+  react:
+    description: React framework rules
+    dependsOn:
+      - typescript
+  # todo clean up
+  # todo add nest base
+  # todo general should be moved from under byro, splitting
+  css:
+    description: CSS styling rules
+  sql:
+    description: SQL rules for DSL backends
+  ruuter:
+    description: Ruuter YAML DSL rules
+
+groups:
+  buerokratt:
+    description: Rules shared across all Bürokratt projects
+
+projects:
+  buerokratt/Service-Module:
+    description: Bürokratt Service Module
+    groups:
+      - buerokratt
+    techs:
+      - react
+      - css
+      - sql
+      - ruuter
+    languages:
+      - typescript
+  buerokratt/Buerokratt-Chatbot:
+    description: Bürokratt Chatbot
+    groups:
+      - buerokratt
+    techs:
+      - react
+      - css
+      - sql
+    languages:
+      - typescript
+  buerokratt/Training-Module:
+    description: Bürokratt Training Module
+    groups:
+      - buerokratt
+    techs:
+      - css
+      - sql
+    languages:
+      - typescript
+  buerokratt/Analytics-Module:
+    description: Bürokratt Analytics Module
+    groups:
+      - buerokratt
+    techs:
+      - css
+      - sql
+    languages:
+      - typescript

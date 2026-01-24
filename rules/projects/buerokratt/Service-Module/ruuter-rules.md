@@ -1,6 +1,7 @@
 ---
-modules:
-  - Service-Module
+appliesTo:
+  projects:
+    - buerokratt/Service-Module
 tags:
   - backend
   - yaml

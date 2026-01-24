@@ -1,8 +1,9 @@
 ---
-modules:
-  - Training-Module
-  - Analytics-Module
-  - Buerokratt-Chatbot
+appliesTo:
+  projects:
+    - buerokratt/Training-Module
+    - buerokratt/Analytics-Module
+    - buerokratt/Buerokratt-Chatbot
 tags:
   - backend
   - sql

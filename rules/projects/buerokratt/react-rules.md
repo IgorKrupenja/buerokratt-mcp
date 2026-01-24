@@ -1,7 +1,8 @@
 ---
-modules:
-  - Service-Module
-  - Buerokratt-Chatbot
+appliesTo:
+  projects:
+    - buerokratt/Service-Module
+    - buerokratt/Buerokratt-Chatbot
 tags:
   - frontend
   - react

@@ -1,6 +1,7 @@
 ---
-modules:
-  - global
+appliesTo:
+  groups:
+    - buerokratt
 tags:
   - code-quality
   - best-practices

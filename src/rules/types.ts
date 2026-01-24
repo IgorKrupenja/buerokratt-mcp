@@ -7,8 +7,15 @@
 /**
  * Frontmatter metadata for rule files
  */
+export interface RuleAppliesTo {
+  projects?: string[];
+  groups?: string[];
+  techs?: string[];
+  languages?: string[];
+}
+
 export interface RuleFrontmatter {
-  modules: string[];
+  appliesTo: RuleAppliesTo;
   tags?: string[];
   description?: string;
 }
@@ -30,6 +37,34 @@ export interface ModuleRuleSet {
   module: string;
   rules: RuleFile[];
   globalRules: RuleFile[];
+}
+
+export interface ManifestLanguage {
+  description?: string;
+}
+
+export interface ManifestTech {
+  description?: string;
+  dependsOn?: string[];
+}
+
+export interface ManifestGroup {
+  description?: string;
+}
+
+export interface ManifestProject {
+  description?: string;
+  groups?: string[];
+  techs?: string[];
+  languages?: string[];
+}
+
+export interface RulesManifest {
+  version?: number;
+  languages?: Record<string, ManifestLanguage>;
+  techs?: Record<string, ManifestTech>;
+  groups?: Record<string, ManifestGroup>;
+  projects?: Record<string, ManifestProject>;
 }
 
 /**
