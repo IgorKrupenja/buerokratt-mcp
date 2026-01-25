@@ -2,55 +2,7 @@ import { mkdir, unlink, writeFile } from 'fs/promises';
 
 import { describe, expect, it } from 'vitest';
 
-import { findMarkdownFiles, loadAllRules, loadRuleFile } from './loader.ts';
-
-describe('loadRuleFile', () => {
-  it('loads and parses a valid rule file', async () => {
-    const testContent = `---\nappliesTo:\n  projects:\n    - buerokratt/Service-Module\ntags:\n  - backend\ndescription: Test rule\n---\n## Test Content\nThis is test content.`;
-
-    // Create a temporary file
-    const tempPath = `/tmp/test-rule-${Date.now()}.md`;
-    await writeFile(tempPath, testContent);
-
-    try {
-      const result = await loadRuleFile(tempPath);
-
-      expect(result.path).toBe(tempPath);
-      expect(result.frontmatter.appliesTo).toEqual({ projects: ['buerokratt/Service-Module'] });
-      expect(result.frontmatter.tags).toEqual(['backend']);
-      expect(result.frontmatter.description).toBe('Test rule');
-      expect(result.content).toContain('## Test Content');
-    } finally {
-      // Cleanup
-      try {
-        await unlink(tempPath);
-      } catch {
-        // Ignore cleanup errors
-      }
-    }
-  });
-
-  it('throws error when appliesTo field is missing', async () => {
-    const invalidContent = `---\ntags:\n  - backend\n---\n## Test Content`;
-
-    const tempPath = `/tmp/test-rule-invalid-${Date.now()}.md`;
-    await writeFile(tempPath, invalidContent);
-
-    try {
-      await expect(loadRuleFile(tempPath)).rejects.toThrow("missing or invalid 'appliesTo' field");
-    } finally {
-      try {
-        await unlink(tempPath);
-      } catch {
-        // Ignore cleanup errors
-      }
-    }
-  });
-
-  it('throws error when file does not exist', async () => {
-    await expect(loadRuleFile('/nonexistent/path/file.md')).rejects.toThrow();
-  });
-});
+import { findMarkdownFiles, loadAllRules } from './loader.ts';
 
 describe('findMarkdownFiles', () => {
   it('finds all markdown files in a directory', async () => {

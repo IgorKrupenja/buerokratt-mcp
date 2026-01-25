@@ -17,40 +17,6 @@ const __dirname = dirname(__filename);
 const RULES_DIR = join(__dirname, '../../rules');
 
 /**
- * Load and parse a single rule file
- */
-export async function loadRuleFile(filePath: string): Promise<RuleFile> {
-  try {
-    // Read file content
-    const raw = await readFile(filePath, 'utf-8');
-
-    // Parse frontmatter using gray-matter
-    const parsed = matter(raw);
-
-    // Validate that frontmatter has required fields
-    if (!parsed.data.appliesTo || typeof parsed.data.appliesTo !== 'object') {
-      throw new Error(`Invalid frontmatter in ${filePath}: missing or invalid 'appliesTo' field`);
-    }
-
-    // Convert frontmatter to our type
-    const frontmatter: RuleFrontmatter = {
-      appliesTo: parsed.data.appliesTo,
-      tags: parsed.data.tags,
-      description: parsed.data.description,
-    };
-
-    return {
-      path: filePath,
-      frontmatter,
-      content: parsed.content,
-      raw,
-    };
-  } catch (error) {
-    throw new Error(`Failed to load rule file ${filePath}: ${error instanceof Error ? error.message : String(error)}`);
-  }
-}
-
-/**
  * Recursively find all markdown files in a directory
  */
 export async function findMarkdownFiles(dir: string): Promise<string[]> {
@@ -99,7 +65,29 @@ export async function loadAllRules(): Promise<RuleFile[]> {
     const markdownFiles = await findMarkdownFiles(RULES_DIR);
 
     // Load and parse each file
-    const ruleFiles = await Promise.all(markdownFiles.map((filePath) => loadRuleFile(filePath)));
+    const ruleFiles = await Promise.all(
+      markdownFiles.map(async (filePath) => {
+        const raw = await readFile(filePath, 'utf-8');
+        const parsed = matter(raw);
+
+        if (!parsed.data.appliesTo || typeof parsed.data.appliesTo !== 'object') {
+          throw new Error(`Invalid frontmatter in ${filePath}: missing or invalid 'appliesTo' field`);
+        }
+
+        const frontmatter: RuleFrontmatter = {
+          appliesTo: parsed.data.appliesTo,
+          tags: parsed.data.tags,
+          description: parsed.data.description,
+        };
+
+        return {
+          path: filePath,
+          frontmatter,
+          content: parsed.content,
+          raw,
+        } satisfies RuleFile;
+      }),
+    );
 
     return ruleFiles;
   } catch (error) {

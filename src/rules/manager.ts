@@ -21,6 +21,8 @@ export async function getMergedRules(request: RuleRequest): Promise<string> {
  * Get rules for a specific request
  */
 export async function getRulesFor(request: RuleRequest): Promise<RuleSet> {
+  // NOTE: We load all rules per request to support hot reload. Refactor to scoped loading if this becomes a bottleneck.
+  // Can be tested with this command: pnpm run measure-load-time
   const [allRules, manifest] = await Promise.all([loadAllRules(), loadRulesManifest()]);
   return getRulesForRequest(allRules, manifest, request);
 }
