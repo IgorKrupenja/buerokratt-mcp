@@ -57,18 +57,22 @@ export function validateFrontmatter(frontmatter: any, filePath: string): Validat
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  if (!frontmatter.modules) {
-    errors.push(`Missing 'modules' field in ${filePath}`);
+  if (!frontmatter.appliesTo) {
+    errors.push(`Missing 'appliesTo' field in ${filePath}`);
     return { valid: false, errors };
   }
 
-  if (!Array.isArray(frontmatter.modules)) {
-    errors.push(`'modules' field must be an array in ${filePath}`);
+  if (typeof frontmatter.appliesTo !== 'object') {
+    errors.push(`'appliesTo' field must be an object in ${filePath}`);
     return { valid: false, errors };
   }
 
-  if (frontmatter.modules.length === 0) {
-    errors.push(`'modules' array cannot be empty in ${filePath}`);
+  const appliesTo = frontmatter.appliesTo;
+  const appliesToKeys = ['projects', 'groups', 'techs', 'languages'] as const;
+  const hasAnyValues = appliesToKeys.some((key) => Array.isArray(appliesTo[key]) && appliesTo[key].length > 0);
+
+  if (!hasAnyValues) {
+    errors.push(`'appliesTo' must include at least one non-empty scope array in ${filePath}`);
   }
 
   if (frontmatter.tags && !Array.isArray(frontmatter.tags)) {

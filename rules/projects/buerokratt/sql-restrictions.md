@@ -4,11 +4,6 @@ appliesTo:
     - buerokratt/Training-Module
     - buerokratt/Analytics-Module
     - buerokratt/Buerokratt-Chatbot
-tags:
-  - backend
-  - sql
-  - database
-  - restrictions
 description: SQL UPDATE and DELETE restrictions for modules that require immutable data
 ---
 

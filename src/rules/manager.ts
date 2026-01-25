@@ -4,40 +4,43 @@
  * Manages rule loading and retrieval
  */
 
-import { getRulesForModule, mergeRules } from './filter.ts';
+import { getRulesForRequest, mergeRules } from './filter.ts';
 import { loadAllRules } from './loader.ts';
-import type { ModuleRuleSet } from './types.ts';
+import { loadRulesManifest } from './manifest.ts';
+import type { RuleRequest, RuleScope, RuleSet } from './types.ts';
 
 /**
- * Get merged rules as markdown for a specific module
+ * Get merged rules as markdown for a specific request
  */
-export async function getMergedRules(moduleName: string): Promise<string> {
-  const ruleSet = await getModuleRules(moduleName);
+export async function getMergedRules(request: RuleRequest): Promise<string> {
+  const ruleSet = await getRulesFor(request);
   return mergeRules(ruleSet);
 }
 
 /**
- * Get rules for a specific module
+ * Get rules for a specific request
  */
-export async function getModuleRules(moduleName: string): Promise<ModuleRuleSet> {
-  const allRules = await loadAllRules();
-  return getRulesForModule(allRules, moduleName);
+export async function getRulesFor(request: RuleRequest): Promise<RuleSet> {
+  const [allRules, manifest] = await Promise.all([loadAllRules(), loadRulesManifest()]);
+  return getRulesForRequest(allRules, manifest, request);
 }
 
 /**
- * Get all available modules from loaded rules
+ * Get available IDs for a scope
  */
-export async function getAvailableModules(): Promise<string[]> {
-  const allRules = await loadAllRules();
-  const modules = new Set<string>();
+export async function getAvailableScopeIds(scope: RuleScope): Promise<string[]> {
+  const manifest = await loadRulesManifest();
 
-  for (const rule of allRules) {
-    for (const module of rule.frontmatter.modules) {
-      if (module !== 'global') {
-        modules.add(module);
-      }
-    }
+  switch (scope) {
+    case 'project':
+      return Object.keys(manifest.projects ?? {}).sort();
+    case 'group':
+      return Object.keys(manifest.groups ?? {}).sort();
+    case 'tech':
+      return Object.keys(manifest.techs ?? {}).sort();
+    case 'language':
+      return Object.keys(manifest.languages ?? {}).sort();
+    default:
+      return [];
   }
-
-  return Array.from(modules).sort();
 }

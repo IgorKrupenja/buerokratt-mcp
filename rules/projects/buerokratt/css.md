@@ -5,11 +5,7 @@ appliesTo:
     - buerokratt/Training-Module
     - buerokratt/Analytics-Module
     - buerokratt/Buerokratt-Chatbot
-tags:
-  - frontend
-  - css
-  - styling
-description: CSS styling rules for React frontends
+description: CSS styling rules for most Buerokratt components. But not Chat-Widget.
 ---
 
 ## Styling

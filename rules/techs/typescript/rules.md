@@ -2,10 +2,6 @@
 appliesTo:
   languages:
     - typescript
-tags:
-  - typescript
-  - code-quality
-  - types
 description: TypeScript-specific code quality rules and best practices
 ---
 
@@ -20,3 +16,11 @@ description: TypeScript-specific code quality rules and best practices
     errors (e.g., clipboard operations, analytics tracking, logging)
   - **Use `async/await`**: When you need to wait for the Promise to complete or handle the result/error
   - **Consider the UX**: For UI operations, immediate feedback is often more important than waiting for async completion
+
+### Linting
+
+- **Single File/Directory**: When linting, always use `--max-warnings 0`.
+
+### Development Environment
+
+- **Node Version**: Always do `nvm use` before running npm or pnpm commands

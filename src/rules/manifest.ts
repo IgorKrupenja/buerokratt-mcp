@@ -29,6 +29,7 @@ function normalizeManifest(input: unknown): RulesManifest {
     techs: manifest.techs ?? undefined,
     groups: manifest.groups ?? undefined,
     projects: manifest.projects ?? undefined,
+    defaults: manifest.defaults ?? undefined,
   };
 }
 

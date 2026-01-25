@@ -6,7 +6,7 @@ import { findMarkdownFiles, loadAllRules, loadRuleFile } from './loader.ts';
 
 describe('loadRuleFile', () => {
   it('loads and parses a valid rule file', async () => {
-    const testContent = `---\nmodules:\n  - Service-Module\ntags:\n  - backend\ndescription: Test rule\n---\n## Test Content\nThis is test content.`;
+    const testContent = `---\nappliesTo:\n  projects:\n    - buerokratt/Service-Module\ntags:\n  - backend\ndescription: Test rule\n---\n## Test Content\nThis is test content.`;
 
     // Create a temporary file
     const tempPath = `/tmp/test-rule-${Date.now()}.md`;
@@ -16,7 +16,7 @@ describe('loadRuleFile', () => {
       const result = await loadRuleFile(tempPath);
 
       expect(result.path).toBe(tempPath);
-      expect(result.frontmatter.modules).toEqual(['Service-Module']);
+      expect(result.frontmatter.appliesTo).toEqual({ projects: ['buerokratt/Service-Module'] });
       expect(result.frontmatter.tags).toEqual(['backend']);
       expect(result.frontmatter.description).toBe('Test rule');
       expect(result.content).toContain('## Test Content');
@@ -30,14 +30,14 @@ describe('loadRuleFile', () => {
     }
   });
 
-  it('throws error when modules field is missing', async () => {
+  it('throws error when appliesTo field is missing', async () => {
     const invalidContent = `---\ntags:\n  - backend\n---\n## Test Content`;
 
     const tempPath = `/tmp/test-rule-invalid-${Date.now()}.md`;
     await writeFile(tempPath, invalidContent);
 
     try {
-      await expect(loadRuleFile(tempPath)).rejects.toThrow("missing or invalid 'modules' field");
+      await expect(loadRuleFile(tempPath)).rejects.toThrow("missing or invalid 'appliesTo' field");
     } finally {
       try {
         await unlink(tempPath);
@@ -111,7 +111,7 @@ describe('loadAllRules', () => {
 
     expect(Array.isArray(result)).toBe(true);
     expect(result.length).toBeGreaterThan(0);
-    expect(result.every((rule) => rule.frontmatter.modules.length > 0)).toBe(true);
+    expect(result.every((rule) => Object.keys(rule.frontmatter.appliesTo).length > 0)).toBe(true);
     expect(result.every((rule) => rule.path.endsWith('.md'))).toBe(true);
   });
 
@@ -120,8 +120,7 @@ describe('loadAllRules', () => {
 
     for (const rule of result) {
       expect(rule.path).toBeTruthy();
-      expect(rule.frontmatter.modules).toBeInstanceOf(Array);
-      expect(rule.frontmatter.modules.length).toBeGreaterThan(0);
+      expect(rule.frontmatter.appliesTo).toBeTruthy();
       expect(rule.content).toBeTruthy();
       expect(rule.raw).toBeTruthy();
     }

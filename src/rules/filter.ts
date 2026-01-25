@@ -1,71 +1,171 @@
 /**
  * Rule Filtering
  *
- * Filters and merges rules for specific modules
+ * Resolves rule sets for projects, groups, techs, and languages.
  */
 
-import type { ModuleRuleSet, RuleFile } from './types.ts';
+import type { RuleAppliesTo, RuleFile, RuleRequest, RuleScope, RuleSet, RulesManifest } from './types.ts';
 
-/**
- * Get all rules for a specific module (including global rules)
- */
-export function getRulesForModule(allRules: RuleFile[], moduleName: string): ModuleRuleSet {
-  // Get global rules (rules that apply to all modules)
-  const globalRules = allRules.filter((rule) => rule.frontmatter.modules.includes('global'));
+interface ResolvedScopes {
+  projects: Set<string>;
+  groups: Set<string>;
+  techs: Set<string>;
+  languages: Set<string>;
+}
 
-  // Special case: when requesting global rules, only return global rules
-  // to avoid duplication (global rules would match both filters)
-  if (moduleName === 'global') {
-    return {
-      module: moduleName,
-      rules: [],
-      globalRules,
-    };
-  }
-
-  // Get module-specific rules
-  const moduleRules = filterRulesByModule(allRules, moduleName);
-
+function createResolvedScopes(): ResolvedScopes {
   return {
-    module: moduleName,
-    rules: moduleRules,
-    globalRules,
+    projects: new Set<string>(),
+    groups: new Set<string>(),
+    techs: new Set<string>(),
+    languages: new Set<string>(),
   };
 }
 
-/**
- * Filter rules by module name
- */
-export function filterRulesByModule(rules: RuleFile[], moduleName: string): RuleFile[] {
-  return rules.filter((rule) => rule.frontmatter.modules.includes(moduleName));
+function addAlwaysGroups(scopes: ResolvedScopes, manifest: RulesManifest): void {
+  for (const group of manifest.defaults?.alwaysGroups ?? []) {
+    scopes.groups.add(group);
+  }
+}
+
+function resolveProject(scopes: ResolvedScopes, manifest: RulesManifest, projectId: string): void {
+  scopes.projects.add(projectId);
+
+  const project = manifest.projects?.[projectId];
+  if (!project) {
+    return;
+  }
+
+  for (const group of project.groups ?? []) {
+    scopes.groups.add(group);
+  }
+
+  for (const tech of project.techs ?? []) {
+    resolveTech(scopes, manifest, tech, new Set<string>());
+  }
+
+  for (const language of project.languages ?? []) {
+    scopes.languages.add(language);
+  }
+}
+
+function resolveTech(
+  scopes: ResolvedScopes,
+  manifest: RulesManifest,
+  techId: string,
+  seen: Set<string>,
+): void {
+  if (seen.has(techId)) {
+    return;
+  }
+
+  seen.add(techId);
+  scopes.techs.add(techId);
+
+  const tech = manifest.techs?.[techId];
+  if (!tech) {
+    return;
+  }
+
+  for (const dependency of tech.dependsOn ?? []) {
+    if (manifest.techs?.[dependency]) {
+      resolveTech(scopes, manifest, dependency, seen);
+      continue;
+    }
+
+    scopes.languages.add(dependency);
+  }
+}
+
+export function resolveRequestScopes(request: RuleRequest, manifest: RulesManifest): ResolvedScopes {
+  const scopes = createResolvedScopes();
+
+  switch (request.scope) {
+    case 'project':
+      resolveProject(scopes, manifest, request.id);
+      break;
+    case 'group':
+      scopes.groups.add(request.id);
+      break;
+    case 'tech':
+      resolveTech(scopes, manifest, request.id, new Set<string>());
+      break;
+    case 'language':
+      scopes.languages.add(request.id);
+      break;
+  }
+
+  addAlwaysGroups(scopes, manifest);
+  return scopes;
+}
+
+function hasIntersection(values: string[] | undefined, scopeSet: Set<string>): boolean {
+  if (!values || values.length === 0) {
+    return false;
+  }
+
+  return values.some((value) => scopeSet.has(value));
+}
+
+export function ruleAppliesToScopes(rule: RuleFile, scopes: ResolvedScopes): boolean {
+  const appliesTo: RuleAppliesTo = rule.frontmatter.appliesTo;
+
+  return (
+    hasIntersection(appliesTo.projects, scopes.projects) ||
+    hasIntersection(appliesTo.groups, scopes.groups) ||
+    hasIntersection(appliesTo.techs, scopes.techs) ||
+    hasIntersection(appliesTo.languages, scopes.languages)
+  );
+}
+
+function sortRulesByAlwaysGroups(rules: RuleFile[], manifest: RulesManifest): RuleFile[] {
+  const alwaysGroups = new Set(manifest.defaults?.alwaysGroups ?? []);
+  if (alwaysGroups.size === 0) {
+    return rules;
+  }
+
+  return [...rules].sort((a, b) => {
+    const aAlways = (a.frontmatter.appliesTo.groups ?? []).some((group) => alwaysGroups.has(group));
+    const bAlways = (b.frontmatter.appliesTo.groups ?? []).some((group) => alwaysGroups.has(group));
+
+    if (aAlways === bAlways) {
+      return a.path.localeCompare(b.path);
+    }
+
+    return aAlways ? -1 : 1;
+  });
+}
+
+export function getRulesForRequest(
+  allRules: RuleFile[],
+  manifest: RulesManifest,
+  request: RuleRequest,
+): RuleSet {
+  const scopes = resolveRequestScopes(request, manifest);
+  const matchingRules = allRules.filter((rule) => ruleAppliesToScopes(rule, scopes));
+
+  return {
+    request,
+    rules: sortRulesByAlwaysGroups(matchingRules, manifest),
+  };
 }
 
 /**
  * Merge rules into a single markdown string
  */
-export function mergeRules(ruleSet: ModuleRuleSet): string {
-  const parts: string[] = [];
-
-  // Add global rules first
-  if (ruleSet.globalRules.length > 0) {
-    parts.push('# Global Rules\n\n');
-    for (const rule of ruleSet.globalRules) {
-      parts.push(rule.content);
-      parts.push('\n\n');
-    }
+export function mergeRules(ruleSet: RuleSet): string {
+  if (ruleSet.rules.length === 0) {
+    return `# Rules (${ruleSet.request.scope}:${ruleSet.request.id})\n\n_No rules found._`;
   }
 
-  // Add module-specific rules
-  if (ruleSet.rules.length > 0) {
-    if (ruleSet.globalRules.length > 0) {
-      parts.push('---\n\n');
+  const parts: string[] = [`# Rules (${ruleSet.request.scope}:${ruleSet.request.id})\n\n`];
+
+  ruleSet.rules.forEach((rule, index) => {
+    if (index > 0) {
+      parts.push('\n\n---\n\n');
     }
-    parts.push(`# ${ruleSet.module} Rules\n\n`);
-    for (const rule of ruleSet.rules) {
-      parts.push(rule.content);
-      parts.push('\n\n');
-    }
-  }
+    parts.push(rule.content.trim());
+  });
 
   return parts.join('').trim();
 }

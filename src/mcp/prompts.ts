@@ -18,13 +18,14 @@ export function setupPrompts(server: McpServer): void {
   server.registerPrompt(
     'development-rules',
     {
-      description: 'Get development rules as a system prompt for a specific module (works with any AI editor)',
+      description: 'Get development rules as a system prompt for a scope and id (works with any AI editor)',
       argsSchema: {
-        module: z.string().describe('Module name'),
+        scope: z.enum(['project', 'group', 'tech', 'language']).describe('Scope type'),
+        id: z.string().describe('Scope identifier'),
       },
     },
     async (args) => {
-      const rules = await getMergedRules(args.module);
+      const rules = await getMergedRules({ scope: args.scope, id: args.id });
 
       return {
         messages: [
@@ -32,7 +33,7 @@ export function setupPrompts(server: McpServer): void {
             role: 'user' as const,
             content: {
               type: 'text' as const,
-              text: `Here are the development rules for ${args.module}:\n\n${rules}`,
+              text: `Here are the development rules for ${args.scope}:${args.id}:\n\n${rules}`,
             },
           },
         ],

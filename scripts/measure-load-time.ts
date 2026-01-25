@@ -5,7 +5,7 @@
  */
 
 import { loadAllRules } from '../src/rules/loader.ts';
-import { getAvailableModules, getMergedRules } from '../src/rules/manager.ts';
+import { getAvailableScopeIds, getMergedRules } from '../src/rules/manager.ts';
 
 // ANSI color codes
 const colors = {
@@ -69,16 +69,16 @@ async function measurePerformance() {
   console.log(`  Average: ${formatTime(avg)}`);
   console.log(`  Median:  ${formatTime(median)}`);
 
-  // Measure module-specific operations
-  console.log(`\n${colors.cyan}Measuring module-specific operations...${colors.reset}\n`);
+  // Measure project-specific operations
+  console.log(`\n${colors.cyan}Measuring project-specific operations...${colors.reset}\n`);
 
-  const modules = await getAvailableModules();
-  for (const module of modules) {
+  const projects = await getAvailableScopeIds('project');
+  for (const project of projects) {
     const start = performance.now();
-    await getMergedRules(module);
+    await getMergedRules({ scope: 'project', id: project });
     const end = performance.now();
     const duration = end - start;
-    console.log(`  ${module}: ${formatTime(duration)}`);
+    console.log(`  ${project}: ${formatTime(duration)}`);
   }
 
   // Recommendation

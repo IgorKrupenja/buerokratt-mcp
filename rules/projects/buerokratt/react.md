@@ -3,16 +3,7 @@ appliesTo:
   projects:
     - buerokratt/Service-Module
     - buerokratt/Buerokratt-Chatbot
-tags:
-  - frontend
-  - react
-  - architecture
-  - typescript
-  - types
-  - i18n
-  - internationalization
-  - testing
-description: React frontend rules (architecture, types, i18n, testing)
+description: React frontend rules
 ---
 
 ## Tests

@@ -20,8 +20,14 @@ techs:
     description: Ruuter YAML DSL rules
 
 groups:
+  global:
+    description: Rules always included for any request
   buerokratt:
     description: Rules shared across all Bürokratt projects
+
+defaults:
+  alwaysGroups:
+    - global
 
 projects:
   buerokratt/Service-Module:

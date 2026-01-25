@@ -14,6 +14,13 @@ export interface RuleAppliesTo {
   languages?: string[];
 }
 
+export type RuleScope = 'project' | 'group' | 'tech' | 'language';
+
+export interface RuleRequest {
+  scope: RuleScope;
+  id: string;
+}
+
 export interface RuleFrontmatter {
   appliesTo: RuleAppliesTo;
   tags?: string[];
@@ -33,10 +40,9 @@ export interface RuleFile {
 /**
  * Rule set for a specific module
  */
-export interface ModuleRuleSet {
-  module: string;
+export interface RuleSet {
+  request: RuleRequest;
   rules: RuleFile[];
-  globalRules: RuleFile[];
 }
 
 export interface ManifestLanguage {
@@ -59,12 +65,17 @@ export interface ManifestProject {
   languages?: string[];
 }
 
+export interface ManifestDefaults {
+  alwaysGroups?: string[];
+}
+
 export interface RulesManifest {
   version?: number;
   languages?: Record<string, ManifestLanguage>;
   techs?: Record<string, ManifestTech>;
   groups?: Record<string, ManifestGroup>;
   projects?: Record<string, ManifestProject>;
+  defaults?: ManifestDefaults;
 }
 
 /**

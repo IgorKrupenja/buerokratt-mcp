@@ -6,7 +6,7 @@
  */
 
 import { loadAllRules } from '../src/rules/loader.ts';
-import { getAvailableModules, getMergedRules } from '../src/rules/manager.ts';
+import { getAvailableScopeIds, getMergedRules } from '../src/rules/manager.ts';
 
 // ANSI color codes
 const colors = {
@@ -87,7 +87,7 @@ async function checkFileSizes() {
   const files = allRules.map((rule) => ({
     path: rule.path.replace(/^.*\/rules\//, 'rules/'),
     size: new TextEncoder().encode(rule.raw).length,
-    modules: rule.frontmatter.modules.join(', '),
+    appliesTo: rule.frontmatter.appliesTo,
   }));
 
   files.sort((a, b) => b.size - a.size);
@@ -110,7 +110,16 @@ async function checkFileSizes() {
         `${formatSize(file.size).padEnd(10)} (~${tokens.toLocaleString()} tokens) ` +
         `${colors.dim}${file.path}${colors.reset}`,
     );
-    console.log(`${colors.dim}    Modules: ${file.modules}${colors.reset}\n`);
+    const appliesTo = file.appliesTo;
+    const appliesParts = [
+      appliesTo.projects?.length ? `projects: ${appliesTo.projects.join(', ')}` : null,
+      appliesTo.groups?.length ? `groups: ${appliesTo.groups.join(', ')}` : null,
+      appliesTo.techs?.length ? `techs: ${appliesTo.techs.join(', ')}` : null,
+      appliesTo.languages?.length ? `languages: ${appliesTo.languages.join(', ')}` : null,
+    ]
+      .filter(Boolean)
+      .join(' | ');
+    console.log(`${colors.dim}    AppliesTo: ${appliesParts}${colors.reset}\n`);
   }
 
   console.log(
@@ -124,24 +133,24 @@ async function checkFileSizes() {
 }
 
 /**
- * Check merged module sizes
+ * Check merged project sizes
  */
-async function checkModuleSizes(moduleName?: string) {
-  console.log(`${colors.bright}${colors.cyan}📦 Merged Module Sizes${colors.reset}\n`);
+async function checkProjectSizes(projectId?: string) {
+  console.log(`${colors.bright}${colors.cyan}📦 Merged Project Sizes${colors.reset}\n`);
 
-  const modules = moduleName ? [moduleName] : await getAvailableModules();
+  const projects = projectId ? [projectId] : await getAvailableScopeIds('project');
 
-  if (modules.length === 0) {
-    console.log(`${colors.yellow}No modules found${colors.reset}\n`);
+  if (projects.length === 0) {
+    console.log(`${colors.yellow}No projects found${colors.reset}\n`);
     return { hasWarnings: false, hasRisks: false };
   }
 
   let hasWarnings = false;
   let hasRisks = false;
 
-  for (const module of modules) {
+  for (const project of projects) {
     try {
-      const mergedRules = await getMergedRules(module);
+      const mergedRules = await getMergedRules({ scope: 'project', id: project });
       const size = new TextEncoder().encode(mergedRules).length;
       const tokens = estimateTokens(size);
       const status = getModuleStatus(size);
@@ -155,11 +164,11 @@ async function checkModuleSizes(moduleName?: string) {
       console.log(
         `${status.color}${status.emoji} ${status.label.padEnd(8)}${colors.reset} ` +
           `${formatSize(size).padEnd(10)} (~${tokens.toLocaleString()} tokens) ` +
-          `${colors.bright}${module}${colors.reset}`,
+          `${colors.bright}${project}${colors.reset}`,
       );
     } catch (error) {
       console.log(
-        `${colors.red}❌ ERROR${colors.reset}   ${colors.bright}${module}${colors.reset} ` +
+        `${colors.red}❌ ERROR${colors.reset}   ${colors.bright}${project}${colors.reset} ` +
           `${colors.red}${error instanceof Error ? error.message : String(error)}${colors.reset}`,
       );
     }
@@ -180,7 +189,7 @@ async function checkModuleSizes(moduleName?: string) {
  */
 async function main() {
   const args = process.argv.slice(2);
-  const moduleName = args[0];
+  const projectId = args[0];
 
   console.log(`${colors.bright}${colors.blue}🔍 MCP Rules Context Size Checker${colors.reset}\n`);
 
@@ -188,8 +197,8 @@ async function main() {
   const fileResults = await checkFileSizes();
   console.log('');
 
-  // Check module sizes
-  const moduleResults = await checkModuleSizes(moduleName);
+  // Check project sizes
+  const moduleResults = await checkProjectSizes(projectId);
   console.log('');
 
   // Summary

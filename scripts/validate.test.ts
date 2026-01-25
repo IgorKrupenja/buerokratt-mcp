@@ -6,7 +6,10 @@ describe('validate utilities', () => {
   describe('validateFrontmatter', () => {
     it('validates correct frontmatter', () => {
       const frontmatter = {
-        modules: ['Service-Module', 'global'],
+        appliesTo: {
+          projects: ['buerokratt/Service-Module'],
+          groups: ['global'],
+        },
         tags: ['backend'],
         description: 'Test rule',
       };
@@ -17,7 +20,7 @@ describe('validate utilities', () => {
       expect(result.errors).toBeUndefined();
     });
 
-    it('rejects missing modules field', () => {
+    it('rejects missing appliesTo field', () => {
       const frontmatter = {
         tags: ['backend'],
       };
@@ -25,34 +28,34 @@ describe('validate utilities', () => {
       const result = validateFrontmatter(frontmatter, 'test.md');
 
       expect(result.valid).toBe(false);
-      expect(result.errors).toContain("Missing 'modules' field in test.md");
+      expect(result.errors).toContain("Missing 'appliesTo' field in test.md");
     });
 
-    it('rejects non-array modules field', () => {
+    it('rejects non-object appliesTo field', () => {
       const frontmatter = {
-        modules: 'Service-Module',
+        appliesTo: 'Service-Module',
       };
 
       const result = validateFrontmatter(frontmatter, 'test.md');
 
       expect(result.valid).toBe(false);
-      expect(result.errors).toContain("'modules' field must be an array in test.md");
+      expect(result.errors).toContain("'appliesTo' field must be an object in test.md");
     });
 
-    it('rejects empty modules array', () => {
+    it('rejects empty appliesTo scopes', () => {
       const frontmatter = {
-        modules: [],
+        appliesTo: {},
       };
 
       const result = validateFrontmatter(frontmatter, 'test.md');
 
       expect(result.valid).toBe(false);
-      expect(result.errors).toContain("'modules' array cannot be empty in test.md");
+      expect(result.errors).toContain("'appliesTo' must include at least one non-empty scope array in test.md");
     });
 
     it('warns about non-array tags', () => {
       const frontmatter = {
-        modules: ['Service-Module'],
+        appliesTo: { projects: ['buerokratt/Service-Module'] },
         tags: 'backend',
       };
 
@@ -64,7 +67,7 @@ describe('validate utilities', () => {
 
     it('accepts valid tags array', () => {
       const frontmatter = {
-        modules: ['Service-Module'],
+        appliesTo: { projects: ['buerokratt/Service-Module'] },
         tags: ['backend', 'api'],
       };
 

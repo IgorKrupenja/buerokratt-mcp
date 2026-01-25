@@ -1,93 +1,85 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import * as loaderModule from './loader.ts';
-import { getAvailableModules, getMergedRules, getModuleRules } from './manager.ts';
-import type { RuleFile } from './types.ts';
+import * as manifestModule from './manifest.ts';
+import { getAvailableScopeIds, getMergedRules, getRulesFor } from './manager.ts';
+import type { RuleFile, RulesManifest } from './types.ts';
 
-function createRuleFile(path: string, modules: string[], content: string): RuleFile {
+function createRuleFile(path: string, appliesTo: RuleFile['frontmatter']['appliesTo'], content: string): RuleFile {
   return {
     path,
     frontmatter: {
-      modules,
+      appliesTo,
     },
     content,
-    raw: `---\nmodules: ${JSON.stringify(modules)}\n---\n${content}`,
+    raw: `---\nappliesTo: ${JSON.stringify(appliesTo)}\n---\n${content}`,
   };
 }
 
-describe('getModuleRules', () => {
-  it('returns rules for a specific module with global rules', async () => {
+const manifest: RulesManifest = {
+  projects: { 'buerokratt/Service-Module': {} },
+  groups: { global: {} },
+  techs: { react: {} },
+  languages: { typescript: {} },
+  defaults: { alwaysGroups: ['global'] },
+};
+
+describe('getRulesFor', () => {
+  it('returns rules for a specific request', async () => {
     const mockRules: RuleFile[] = [
-      createRuleFile('rules/global/common.md', ['global'], 'Global rule'),
-      createRuleFile('rules/service-module/rules.md', ['Service-Module'], 'Service rule'),
-      createRuleFile('rules/training-module/rules.md', ['Training-Module'], 'Training rule'),
+      createRuleFile('rules/common.md', { groups: ['global'] }, 'Global rule'),
+      createRuleFile('rules/service.md', { projects: ['buerokratt/Service-Module'] }, 'Service rule'),
     ];
 
-    const spy = vi.spyOn(loaderModule, 'loadAllRules').mockResolvedValue(mockRules);
+    const rulesSpy = vi.spyOn(loaderModule, 'loadAllRules').mockResolvedValue(mockRules);
+    const manifestSpy = vi.spyOn(manifestModule, 'loadRulesManifest').mockResolvedValue(manifest);
 
-    const result = await getModuleRules('Service-Module');
+    const result = await getRulesFor({ scope: 'project', id: 'buerokratt/Service-Module' });
 
-    expect(result.module).toBe('Service-Module');
-    expect(result.globalRules).toHaveLength(1);
-    expect(result.rules).toHaveLength(1);
-    expect(result.rules[0]?.content).toBe('Service rule');
-    expect(spy).toHaveBeenCalled();
+    expect(result.request.scope).toBe('project');
+    expect(result.rules).toHaveLength(2);
+    expect(result.rules[0]?.content).toBe('Global rule');
+    expect(result.rules[1]?.content).toBe('Service rule');
+    expect(rulesSpy).toHaveBeenCalled();
+    expect(manifestSpy).toHaveBeenCalled();
 
-    spy.mockRestore();
+    rulesSpy.mockRestore();
+    manifestSpy.mockRestore();
   });
 });
 
-describe('getAvailableModules', () => {
-  it('returns sorted list of available modules', async () => {
-    const mockRules: RuleFile[] = [
-      createRuleFile('rules/global/common.md', ['global'], 'Global rule'),
-      createRuleFile('rules/service-module/rules.md', ['Service-Module'], 'Service rule'),
-      createRuleFile('rules/training-module/rules.md', ['Training-Module'], 'Training rule'),
-      createRuleFile('rules/analytics-module/rules.md', ['Analytics-Module'], 'Analytics rule'),
-    ];
+describe('getAvailableScopeIds', () => {
+  it('returns sorted project ids', async () => {
+    const manifestSpy = vi.spyOn(manifestModule, 'loadRulesManifest').mockResolvedValue(manifest);
 
-    const spy = vi.spyOn(loaderModule, 'loadAllRules').mockResolvedValue(mockRules);
+    const result = await getAvailableScopeIds('project');
 
-    const result = await getAvailableModules();
+    expect(result).toEqual(['buerokratt/Service-Module']);
+    expect(manifestSpy).toHaveBeenCalled();
 
-    expect(result).toEqual(['Analytics-Module', 'Service-Module', 'Training-Module']);
-    expect(result).not.toContain('global');
-    expect(spy).toHaveBeenCalled();
-
-    spy.mockRestore();
-  });
-
-  it('returns empty array when no modules found', async () => {
-    const mockRules: RuleFile[] = [createRuleFile('rules/global/common.md', ['global'], 'Global rule')];
-
-    const spy = vi.spyOn(loaderModule, 'loadAllRules').mockResolvedValue(mockRules);
-
-    const result = await getAvailableModules();
-
-    expect(result).toEqual([]);
-    expect(spy).toHaveBeenCalled();
-
-    spy.mockRestore();
+    manifestSpy.mockRestore();
   });
 });
 
 describe('getMergedRules', () => {
-  it('returns merged markdown for a module', async () => {
+  it('returns merged markdown for a request', async () => {
     const mockRules: RuleFile[] = [
-      createRuleFile('rules/global/common.md', ['global'], 'Global content'),
-      createRuleFile('rules/service-module/rules.md', ['Service-Module'], 'Service content'),
+      createRuleFile('rules/common.md', { groups: ['global'] }, 'Global content'),
+      createRuleFile('rules/service.md', { projects: ['buerokratt/Service-Module'] }, 'Service content'),
     ];
 
-    const spy = vi.spyOn(loaderModule, 'loadAllRules').mockResolvedValue(mockRules);
+    const rulesSpy = vi.spyOn(loaderModule, 'loadAllRules').mockResolvedValue(mockRules);
+    const manifestSpy = vi.spyOn(manifestModule, 'loadRulesManifest').mockResolvedValue(manifest);
 
-    const result = await getMergedRules('Service-Module');
+    const result = await getMergedRules({ scope: 'project', id: 'buerokratt/Service-Module' });
 
-    expect(result).toContain('# Global Rules');
+    expect(result).toContain('# Rules (project:buerokratt/Service-Module)');
     expect(result).toContain('Global content');
-    expect(result).toContain('# Service-Module Rules');
     expect(result).toContain('Service content');
-    expect(spy).toHaveBeenCalled();
+    expect(rulesSpy).toHaveBeenCalled();
+    expect(manifestSpy).toHaveBeenCalled();
 
-    spy.mockRestore();
+    rulesSpy.mockRestore();
+    manifestSpy.mockRestore();
   });
 });
