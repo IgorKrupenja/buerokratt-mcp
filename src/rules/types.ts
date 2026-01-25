@@ -45,27 +45,27 @@ export interface RuleSet {
   rules: RuleFile[];
 }
 
-export interface ManifestLanguage {
+interface ManifestLanguage {
   description?: string;
 }
 
-export interface ManifestTech {
+interface ManifestTech {
   description?: string;
   dependsOn?: string[];
 }
 
-export interface ManifestGroup {
+interface ManifestGroup {
   description?: string;
 }
 
-export interface ManifestProject {
+interface ManifestProject {
   description?: string;
   groups?: string[];
   techs?: string[];
   languages?: string[];
 }
 
-export interface ManifestDefaults {
+interface ManifestDefaults {
   alwaysGroups?: string[];
 }
 
@@ -76,13 +76,4 @@ export interface RulesManifest {
   groups?: Record<string, ManifestGroup>;
   projects?: Record<string, ManifestProject>;
   defaults?: ManifestDefaults;
-}
-
-/**
- * Validation result for rule files
- */
-export interface ValidationResult {
-  valid: boolean;
-  errors?: string[];
-  warnings?: string[];
 }

@@ -11,7 +11,12 @@ import { fileURLToPath } from 'url';
 import { lint } from 'markdownlint/promise';
 
 import { loadAllRules } from '../src/rules/loader.ts';
-import type { ValidationResult } from '../src/rules/types.ts';
+
+export interface ValidationResult {
+  valid: boolean;
+  errors?: string[];
+  warnings?: string[];
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
