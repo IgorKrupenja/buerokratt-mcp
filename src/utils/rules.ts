@@ -83,9 +83,10 @@ export function getRulesForRequest(allRules: RuleFile[], manifest: RulesManifest
   const scopes = resolveRequestScopes(request, manifest);
   const matchingRules = allRules.filter((rule) => ruleAppliesToScopes(rule, scopes));
 
+  // todo why return request?
   return {
     request,
-    rules: sortRulesByAlwaysGroups(matchingRules, manifest),
+    rules: matchingRules,
   };
 }
 
@@ -106,26 +107,6 @@ function hasIntersection(values: string[] | undefined, scopeSet: Set<string>): b
   }
 
   return values.some((value) => scopeSet.has(value));
-}
-
-// TODO ???? ==============================================================================================================
-
-function sortRulesByAlwaysGroups(rules: RuleFile[], manifest: RulesManifest): RuleFile[] {
-  const alwaysGroups = new Set(manifest.defaults?.alwaysGroups ?? []);
-  if (alwaysGroups.size === 0) {
-    return rules;
-  }
-
-  return [...rules].sort((a, b) => {
-    const aAlways = (a.frontmatter.appliesTo.groups ?? []).some((group) => alwaysGroups.has(group));
-    const bAlways = (b.frontmatter.appliesTo.groups ?? []).some((group) => alwaysGroups.has(group));
-
-    if (aAlways === bAlways) {
-      return a.path.localeCompare(b.path);
-    }
-
-    return aAlways ? -1 : 1;
-  });
 }
 
 /**

@@ -33,8 +33,7 @@ groups:
     description: Rules shared across all Bürokratt projects
 
 defaults:
-  alwaysGroups:
-    - global
+  alwaysGroup: global
 
 projects:
   buerokratt/Service-Module:

@@ -94,7 +94,7 @@ export function resolveRequestScopes(request: RuleRequest, manifest: RulesManife
       break;
   }
 
-  addAlwaysGroups(scopes, manifest);
+  addAlwaysGroup(scopes, manifest);
   return scopes;
 }
 
@@ -142,8 +142,7 @@ function resolveTech(scopes: ResolvedScopes, manifest: RulesManifest, techId: st
   }
 }
 
-function addAlwaysGroups(scopes: ResolvedScopes, manifest: RulesManifest): void {
-  for (const group of manifest.defaults?.alwaysGroups ?? []) {
-    scopes.groups.add(group);
-  }
+function addAlwaysGroup(scopes: ResolvedScopes, manifest: RulesManifest): void {
+  const alwaysGroup = manifest.defaults?.alwaysGroup;
+  if (alwaysGroup) scopes.groups.add(alwaysGroup);
 }

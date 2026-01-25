@@ -66,7 +66,7 @@ interface ManifestProject {
 }
 
 interface ManifestDefaults {
-  alwaysGroups?: string[];
+  alwaysGroup?: string;
 }
 
 export interface RulesManifest {
