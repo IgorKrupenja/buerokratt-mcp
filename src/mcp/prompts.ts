@@ -9,6 +9,7 @@ import { z } from 'zod';
 
 import { getMergedRules } from '@/utils/rules.ts';
 
+// todo do i need this?
 /**
  * Set up prompt handlers for the MCP server
  */

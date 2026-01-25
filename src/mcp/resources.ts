@@ -4,30 +4,27 @@
  * Handles resource-related requests (listing and reading rules)
  */
 
-import { readFile } from 'node:fs/promises';
-
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-import { getAvailableAssets } from '../utils/assets.ts';
+import { getAvailableAssets, loadAsset } from '../utils/assets.ts';
 import type { RuleScope } from '../utils/types.ts';
 
 import { getAvailableScopeIds } from '@/utils/manifest.ts';
-import { buildRuleResources, getMergedRules } from '@/utils/rules.ts';
+import { getMergedRules } from '@/utils/rules.ts';
 
 /**
  * Set up resource handlers for the MCP server
  */
 export function setupResources(server: McpServer): void {
-  // Register resource template for bundled assets
   server.registerResource(
     'assets',
-    // todo, assets NOT rules! - also fix sync script example
-    new ResourceTemplate('rules://assets/{name}', {
+    new ResourceTemplate('assets://{name}', {
       list: async () => {
         const resources = await getAvailableAssets();
+
         return {
           resources: Object.entries(resources).map(([name, { mimeType }]) => ({
-            uri: `rules://assets/${name}`,
+            uri: `assets://${name}`,
             name,
             description: `Bundled asset ${name}`,
             mimeType,
@@ -37,7 +34,6 @@ export function setupResources(server: McpServer): void {
     }),
     {
       description: 'Bundled helper assets',
-      mimeType: 'application/octet-stream',
     },
     async (uri, variables) => {
       // MCP variables may be string or string[] depending on URI parsing.
@@ -46,20 +42,14 @@ export function setupResources(server: McpServer): void {
         throw new Error('Asset name is required');
       }
 
-      const scriptResources = await getAvailableAssets();
-      const scriptResource = scriptResources[name];
-      if (!scriptResource) {
-        throw new Error(`Unknown asset: ${name}`);
-      }
-
-      const scriptContent = await readFile(scriptResource.path, 'utf-8');
+      const asset = await loadAsset(name);
 
       return {
         contents: [
           {
             uri: uri.toString(),
-            mimeType: scriptResource.mimeType,
-            text: scriptContent,
+            mimeType: asset.mimeType,
+            text: asset.content,
           },
         ],
       };
@@ -76,7 +66,14 @@ export function setupResources(server: McpServer): void {
         const scopeEntries = await Promise.all(
           scopes.map(async (scope) => [scope, await getAvailableScopeIds(scope)] as const),
         );
-        const resources = scopeEntries.flatMap(([scope, ids]) => buildRuleResources(scope, ids));
+        const resources = scopeEntries.flatMap(([scope, ids]) => {
+          return ids.map((id) => ({
+            uri: `rules://${scope}/${id}`,
+            name: `${scope}-${id}`,
+            description: `Rules for ${scope} ${id}`,
+            mimeType: 'text/markdown',
+          }));
+        });
 
         return {
           resources,
@@ -93,6 +90,10 @@ export function setupResources(server: McpServer): void {
       const id = typeof variables.id === 'string' ? variables.id : variables.id?.[0];
       if (!scope || !id) {
         throw new Error('Scope and id are required');
+      }
+      const validScopes: RuleScope[] = ['project', 'group', 'tech', 'language'];
+      if (!validScopes.includes(scope as RuleScope)) {
+        throw new Error(`Invalid scope: ${scope}`);
       }
 
       const rules = await getMergedRules({ scope: scope as RuleScope, id });

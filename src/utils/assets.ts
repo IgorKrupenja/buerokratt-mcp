@@ -4,6 +4,7 @@
  * Scans rule assets and resolves MIME types.
  */
 
+import { readFile } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -28,4 +29,17 @@ export async function getAvailableAssets(): Promise<Record<string, { path: strin
   }
 
   return resources;
+}
+
+export async function loadAsset(name: string): Promise<{ content: string; mimeType: string }> {
+  const assets = await getAvailableAssets();
+  const asset = assets[name];
+  if (!asset) {
+    throw new Error(`Unknown asset: ${name}`);
+  }
+
+  return {
+    content: await readFile(asset.path, 'utf-8'),
+    mimeType: asset.mimeType,
+  };
 }

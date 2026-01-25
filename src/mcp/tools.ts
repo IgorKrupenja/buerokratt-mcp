@@ -7,8 +7,8 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
-import { getAvailableScopeIds, loadManifest, resolveRequestScopes } from '@/utils/manifest.ts';
-import { getMergedRules, loadAllRules, ruleAppliesToScopes } from '@/utils/rules.ts';
+import { getAvailableScopeIds } from '@/utils/manifest.ts';
+import { getMergedRules, searchRulesByKeyword } from '@/utils/rules.ts';
 import type { RuleScope } from '@/utils/types.ts';
 
 /**
@@ -50,12 +50,12 @@ export function setupTools(server: McpServer): void {
     },
     async (args) => {
       const ids = await getAvailableScopeIds(args.scope as RuleScope);
-      const list = ids.map((id) => `- ${id}`).join('\n');
+
       return {
         content: [
           {
             type: 'text' as const,
-            text: `Available ${args.scope} ids:\n\n${list}`,
+            text: `Available ${args.scope} ids:\n\n${ids.map((id) => `- ${id}`).join('\n')}`,
           },
         ],
       };
@@ -81,55 +81,16 @@ export function setupTools(server: McpServer): void {
         throw new Error('Both scope and id must be provided together.');
       }
 
-      // todo move to helper util
-
-      const [allRules, manifest] = await Promise.all([loadAllRules(), loadManifest()]);
-      const keyword = args.keyword.toLowerCase();
-      const results: string[] = [];
-      const resolvedScopes =
-        args.scope && args.id ? resolveRequestScopes({ scope: args.scope, id: args.id }, manifest) : null;
-
-      for (const rule of allRules) {
-        // Filter by scope if specified
-        if (resolvedScopes && !ruleAppliesToScopes(rule, resolvedScopes)) {
-          continue;
-        }
-
-        // Search in content
-        if (
-          rule.content.toLowerCase().includes(keyword) ||
-          rule.frontmatter.description?.toLowerCase().includes(keyword)
-        ) {
-          const appliesTo = rule.frontmatter.appliesTo;
-          const appliesParts = [
-            appliesTo.projects?.length ? `projects: ${appliesTo.projects.join(', ')}` : null,
-            appliesTo.groups?.length ? `groups: ${appliesTo.groups.join(', ')}` : null,
-            appliesTo.techs?.length ? `techs: ${appliesTo.techs.join(', ')}` : null,
-            appliesTo.languages?.length ? `languages: ${appliesTo.languages.join(', ')}` : null,
-          ]
-            .filter(Boolean)
-            .join(' | ');
-          results.push(`**${rule.path}** (${appliesParts})\n${rule.content.substring(0, 200)}...`);
-        }
-      }
-
-      if (results.length === 0) {
-        const scopeText = args.scope && args.id ? ` in ${args.scope} "${args.id}"` : '';
-        return {
-          content: [
-            {
-              type: 'text' as const,
-              text: `No rules found containing "${args.keyword}"${scopeText}.`,
-            },
-          ],
-        };
-      }
-
+      const text = await searchRulesByKeyword({
+        keyword: args.keyword,
+        scope: args.scope,
+        id: args.id,
+      });
       return {
         content: [
           {
             type: 'text' as const,
-            text: `Found ${results.length} rule(s) containing "${args.keyword}":\n\n${results.join('\n\n---\n\n')}`,
+            text,
           },
         ],
       };

@@ -121,6 +121,44 @@ export function mergeRules(rules: RuleFile[], request: RuleRequest): string {
   return parts.join('').trim();
 }
 
+export async function searchRulesByKeyword(params: {
+  keyword: string;
+  scope?: RuleScope;
+  id?: string;
+}): Promise<string> {
+  const [allRules, manifest] = await Promise.all([loadAllRules(), loadManifest()]);
+  const keyword = params.keyword.toLowerCase();
+  const results: string[] = [];
+  const resolvedScopes =
+    params.scope && params.id ? resolveRequestScopes({ scope: params.scope, id: params.id }, manifest) : null;
+
+  for (const rule of allRules) {
+    if (resolvedScopes && !ruleAppliesToScopes(rule, resolvedScopes)) {
+      continue;
+    }
+
+    if (rule.content.toLowerCase().includes(keyword) || rule.frontmatter.description?.toLowerCase().includes(keyword)) {
+      const appliesTo = rule.frontmatter.appliesTo;
+      const appliesParts = [
+        appliesTo.projects?.length ? `projects: ${appliesTo.projects.join(', ')}` : null,
+        appliesTo.groups?.length ? `groups: ${appliesTo.groups.join(', ')}` : null,
+        appliesTo.techs?.length ? `techs: ${appliesTo.techs.join(', ')}` : null,
+        appliesTo.languages?.length ? `languages: ${appliesTo.languages.join(', ')}` : null,
+      ]
+        .filter(Boolean)
+        .join(' | ');
+      results.push(`**${rule.path}** (${appliesParts})\n${rule.content.substring(0, 200)}...`);
+    }
+  }
+
+  if (results.length === 0) {
+    const scopeText = params.scope && params.id ? ` in ${params.scope} "${params.id}"` : '';
+    return `No rules found containing "${params.keyword}"${scopeText}.`;
+  }
+
+  return `Found ${results.length} rule(s) containing "${params.keyword}":\n\n${results.join('\n\n---\n\n')}`;
+}
+
 export function buildRuleResources(scope: RuleScope, ids: string[]) {
   return ids.map((id) => ({
     uri: `rules://${scope}/${id}`,
