@@ -6,6 +6,10 @@ appliesTo:
 description: React frontend rules
 ---
 
+## Folder structure
+
+- **GUI folder**: React-based front-end application (contains all frontend code and tests).
+
 ## Tests
 
 - **Tests are ONLY in GUI folder**: All tests are located in the `GUI/` directory

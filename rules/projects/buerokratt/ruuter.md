@@ -2,6 +2,9 @@
 appliesTo:
   projects:
     - buerokratt/Service-Module
+    - buerokratt/Training-Module
+    - buerokratt/Analytics-Module
+    - buerokratt/Buerokratt-Chatbot
 description: Ruuter YAML business logic rules for DSL-based backends
 ---
 

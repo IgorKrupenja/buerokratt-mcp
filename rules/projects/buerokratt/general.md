@@ -1,19 +1,9 @@
 ---
 appliesTo:
-  projects:
-    - buerokratt/Service-Module
-    - buerokratt/Training-Module
-    - buerokratt/Analytics-Module
-    - buerokratt/Buerokratt-Chatbot
+  groups:
+    - buerokratt
 description: Common rules for all Bürokratt projects
 ---
-
-## Project Overview
-
-This repository contains a module with two main parts:
-
-- **GUI folder**: React-based front-end application (contains all frontend code and tests)
-- **DSL folder**: Back-end using a custom stack based on YAML files (configuration-based, no unit tests)
 
 ### Development Environment
 
