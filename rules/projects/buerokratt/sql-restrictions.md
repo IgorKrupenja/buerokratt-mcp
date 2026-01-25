@@ -4,7 +4,7 @@ appliesTo:
     - buerokratt/Training-Module
     - buerokratt/Analytics-Module
     - buerokratt/Buerokratt-Chatbot
-description: SQL UPDATE and DELETE restrictions for modules that require immutable data
+description: SQL UPDATE and DELETE restrictions for modules that require immutable data. Does not apply to Service-Module.
 ---
 
 ## SQL Restrictions
