@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import * as loaderModule from './loader.ts';
-import * as manifestModule from './manifest.ts';
 import { getAvailableScopeIds, getMergedRules, getRulesFor } from './manager.ts';
+import * as manifestModule from './manifest.ts';
 import type { RuleFile, RulesManifest } from './types.ts';
 
 function createRuleFile(path: string, appliesTo: RuleFile['frontmatter']['appliesTo'], content: string): RuleFile {

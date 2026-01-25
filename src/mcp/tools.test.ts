@@ -205,7 +205,10 @@ describe('setupTools', () => {
     loadAllRulesSpy.mockResolvedValue([
       {
         path: 'rules/test1.md',
-        frontmatter: { appliesTo: { projects: ['buerokratt/Service-Module'] }, description: 'This is about SQL queries' },
+        frontmatter: {
+          appliesTo: { projects: ['buerokratt/Service-Module'] },
+          description: 'This is about SQL queries',
+        },
         content: 'Some content here',
       },
     ]);

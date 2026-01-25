@@ -4,7 +4,7 @@
  * Resolves rule sets for projects, groups, techs, and languages.
  */
 
-import type { RuleAppliesTo, RuleFile, RuleRequest, RuleScope, RuleSet, RulesManifest } from './types.ts';
+import type { RuleAppliesTo, RuleFile, RuleRequest, RuleSet, RulesManifest } from './types.ts';
 
 interface ResolvedScopes {
   projects: Set<string>;
@@ -49,12 +49,7 @@ function resolveProject(scopes: ResolvedScopes, manifest: RulesManifest, project
   }
 }
 
-function resolveTech(
-  scopes: ResolvedScopes,
-  manifest: RulesManifest,
-  techId: string,
-  seen: Set<string>,
-): void {
+function resolveTech(scopes: ResolvedScopes, manifest: RulesManifest, techId: string, seen: Set<string>): void {
   if (seen.has(techId)) {
     return;
   }
@@ -136,11 +131,7 @@ function sortRulesByAlwaysGroups(rules: RuleFile[], manifest: RulesManifest): Ru
   });
 }
 
-export function getRulesForRequest(
-  allRules: RuleFile[],
-  manifest: RulesManifest,
-  request: RuleRequest,
-): RuleSet {
+export function getRulesForRequest(allRules: RuleFile[], manifest: RulesManifest, request: RuleRequest): RuleSet {
   const scopes = resolveRequestScopes(request, manifest);
   const matchingRules = allRules.filter((rule) => ruleAppliesToScopes(rule, scopes));
 

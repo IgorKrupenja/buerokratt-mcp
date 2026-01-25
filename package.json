@@ -1,7 +1,7 @@
 {
-  "name": "buerokratt-mcp",
+  "name": "modular-mcp",
   "version": "0.1.0",
-  "description": "MCP server for Bürokratt AI coding assistant rules",
+  "description": "MCP server for modular AI coding assistant rules",
   "type": "module",
   "private": true,
   "packageManager": "pnpm@10.28.1",

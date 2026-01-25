@@ -3,11 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { getRulesForRequest, mergeRules, resolveRequestScopes, ruleAppliesToScopes } from './filter.ts';
 import type { RuleFile, RulesManifest } from './types.ts';
 
-function createRuleFile(
-  path: string,
-  appliesTo: RuleFile['frontmatter']['appliesTo'],
-  content: string,
-): RuleFile {
+function createRuleFile(path: string, appliesTo: RuleFile['frontmatter']['appliesTo'], content: string): RuleFile {
   return {
     path,
     frontmatter: {

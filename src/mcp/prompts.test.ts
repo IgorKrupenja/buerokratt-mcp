@@ -59,7 +59,9 @@ describe('setupPrompts', () => {
     expect(result.messages.length).toBe(1);
     expect(result.messages[0].role).toBe('user');
     expect(result.messages[0].content.type).toBe('text');
-    expect(result.messages[0].content.text).toContain('Here are the development rules for project:buerokratt/Service-Module:');
+    expect(result.messages[0].content.text).toContain(
+      'Here are the development rules for project:buerokratt/Service-Module:',
+    );
     expect(result.messages[0].content.text).toContain('# Test Rules\n\nContent here');
 
     getMergedRulesSpy.mockRestore();
