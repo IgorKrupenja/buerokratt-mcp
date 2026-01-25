@@ -8,9 +8,9 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
 import { resolveRequestScopes, ruleAppliesToScopes } from '@/rules/filter.ts';
-import { loadRulesManifest } from '@/rules/manifest.ts';
 import { loadAllRules } from '@/rules/loader.ts';
 import { getAvailableScopeIds, getMergedRules } from '@/rules/manager.ts';
+import { loadRulesManifest } from '@/rules/manifest.ts';
 import type { RuleScope } from '@/rules/types.ts';
 
 /**
@@ -70,7 +70,10 @@ export function setupTools(server: McpServer): void {
       description: 'Search for rules containing a specific keyword across all scopes',
       inputSchema: z.object({
         keyword: z.string().describe('Keyword to search for'),
-        scope: z.enum(['project', 'group', 'tech', 'language']).optional().describe('Optional: limit search to a scope'),
+        scope: z
+          .enum(['project', 'group', 'tech', 'language'])
+          .optional()
+          .describe('Optional: limit search to a scope'),
         id: z.string().optional().describe('Optional: scope identifier'),
       }),
     },
@@ -82,7 +85,8 @@ export function setupTools(server: McpServer): void {
       const [allRules, manifest] = await Promise.all([loadAllRules(), loadRulesManifest()]);
       const keyword = args.keyword.toLowerCase();
       const results: string[] = [];
-      const resolvedScopes = args.scope && args.id ? resolveRequestScopes({ scope: args.scope, id: args.id }, manifest) : null;
+      const resolvedScopes =
+        args.scope && args.id ? resolveRequestScopes({ scope: args.scope, id: args.id }, manifest) : null;
 
       for (const rule of allRules) {
         // Filter by scope if specified
