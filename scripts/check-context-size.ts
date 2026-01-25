@@ -192,7 +192,9 @@ async function main() {
     );
     process.exit(1);
   } else {
-    console.log(`${colors.green}${colors.bright}✅ Summary: All projects/techs are within safe limits${colors.reset}\n`);
+    console.log(
+      `${colors.green}${colors.bright}✅ Summary: All projects/techs are within safe limits${colors.reset}\n`,
+    );
     process.exit(0);
   }
 }
