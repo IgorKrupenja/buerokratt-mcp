@@ -158,12 +158,3 @@ export async function searchRulesByKeyword(params: {
 
   return `Found ${results.length} rule(s) containing "${params.keyword}":\n\n${results.join('\n\n---\n\n')}`;
 }
-
-export function buildRuleResources(scope: RuleScope, ids: string[]) {
-  return ids.map((id) => ({
-    uri: `rules://${scope}/${id}`,
-    name: `${scope}-${id}`,
-    description: `Rules for ${scope} ${id}`,
-    mimeType: 'text/markdown',
-  }));
-}

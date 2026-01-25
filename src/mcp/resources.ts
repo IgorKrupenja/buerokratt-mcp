@@ -12,6 +12,10 @@ import type { RuleScope } from '../utils/types.ts';
 import { getAvailableScopeIds } from '@/utils/manifest.ts';
 import { getMergedRules } from '@/utils/rules.ts';
 
+const RULE_SCOPES = ['project', 'group', 'tech', 'language'] as const satisfies RuleScope[];
+
+const isRuleScope = (value: string): value is RuleScope => RULE_SCOPES.includes(value as RuleScope);
+
 /**
  * Set up resource handlers for the MCP server
  */
@@ -61,22 +65,19 @@ export function setupResources(server: McpServer): void {
     'rules',
     new ResourceTemplate('rules://{scope}/{id}', {
       list: async () => {
-        // todo likely to helper util - but check if need method at all
-        const scopes: RuleScope[] = ['project', 'group', 'tech', 'language'];
         const scopeEntries = await Promise.all(
-          scopes.map(async (scope) => [scope, await getAvailableScopeIds(scope)] as const),
+          RULE_SCOPES.map(async (scope) => [scope, await getAvailableScopeIds(scope)] as const),
         );
-        const resources = scopeEntries.flatMap(([scope, ids]) => {
-          return ids.map((id) => ({
-            uri: `rules://${scope}/${id}`,
-            name: `${scope}-${id}`,
-            description: `Rules for ${scope} ${id}`,
-            mimeType: 'text/markdown',
-          }));
-        });
 
         return {
-          resources,
+          resources: scopeEntries.flatMap(([scope, ids]) => {
+            return ids.map((id) => ({
+              uri: `rules://${scope}/${id}`,
+              name: `${scope}-${id}`,
+              description: `Rules for ${scope} ${id}`,
+              mimeType: 'text/markdown',
+            }));
+          }),
         };
       },
     }),
@@ -91,12 +92,11 @@ export function setupResources(server: McpServer): void {
       if (!scope || !id) {
         throw new Error('Scope and id are required');
       }
-      const validScopes: RuleScope[] = ['project', 'group', 'tech', 'language'];
-      if (!validScopes.includes(scope as RuleScope)) {
+      if (!isRuleScope(scope)) {
         throw new Error(`Invalid scope: ${scope}`);
       }
 
-      const rules = await getMergedRules({ scope: scope as RuleScope, id });
+      const rules = await getMergedRules({ scope, id });
 
       return {
         contents: [
