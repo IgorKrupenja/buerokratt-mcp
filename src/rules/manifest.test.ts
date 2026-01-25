@@ -46,8 +46,8 @@ describe('loadRulesManifest', () => {
   });
 
   it('returns empty manifest on ENOENT', async () => {
-    const error = new Error('Missing') as NodeJS.ErrnoException;
-    error.code = 'ENOENT';
+    const error = new Error('Missing');
+    (error as { code?: string }).code = 'ENOENT';
 
     vi.mock('node:fs/promises', () => ({
       readFile: vi.fn().mockRejectedValue(error),

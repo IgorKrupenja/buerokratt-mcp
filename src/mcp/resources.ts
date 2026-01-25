@@ -4,8 +4,8 @@
  * Handles resource-related requests (listing and reading rules)
  */
 
-import { readFile } from 'node:fs/promises';
-import { dirname, extname, join, relative } from 'node:path';
+import { readdir, readFile } from 'node:fs/promises';
+import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -20,7 +20,6 @@ const __dirname = dirname(__filename);
 const RULES_DIR = join(__dirname, '../../rules');
 
 export async function findScriptFiles(dir: string): Promise<string[]> {
-  const { readdir } = await import('node:fs/promises');
   const files: string[] = [];
 
   const entries = await readdir(dir, { withFileTypes: true });
@@ -47,39 +46,19 @@ export async function findScriptFiles(dir: string): Promise<string[]> {
   return files;
 }
 
-export function getScriptMimeType(filePath: string): string {
-  if (extname(filePath).toLowerCase() === '.sh') {
-    return 'text/x-shellscript';
-  }
-
-  return mime.lookup(filePath) || 'application/octet-stream';
-}
-
-let scriptResourcesPromise: Promise<Record<string, { path: string; mimeType: string }>> | undefined;
-
-export async function loadScriptResources(
-  rootDir: string = RULES_DIR,
-): Promise<Record<string, { path: string; mimeType: string }>> {
-  const files = await findScriptFiles(rootDir);
+export async function loadScriptResources(): Promise<Record<string, { path: string; mimeType: string }>> {
+  const files = await findScriptFiles(RULES_DIR);
   const resources: Record<string, { path: string; mimeType: string }> = {};
 
   for (const filePath of files) {
-    const resourcePath = relative(rootDir, filePath).split('\\').join('/');
+    const resourcePath = relative(RULES_DIR, filePath).split('\\').join('/');
     resources[resourcePath] = {
       path: filePath,
-      mimeType: getScriptMimeType(filePath),
+      mimeType: mime.lookup(filePath) || 'application/octet-stream',
     };
   }
 
   return resources;
-}
-
-function getScriptResources(): Promise<Record<string, { path: string; mimeType: string }>> {
-  if (!scriptResourcesPromise) {
-    scriptResourcesPromise = loadScriptResources();
-  }
-
-  return scriptResourcesPromise;
 }
 
 /**
@@ -91,7 +70,7 @@ export function setupResources(server: McpServer): void {
     'asset-files',
     new ResourceTemplate('rules://assets/{name}', {
       list: async () => {
-        const resources = await getScriptResources();
+        const resources = await loadScriptResources();
         return {
           resources: Object.entries(resources).map(([name, { mimeType }]) => ({
             uri: `rules://assets/${name}`,
@@ -112,7 +91,7 @@ export function setupResources(server: McpServer): void {
         throw new Error('Asset name is required');
       }
 
-      const scriptResources = await getScriptResources();
+      const scriptResources = await loadScriptResources();
       const scriptResource = scriptResources[name];
       if (!scriptResource) {
         throw new Error(`Unknown asset: ${name}`);
