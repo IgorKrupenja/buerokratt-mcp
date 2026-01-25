@@ -81,6 +81,18 @@ async function measurePerformance() {
     console.log(`  ${project}: ${formatTime(duration)}`);
   }
 
+  // Measure tech-specific operations
+  console.log(`\n${colors.cyan}Measuring tech-specific operations...${colors.reset}\n`);
+
+  const techs = await getAvailableScopeIds('tech');
+  for (const tech of techs) {
+    const start = performance.now();
+    await getMergedRules({ scope: 'tech', id: tech });
+    const end = performance.now();
+    const duration = end - start;
+    console.log(`  ${tech}: ${formatTime(duration)}`);
+  }
+
   // Recommendation
   console.log(`\n${colors.bright}Recommendation:${colors.reset}`);
   if (avg < 10) {
