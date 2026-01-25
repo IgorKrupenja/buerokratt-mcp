@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 
 import matter from 'gray-matter';
 
-import { findFilesByType } from './file-finder.ts';
+import { findFilesByType } from './files.ts';
 import type { RuleFile, RuleFrontmatter, RuleRequest, RuleScope, RuleSet, RulesManifest } from './types.ts';
 
 import { resolveRequestScopes, ruleAppliesToScopes } from '@/utils/filter.ts';
