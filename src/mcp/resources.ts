@@ -19,6 +19,15 @@ const __dirname = dirname(__filename);
 
 const RULES_DIR = join(__dirname, '../../rules');
 
+function buildScopeResources(scope: RuleScope, ids: string[]) {
+  return ids.map((id) => ({
+    uri: `rules://${scope}/${id}`,
+    name: `${scope}-${id}`,
+    description: `Rules for ${scope} ${id}`,
+    mimeType: 'text/markdown',
+  }));
+}
+
 export async function findScriptFiles(dir: string): Promise<string[]> {
   const files: string[] = [];
 
@@ -124,30 +133,10 @@ export function setupResources(server: McpServer): void {
         ]);
 
         const resources = [
-          ...projects.map((id) => ({
-            uri: `rules://project/${id}`,
-            name: `project-${id}`,
-            description: `Rules for project ${id}`,
-            mimeType: 'text/markdown',
-          })),
-          ...groups.map((id) => ({
-            uri: `rules://group/${id}`,
-            name: `group-${id}`,
-            description: `Rules for group ${id}`,
-            mimeType: 'text/markdown',
-          })),
-          ...techs.map((id) => ({
-            uri: `rules://tech/${id}`,
-            name: `tech-${id}`,
-            description: `Rules for tech ${id}`,
-            mimeType: 'text/markdown',
-          })),
-          ...languages.map((id) => ({
-            uri: `rules://language/${id}`,
-            name: `language-${id}`,
-            description: `Rules for language ${id}`,
-            mimeType: 'text/markdown',
-          })),
+          ...buildScopeResources('project', projects),
+          ...buildScopeResources('group', groups),
+          ...buildScopeResources('tech', techs),
+          ...buildScopeResources('language', languages),
         ];
 
         return {
