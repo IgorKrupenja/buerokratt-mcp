@@ -95,6 +95,7 @@ export function setupResources(server: McpServer): void {
       mimeType: 'application/octet-stream',
     },
     async (uri, variables) => {
+      // MCP variables may be string or string[] depending on URI parsing.
       const name = typeof variables.name === 'string' ? variables.name : variables.name?.[0];
       if (!name) {
         throw new Error('Asset name is required');
@@ -125,19 +126,11 @@ export function setupResources(server: McpServer): void {
     'scope-rules',
     new ResourceTemplate('rules://{scope}/{id}', {
       list: async () => {
-        const [projects, groups, techs, languages] = await Promise.all([
-          getAvailableScopeIds('project'),
-          getAvailableScopeIds('group'),
-          getAvailableScopeIds('tech'),
-          getAvailableScopeIds('language'),
-        ]);
-
-        const resources = [
-          ...buildScopeResources('project', projects),
-          ...buildScopeResources('group', groups),
-          ...buildScopeResources('tech', techs),
-          ...buildScopeResources('language', languages),
-        ];
+        const scopes: RuleScope[] = ['project', 'group', 'tech', 'language'];
+        const scopeEntries = await Promise.all(
+          scopes.map(async (scope) => [scope, await getAvailableScopeIds(scope)] as const),
+        );
+        const resources = scopeEntries.flatMap(([scope, ids]) => buildScopeResources(scope, ids));
 
         return {
           resources,
@@ -149,6 +142,7 @@ export function setupResources(server: McpServer): void {
       mimeType: 'text/markdown',
     },
     async (uri, variables) => {
+      // MCP variables may be string or string[] depending on URI parsing.
       const scope = typeof variables.scope === 'string' ? variables.scope : variables.scope?.[0];
       const id = typeof variables.id === 'string' ? variables.id : variables.id?.[0];
       if (!scope || !id) {
