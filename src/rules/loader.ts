@@ -91,6 +91,7 @@ export async function findMarkdownFiles(dir: string): Promise<string[]> {
 
 /**
  * Load all rule files from the rules directory
+ * Should only normally be used by things like CI check scripts.
  */
 export async function loadAllRules(): Promise<RuleFile[]> {
   try {
