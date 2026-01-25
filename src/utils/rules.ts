@@ -18,7 +18,6 @@ import type {
   RuleFrontmatter,
   RuleRequest,
   RuleScope,
-  RuleSet,
   RulesManifest,
 } from './types.ts';
 
@@ -35,8 +34,8 @@ export async function getMergedRules(request: RuleRequest): Promise<string> {
   // NOTE: We load all rules per request to support hot reload. Refactor to scoped loading if this becomes a bottleneck.
   // Can be tested with this command: pnpm run measure-load-time
   const [allRules, manifest] = await Promise.all([loadAllRules(), loadManifest()]);
-  const ruleSet = getRulesForRequest(allRules, manifest, request);
-  return mergeRules(ruleSet);
+  const rules = getRulesForRequest(allRules, manifest, request);
+  return mergeRules(rules, request);
 }
 
 /**
@@ -79,15 +78,9 @@ export async function loadAllRules(): Promise<RuleFile[]> {
   }
 }
 
-export function getRulesForRequest(allRules: RuleFile[], manifest: RulesManifest, request: RuleRequest): RuleSet {
+export function getRulesForRequest(allRules: RuleFile[], manifest: RulesManifest, request: RuleRequest): RuleFile[] {
   const scopes = resolveRequestScopes(request, manifest);
-  const matchingRules = allRules.filter((rule) => ruleAppliesToScopes(rule, scopes));
-
-  // todo why return request?
-  return {
-    request,
-    rules: matchingRules,
-  };
+  return allRules.filter((rule) => ruleAppliesToScopes(rule, scopes));
 }
 
 export function ruleAppliesToScopes(rule: RuleFile, scopes: ResolvedScopes): boolean {
@@ -112,14 +105,13 @@ function hasIntersection(values: string[] | undefined, scopeSet: Set<string>): b
 /**
  * Merge rules into a single markdown string
  */
-export function mergeRules(ruleSet: RuleSet): string {
-  if (ruleSet.rules.length === 0) {
-    return `# Rules (${ruleSet.request.scope}:${ruleSet.request.id})\n\n_No rules found._`;
-  }
+export function mergeRules(rules: RuleFile[], request: RuleRequest): string {
+  const heading = `# Rules (${request.scope}:${request.id})\n\n`;
+  if (rules.length === 0) return `${heading}_No rules found._`;
 
-  const parts: string[] = [`# Rules (${ruleSet.request.scope}:${ruleSet.request.id})\n\n`];
+  const parts: string[] = [heading];
 
-  ruleSet.rules.forEach((rule, index) => {
+  rules.forEach((rule, index) => {
     if (index > 0) {
       parts.push('\n\n---\n\n');
     }

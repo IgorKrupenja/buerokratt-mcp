@@ -10,9 +10,7 @@ import { fileURLToPath } from 'node:url';
 
 import { parse as parseYaml } from 'yaml';
 
-import type { RuleRequest, RuleScope, RulesManifest } from './types.ts';
-
-import type { ResolvedScopes } from '@/utils/filter.ts';
+import type { ResolvedScopes, RuleRequest, RuleScope, RulesManifest } from './types.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

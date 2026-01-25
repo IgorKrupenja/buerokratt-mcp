@@ -71,7 +71,7 @@ export function setupResources(server: McpServer): void {
     'rules',
     new ResourceTemplate('rules://{scope}/{id}', {
       list: async () => {
-        // todo likely to helper util
+        // todo likely to helper util - but check if need method at all
         const scopes: RuleScope[] = ['project', 'group', 'tech', 'language'];
         const scopeEntries = await Promise.all(
           scopes.map(async (scope) => [scope, await getAvailableScopeIds(scope)] as const),
