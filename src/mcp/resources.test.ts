@@ -1,7 +1,10 @@
+import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { setupResources } from './resources.ts';
+import { findScriptFiles, getScriptMimeType, loadScriptResources, setupResources } from './resources.ts';
 import * as managerModule from '../rules/manager.ts';
 
 describe('setupResources', () => {
@@ -39,6 +42,36 @@ describe('setupResources', () => {
     expect(registeredResources.has('scope-rules')).toBe(true);
     const resourceConfig = registeredResources.get('scope-rules');
     expect(resourceConfig).toBeDefined();
+  });
+
+  it('registers asset-files resource', () => {
+    setupResources(server);
+
+    expect(registeredResources.has('asset-files')).toBe(true);
+    const resourceConfig = registeredResources.get('asset-files');
+    expect(resourceConfig).toBeDefined();
+  });
+
+  it('asset-files resource read handler returns asset content', async () => {
+    setupResources(server);
+
+    const resourceConfig = registeredResources.get('asset-files');
+    expect(resourceConfig).toBeDefined();
+    const readHandler = resourceConfig?.[2] as (
+      uri: URL,
+      variables: { name: string },
+    ) => Promise<{ contents: Array<{ uri: string; mimeType: string; text: string }> }>;
+    expect(typeof readHandler).toBe('function');
+
+    const uri = new URL('rules://assets/projects/buerokratt/sync-upstream.sh');
+    const result = await readHandler(uri, { name: 'projects/buerokratt/sync-upstream.sh' });
+
+    expect(result.contents).toBeDefined();
+    expect(result.contents.length).toBe(1);
+    const content = result.contents[0]!;
+    expect(content.uri).toBe(uri.toString());
+    expect(content.mimeType).toBe('text/x-shellscript');
+    expect(content.text).toMatch(/^#!\/(usr\/bin\/env bash|bin\/bash)/);
   });
 
   it('scope-rules resource is registered with correct structure', () => {
@@ -147,5 +180,43 @@ describe('setupResources', () => {
     const uri = new URL('rules://project/buerokratt/Service-Module');
 
     await expect(readHandler(uri, {})).rejects.toThrow('Scope and id are required');
+  });
+});
+
+describe('asset resource helpers', () => {
+  it('finds files with known mime types', async () => {
+    const tempDir = `/tmp/test-assets-${Date.now()}`;
+    await mkdir(join(tempDir, 'subdir'), { recursive: true });
+    await writeFile(join(tempDir, 'file.sql'), 'select 1;');
+    await writeFile(join(tempDir, 'file.unknownext'), 'data');
+    await writeFile(join(tempDir, 'subdir', 'file.json'), '{"ok":true}');
+
+    try {
+      const result = await findScriptFiles(tempDir);
+      expect(result.some((file) => file.endsWith('file.sql'))).toBe(true);
+      expect(result.some((file) => file.endsWith('file.json'))).toBe(true);
+      expect(result.some((file) => file.endsWith('file.unknownext'))).toBe(false);
+    } finally {
+      await rm(tempDir, { recursive: true, force: true });
+    }
+  });
+
+  it('detects mime types with fallback', () => {
+    expect(getScriptMimeType('file.json')).toBe('application/json');
+    expect(getScriptMimeType('file.unknownext')).toBe('application/octet-stream');
+  });
+
+  it('builds asset resources map with relative paths', async () => {
+    const tempDir = `/tmp/test-assets-${Date.now()}`;
+    await mkdir(join(tempDir, 'nested'), { recursive: true });
+    await writeFile(join(tempDir, 'nested', 'script.sh'), '#!/usr/bin/env bash\necho ok\n');
+
+    try {
+      const resources = await loadScriptResources(tempDir);
+      expect(resources['nested/script.sh']).toBeDefined();
+      expect(resources['nested/script.sh']?.mimeType).toBe('text/x-shellscript');
+    } finally {
+      await rm(tempDir, { recursive: true, force: true });
+    }
   });
 });

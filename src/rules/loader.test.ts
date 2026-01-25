@@ -121,7 +121,7 @@ describe('loadAllRules', () => {
     for (const rule of result) {
       expect(rule.path).toBeTruthy();
       expect(rule.frontmatter.appliesTo).toBeTruthy();
-      expect(rule.content).toBeTruthy();
+      expect(typeof rule.content).toBe('string');
       expect(rule.raw).toBeTruthy();
     }
   });
