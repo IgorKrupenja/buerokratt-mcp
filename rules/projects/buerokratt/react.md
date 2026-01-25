@@ -6,8 +6,6 @@ appliesTo:
 description: React frontend rules
 ---
 
-<!-- todo some move to generic -->
-
 ## Tests
 
 - **Tests are ONLY in GUI folder**: All tests are located in the `GUI/` directory
@@ -30,12 +28,6 @@ description: React frontend rules
 - **Test-First Approach**: ONLY fix linter issues after all tests pass
 - **Step-by-Step Tests**: When you have several functions, create tests step by step. First for one function, so it
   can be reviewed. Only after that, create tests for second function, review + so on
-
-## Component Architecture
-
-- **Extract Functions**: When dealing with React components, extract functions from component itself OUTSIDE for testability
-- **Separate Testable Logic**: Place extracted functions in separate files and export them for easy testing
-- **Small Functions**: Make functions small to make them easily testable
 
 ### File Naming & Organization
 
