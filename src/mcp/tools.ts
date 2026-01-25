@@ -7,9 +7,8 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
-import { resolveRequestScopes, ruleAppliesToScopes } from '@/utils/filter.ts';
-import { getAvailableScopeIds, loadManifest } from '@/utils/manifest.ts';
-import { getMergedRules, loadAllRules } from '@/utils/rules.ts';
+import { getAvailableScopeIds, loadManifest, resolveRequestScopes } from '@/utils/manifest.ts';
+import { getMergedRules, loadAllRules, ruleAppliesToScopes } from '@/utils/rules.ts';
 import type { RuleScope } from '@/utils/types.ts';
 
 /**
@@ -80,6 +79,8 @@ export function setupTools(server: McpServer): void {
       if ((args.scope && !args.id) || (!args.scope && args.id)) {
         throw new Error('Both scope and id must be provided together.');
       }
+
+      // todo move to helper util
 
       const [allRules, manifest] = await Promise.all([loadAllRules(), loadManifest()]);
       const keyword = args.keyword.toLowerCase();

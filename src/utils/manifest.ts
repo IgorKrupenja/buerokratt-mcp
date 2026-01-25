@@ -10,7 +10,9 @@ import { fileURLToPath } from 'node:url';
 
 import { parse as parseYaml } from 'yaml';
 
-import type { RuleScope, RulesManifest } from './types.ts';
+import type { RuleRequest, RuleScope, RulesManifest } from './types.ts';
+
+import type { ResolvedScopes } from '@/utils/filter.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -63,5 +65,85 @@ export async function getAvailableScopeIds(scope: RuleScope): Promise<string[]> 
       return Object.keys(manifest.languages ?? {}).sort();
     default:
       return [];
+  }
+}
+
+/*
+ * Resolve scopes for a request
+ */
+export function resolveRequestScopes(request: RuleRequest, manifest: RulesManifest): ResolvedScopes {
+  const scopes: ResolvedScopes = {
+    projects: new Set<string>(),
+    groups: new Set<string>(),
+    techs: new Set<string>(),
+    languages: new Set<string>(),
+  };
+
+  switch (request.scope) {
+    case 'project':
+      resolveProject(scopes, manifest, request.id);
+      break;
+    case 'group':
+      scopes.groups.add(request.id);
+      break;
+    case 'tech':
+      resolveTech(scopes, manifest, request.id, new Set<string>());
+      break;
+    case 'language':
+      scopes.languages.add(request.id);
+      break;
+  }
+
+  addAlwaysGroups(scopes, manifest);
+  return scopes;
+}
+
+function resolveProject(scopes: ResolvedScopes, manifest: RulesManifest, projectId: string): void {
+  scopes.projects.add(projectId);
+
+  const project = manifest.projects?.[projectId];
+  if (!project) {
+    return;
+  }
+
+  for (const group of project.groups ?? []) {
+    scopes.groups.add(group);
+  }
+
+  for (const tech of project.techs ?? []) {
+    resolveTech(scopes, manifest, tech, new Set<string>());
+  }
+
+  for (const language of project.languages ?? []) {
+    scopes.languages.add(language);
+  }
+}
+
+function resolveTech(scopes: ResolvedScopes, manifest: RulesManifest, techId: string, seen: Set<string>): void {
+  if (seen.has(techId)) {
+    return;
+  }
+
+  seen.add(techId);
+  scopes.techs.add(techId);
+
+  const tech = manifest.techs?.[techId];
+  if (!tech) {
+    return;
+  }
+
+  for (const dependency of tech.dependsOn ?? []) {
+    if (manifest.techs?.[dependency]) {
+      resolveTech(scopes, manifest, dependency, seen);
+      continue;
+    }
+
+    scopes.languages.add(dependency);
+  }
+}
+
+function addAlwaysGroups(scopes: ResolvedScopes, manifest: RulesManifest): void {
+  for (const group of manifest.defaults?.alwaysGroups ?? []) {
+    scopes.groups.add(group);
   }
 }

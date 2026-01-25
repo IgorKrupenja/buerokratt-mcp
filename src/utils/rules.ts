@@ -21,8 +21,8 @@ import type {
   RulesManifest,
 } from './types.ts';
 
-import { type ResolvedScopes } from '@/utils/filter.ts';
-import { loadManifest } from '@/utils/manifest.ts';
+import type { ResolvedScopes } from '@/utils/filter.ts';
+import { loadManifest, resolveRequestScopes } from '@/utils/manifest.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -79,28 +79,7 @@ export async function loadAllRules(): Promise<RuleFile[]> {
   }
 }
 
-/**
- * Merge rules into a single markdown string
- */
-export function mergeRules(ruleSet: RuleSet): string {
-  if (ruleSet.rules.length === 0) {
-    return `# Rules (${ruleSet.request.scope}:${ruleSet.request.id})\n\n_No rules found._`;
-  }
-
-  const parts: string[] = [`# Rules (${ruleSet.request.scope}:${ruleSet.request.id})\n\n`];
-
-  ruleSet.rules.forEach((rule, index) => {
-    if (index > 0) {
-      parts.push('\n\n---\n\n');
-    }
-    parts.push(rule.content.trim());
-  });
-
-  return parts.join('').trim();
-}
-
 export function getRulesForRequest(allRules: RuleFile[], manifest: RulesManifest, request: RuleRequest): RuleSet {
-  // todo continue spagett from here ======================================================================================
   const scopes = resolveRequestScopes(request, manifest);
   const matchingRules = allRules.filter((rule) => ruleAppliesToScopes(rule, scopes));
 
@@ -108,84 +87,6 @@ export function getRulesForRequest(allRules: RuleFile[], manifest: RulesManifest
     request,
     rules: sortRulesByAlwaysGroups(matchingRules, manifest),
   };
-}
-
-// TODO likely to manifest util
-export function resolveRequestScopes(request: RuleRequest, manifest: RulesManifest): ResolvedScopes {
-  const scopes: ResolvedScopes = {
-    projects: new Set<string>(),
-    groups: new Set<string>(),
-    techs: new Set<string>(),
-    languages: new Set<string>(),
-  };
-
-  switch (request.scope) {
-    case 'project':
-      resolveProject(scopes, manifest, request.id);
-      break;
-    case 'group':
-      scopes.groups.add(request.id);
-      break;
-    case 'tech':
-      resolveTech(scopes, manifest, request.id, new Set<string>());
-      break;
-    case 'language':
-      scopes.languages.add(request.id);
-      break;
-  }
-
-  addAlwaysGroups(scopes, manifest);
-  return scopes;
-}
-
-function resolveProject(scopes: ResolvedScopes, manifest: RulesManifest, projectId: string): void {
-  scopes.projects.add(projectId);
-
-  const project = manifest.projects?.[projectId];
-  if (!project) {
-    return;
-  }
-
-  for (const group of project.groups ?? []) {
-    scopes.groups.add(group);
-  }
-
-  for (const tech of project.techs ?? []) {
-    resolveTech(scopes, manifest, tech, new Set<string>());
-  }
-
-  for (const language of project.languages ?? []) {
-    scopes.languages.add(language);
-  }
-}
-
-function resolveTech(scopes: ResolvedScopes, manifest: RulesManifest, techId: string, seen: Set<string>): void {
-  if (seen.has(techId)) {
-    return;
-  }
-
-  seen.add(techId);
-  scopes.techs.add(techId);
-
-  const tech = manifest.techs?.[techId];
-  if (!tech) {
-    return;
-  }
-
-  for (const dependency of tech.dependsOn ?? []) {
-    if (manifest.techs?.[dependency]) {
-      resolveTech(scopes, manifest, dependency, seen);
-      continue;
-    }
-
-    scopes.languages.add(dependency);
-  }
-}
-
-function addAlwaysGroups(scopes: ResolvedScopes, manifest: RulesManifest): void {
-  for (const group of manifest.defaults?.alwaysGroups ?? []) {
-    scopes.groups.add(group);
-  }
 }
 
 export function ruleAppliesToScopes(rule: RuleFile, scopes: ResolvedScopes): boolean {
@@ -227,7 +128,25 @@ function sortRulesByAlwaysGroups(rules: RuleFile[], manifest: RulesManifest): Ru
   });
 }
 
-// TODO: separator =====================================================================================================
+/**
+ * Merge rules into a single markdown string
+ */
+export function mergeRules(ruleSet: RuleSet): string {
+  if (ruleSet.rules.length === 0) {
+    return `# Rules (${ruleSet.request.scope}:${ruleSet.request.id})\n\n_No rules found._`;
+  }
+
+  const parts: string[] = [`# Rules (${ruleSet.request.scope}:${ruleSet.request.id})\n\n`];
+
+  ruleSet.rules.forEach((rule, index) => {
+    if (index > 0) {
+      parts.push('\n\n---\n\n');
+    }
+    parts.push(rule.content.trim());
+  });
+
+  return parts.join('').trim();
+}
 
 export function buildRuleResources(scope: RuleScope, ids: string[]) {
   return ids.map((id) => ({
