@@ -7,14 +7,8 @@
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 import { getAvailableAssets, loadAsset } from '../utils/assets.ts';
-import type { RuleScope } from '../utils/types.ts';
 
-import { getAvailableScopeIds } from '@/utils/manifest.ts';
-import { getMergedRules } from '@/utils/rules.ts';
-
-const RULE_SCOPES = ['project', 'group', 'tech', 'language'] as const satisfies RuleScope[];
-
-const isRuleScope = (value: string): value is RuleScope => RULE_SCOPES.includes(value as RuleScope);
+import { getMergedRules, getRuleScopeEntries, isRuleScope } from '@/utils/rules.ts';
 
 /**
  * Set up resource handlers for the MCP server
@@ -65,9 +59,7 @@ export function setupResources(server: McpServer): void {
     'rules',
     new ResourceTemplate('rules://{scope}/{id}', {
       list: async () => {
-        const scopeEntries = await Promise.all(
-          RULE_SCOPES.map(async (scope) => [scope, await getAvailableScopeIds(scope)] as const),
-        );
+        const scopeEntries = await getRuleScopeEntries();
 
         return {
           resources: scopeEntries.flatMap(([scope, ids]) => {

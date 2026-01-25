@@ -21,11 +21,19 @@ import type {
   RulesManifest,
 } from './types.ts';
 
-import { loadManifest, resolveRequestScopes } from '@/utils/manifest.ts';
+import { getAvailableScopeIds, loadManifest, resolveRequestScopes } from '@/utils/manifest.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const RULES_DIR = join(__dirname, '../../rules');
+
+export const RULE_SCOPES = ['project', 'group', 'tech', 'language'] as const satisfies RuleScope[];
+
+export const isRuleScope = (value: string): value is RuleScope => RULE_SCOPES.includes(value as RuleScope);
+
+export async function getRuleScopeEntries(): Promise<readonly (readonly [RuleScope, string[]])[]> {
+  return Promise.all(RULE_SCOPES.map(async (scope) => [scope, await getAvailableScopeIds(scope)] as const));
+}
 
 /**
  * Get merged rules as markdown for a specific request
