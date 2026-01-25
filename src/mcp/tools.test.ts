@@ -47,7 +47,7 @@ describe('setupTools', () => {
     expect(registeredTools.has('get_rules')).toBe(true);
     const toolConfig = registeredTools.get('get_rules');
     expect(toolConfig).toBeDefined();
-    expect(toolConfig[0].description).toBe('Get cursor rules for a specific scope and id');
+    expect(toolConfig[0].description).toBe('Get rules for a specific scope and id');
   });
 
   it('get_rules tool handler returns merged rules', async () => {

@@ -89,7 +89,7 @@ describe('setupResources', () => {
     // Verify metadata (second arg)
     const metadata = resourceConfig?.[1] as { description?: string; mimeType?: string } | undefined;
     expect(metadata).toBeDefined();
-    expect(metadata?.description).toBe('Cursor rules for projects, groups, techs, and languages');
+    expect(metadata?.description).toBe('Rules for projects, groups, techs, and languages');
     expect(metadata?.mimeType).toBe('text/markdown');
 
     // Verify read handler exists (third arg)

@@ -84,7 +84,7 @@ export function setupResources(server: McpServer): void {
       },
     }),
     {
-      description: 'Cursor rules for projects, groups, techs, and languages',
+      description: 'Rules for projects, groups, techs, and languages',
       mimeType: 'text/markdown',
     },
     async (uri, variables) => {

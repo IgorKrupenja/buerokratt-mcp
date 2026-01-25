@@ -1,7 +1,7 @@
 /**
  * Bürokratt MCP Server
  *
- * MCP (Model Context Protocol) server for sharing Cursor rules
+ * MCP (Model Context Protocol) server for sharing AI coding assistant rules
  * across Bürokratt modules.
  */
 
