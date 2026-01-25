@@ -2,11 +2,6 @@
 appliesTo:
   projects:
     - buerokratt/Service-Module
-tags:
-  - backend
-  - yaml
-  - ruuter
-  - dsl
 description: Ruuter YAML business logic rules for DSL-based backends
 ---
 

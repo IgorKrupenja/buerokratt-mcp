@@ -6,6 +6,8 @@ appliesTo:
 description: React frontend rules
 ---
 
+<!-- todo some move to generic -->
+
 ## Tests
 
 - **Tests are ONLY in GUI folder**: All tests are located in the `GUI/` directory

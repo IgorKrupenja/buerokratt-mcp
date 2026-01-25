@@ -2,19 +2,8 @@
 appliesTo:
   projects:
     - buerokratt/Service-Module
-tags:
-  - service-module
-  - overview
-  - utils
 description: Service Module specific rules (overview, utilities)
 ---
-
-## Project Overview
-
-This repository contains a Service Module with two main parts:
-
-- **GUI folder**: React-based front-end application (contains all frontend code and tests)
-- **DSL folder**: Back-end using a custom stack (configuration-based, no unit tests)
 
 ## SQL Rules (Service Module Specific)
 
@@ -25,7 +14,7 @@ This repository contains a Service Module with two main parts:
   ALLOWED (see shared-backend/sql-restrictions.md for details). This is an exception - Service-Module allows
   UPDATE/DELETE in the `services/` folder only.
 
-## Utils
+## Front-end utils
 
 - **String Utilities**: Use `src/utils/string-util.ts` for string manipulation functions:
   - **Template Functions**: `isTemplate()`, `stringToTemplate()`, `templateToString()` for `${variable}` template handling

@@ -1,15 +1,27 @@
 ---
 appliesTo:
-  groups:
-    - buerokratt
+  projects:
+    - buerokratt/Service-Module
+    - buerokratt/Training-Module
+    - buerokratt/Analytics-Module
+    - buerokratt/Buerokratt-Chatbot
 description: Common rules for all Bürokratt projects
 ---
+
+## Project Overview
+
+This repository contains a module with two main parts:
+
+- **GUI folder**: React-based front-end application (contains all frontend code and tests)
+- **DSL folder**: Back-end using a custom stack based on YAML files (configuration-based, no unit tests)
 
 ### Development Environment
 
 - **Installation**: Always use `npm install` with `--legacy-peer-deps`
 
 ## Fork Synchronization
+
+<!-- todo better way to locate script -->
 
 - **Sync Command**: When the user says "sync" or asks to sync with upstream, automatically run the `sync-upstream.sh` script from `buerokratt-mcp/rules/projects/buerokratt/sync-upstream.sh`
 - **Script Location**: The `sync-upstream.sh` script is located at `buerokratt-mcp/rules/projects/buerokratt/sync-upstream.sh` (single source of truth, not duplicated in module repos)

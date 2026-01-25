@@ -2,12 +2,9 @@
 appliesTo:
   projects:
     - buerokratt/Service-Module
-tags:
-  - backend
-  - database
-  - migrations
-  - sql
-  - dsl
+    - buerokratt/Training-Module
+    - buerokratt/Analytics-Module
+    - buerokratt/Buerokratt-Chatbot
 description: SQL rules for DSL-based backends (migrations and queries)
 ---
 
