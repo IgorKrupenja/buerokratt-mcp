@@ -21,7 +21,7 @@ export function setupTools(server: McpServer): void {
   server.registerTool(
     'get_rules',
     {
-      description: 'Get cursor rules for a specific scope and id',
+      description: 'Get rules for a specific scope and id',
       inputSchema: z.object({
         scope: z.enum(['project', 'group', 'tech', 'language']).describe('Scope type'),
         id: z.string().describe('Scope identifier'),
