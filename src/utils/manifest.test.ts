@@ -34,7 +34,7 @@ describe('loadRulesManifest', () => {
         ),
     }));
 
-    const { loadRulesManifest } = await import('./manifest.ts');
+    const { loadManifest: loadRulesManifest } = await import('./manifest.ts');
     const manifest = await loadRulesManifest();
 
     expect(manifest.version).toBe(1);
@@ -53,7 +53,7 @@ describe('loadRulesManifest', () => {
       readFile: vi.fn().mockRejectedValue(error),
     }));
 
-    const { loadRulesManifest } = await import('./manifest.ts');
+    const { loadManifest: loadRulesManifest } = await import('./manifest.ts');
     const manifest = await loadRulesManifest();
 
     expect(manifest).toEqual({});
@@ -64,7 +64,7 @@ describe('loadRulesManifest', () => {
       readFile: vi.fn().mockResolvedValue('just-a-string'),
     }));
 
-    const { loadRulesManifest } = await import('./manifest.ts');
+    const { loadManifest: loadRulesManifest } = await import('./manifest.ts');
     const manifest = await loadRulesManifest();
 
     expect(manifest).toEqual({});

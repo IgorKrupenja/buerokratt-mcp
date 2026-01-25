@@ -7,9 +7,9 @@
 import { readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
-export type FileKind = 'markdown' | 'non-markdown';
+export type FileType = 'markdown' | 'non-markdown';
 
-export async function findFilesByKind(dir: string, kind: FileKind): Promise<string[]> {
+export async function findFilesByType(dir: string, type: FileType): Promise<string[]> {
   const files: string[] = [];
 
   async function scanDir(currentDir: string): Promise<void> {
@@ -33,7 +33,7 @@ export async function findFilesByKind(dir: string, kind: FileKind): Promise<stri
         }
 
         const isMarkdown = entry.name.endsWith('.md');
-        if (kind === 'markdown' ? isMarkdown : !isMarkdown) {
+        if (type === 'markdown' ? isMarkdown : !isMarkdown) {
           files.push(fullPath);
         }
       }
@@ -50,7 +50,7 @@ export async function findFilesByKind(dir: string, kind: FileKind): Promise<stri
     await scanDir(dir);
   } catch (error) {
     throw new Error(
-      `Failed to find ${kind} files in ${dir}: ${error instanceof Error ? error.message : String(error)}`,
+      `Failed to find ${type} files in ${dir}: ${error instanceof Error ? error.message : String(error)}`,
     );
   }
 

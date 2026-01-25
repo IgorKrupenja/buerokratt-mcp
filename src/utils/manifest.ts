@@ -33,7 +33,7 @@ function normalizeManifest(input: unknown): RulesManifest {
   };
 }
 
-export async function loadRulesManifest(): Promise<RulesManifest> {
+export async function loadManifest(): Promise<RulesManifest> {
   try {
     const raw = await readFile(MANIFEST_PATH, 'utf-8');
     const parsed = parseYaml(raw);
@@ -50,7 +50,7 @@ export async function loadRulesManifest(): Promise<RulesManifest> {
  * Get available IDs for a scope
  */
 export async function getAvailableScopeIds(scope: RuleScope): Promise<string[]> {
-  const manifest = await loadRulesManifest();
+  const manifest = await loadManifest();
 
   switch (scope) {
     case 'project':

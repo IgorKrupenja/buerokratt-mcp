@@ -8,7 +8,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
 import { resolveRequestScopes, ruleAppliesToScopes } from '@/utils/filter.ts';
-import { getAvailableScopeIds, loadRulesManifest } from '@/utils/manifest.ts';
+import { getAvailableScopeIds, loadManifest } from '@/utils/manifest.ts';
 import { getMergedRules, loadAllRules } from '@/utils/rules.ts';
 import type { RuleScope } from '@/utils/types.ts';
 
@@ -81,7 +81,7 @@ export function setupTools(server: McpServer): void {
         throw new Error('Both scope and id must be provided together.');
       }
 
-      const [allRules, manifest] = await Promise.all([loadAllRules(), loadRulesManifest()]);
+      const [allRules, manifest] = await Promise.all([loadAllRules(), loadManifest()]);
       const keyword = args.keyword.toLowerCase();
       const results: string[] = [];
       const resolvedScopes =

@@ -10,11 +10,11 @@ import { fileURLToPath } from 'node:url';
 
 import matter from 'gray-matter';
 
-import { findFilesByKind } from './file-finder.ts';
-import type { RuleFile, RuleFrontmatter, RuleRequest, RuleScope, RuleSet } from './types.ts';
+import { findFilesByType } from './file-finder.ts';
+import type { RuleFile, RuleFrontmatter, RuleRequest, RuleScope, RuleSet, RulesManifest } from './types.ts';
 
-import { getRulesForRequest, mergeRules } from '@/utils/filter.ts';
-import { loadRulesManifest } from '@/utils/manifest.ts';
+import { resolveRequestScopes, ruleAppliesToScopes } from '@/utils/filter.ts';
+import { loadManifest } from '@/utils/manifest.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -24,18 +24,11 @@ const RULES_DIR = join(__dirname, '../../rules');
  * Get merged rules as markdown for a specific request
  */
 export async function getMergedRules(request: RuleRequest): Promise<string> {
-  const ruleSet = await getRulesFor(request);
-  return mergeRules(ruleSet);
-}
-
-/**
- * Get rules for a specific request
- */
-export async function getRulesFor(request: RuleRequest): Promise<RuleSet> {
   // NOTE: We load all rules per request to support hot reload. Refactor to scoped loading if this becomes a bottleneck.
   // Can be tested with this command: pnpm run measure-load-time
-  const [allRules, manifest] = await Promise.all([loadAllRules(), loadRulesManifest()]);
-  return getRulesForRequest(allRules, manifest, request);
+  const [allRules, manifest] = await Promise.all([loadAllRules(), loadManifest()]);
+  const ruleSet = getRulesForRequest(allRules, manifest, request);
+  return mergeRules(ruleSet);
 }
 
 /**
@@ -45,7 +38,7 @@ export async function getRulesFor(request: RuleRequest): Promise<RuleSet> {
 export async function loadAllRules(): Promise<RuleFile[]> {
   try {
     // Find all markdown files in the rules directory
-    const markdownFiles = await findFilesByKind(RULES_DIR, 'markdown');
+    const markdownFiles = await findFilesByType(RULES_DIR, 'markdown');
 
     // Load and parse each file
     const ruleFiles = await Promise.all(
@@ -76,6 +69,55 @@ export async function loadAllRules(): Promise<RuleFile[]> {
   } catch (error) {
     throw new Error(`Failed to load rules: ${error instanceof Error ? error.message : String(error)}`);
   }
+}
+
+/**
+ * Merge rules into a single markdown string
+ */
+export function mergeRules(ruleSet: RuleSet): string {
+  if (ruleSet.rules.length === 0) {
+    return `# Rules (${ruleSet.request.scope}:${ruleSet.request.id})\n\n_No rules found._`;
+  }
+
+  const parts: string[] = [`# Rules (${ruleSet.request.scope}:${ruleSet.request.id})\n\n`];
+
+  ruleSet.rules.forEach((rule, index) => {
+    if (index > 0) {
+      parts.push('\n\n---\n\n');
+    }
+    parts.push(rule.content.trim());
+  });
+
+  return parts.join('').trim();
+}
+
+export function getRulesForRequest(allRules: RuleFile[], manifest: RulesManifest, request: RuleRequest): RuleSet {
+  // todo continue spagett from here
+  const scopes = resolveRequestScopes(request, manifest);
+  const matchingRules = allRules.filter((rule) => ruleAppliesToScopes(rule, scopes));
+
+  return {
+    request,
+    rules: sortRulesByAlwaysGroups(matchingRules, manifest),
+  };
+}
+
+function sortRulesByAlwaysGroups(rules: RuleFile[], manifest: RulesManifest): RuleFile[] {
+  const alwaysGroups = new Set(manifest.defaults?.alwaysGroups ?? []);
+  if (alwaysGroups.size === 0) {
+    return rules;
+  }
+
+  return [...rules].sort((a, b) => {
+    const aAlways = (a.frontmatter.appliesTo.groups ?? []).some((group) => alwaysGroups.has(group));
+    const bAlways = (b.frontmatter.appliesTo.groups ?? []).some((group) => alwaysGroups.has(group));
+
+    if (aAlways === bAlways) {
+      return a.path.localeCompare(b.path);
+    }
+
+    return aAlways ? -1 : 1;
+  });
 }
 
 export function buildRuleResources(scope: RuleScope, ids: string[]) {

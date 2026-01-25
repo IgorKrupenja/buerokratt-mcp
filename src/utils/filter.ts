@@ -4,22 +4,13 @@
  * Resolves rule sets for projects, groups, techs, and languages.
  */
 
-import type { RuleAppliesTo, RuleFile, RuleRequest, RuleSet, RulesManifest } from './types.ts';
+import type { RuleAppliesTo, RuleFile, RuleRequest, RulesManifest } from './types.ts';
 
 interface ResolvedScopes {
   projects: Set<string>;
   groups: Set<string>;
   techs: Set<string>;
   languages: Set<string>;
-}
-
-function createResolvedScopes(): ResolvedScopes {
-  return {
-    projects: new Set<string>(),
-    groups: new Set<string>(),
-    techs: new Set<string>(),
-    languages: new Set<string>(),
-  };
 }
 
 function addAlwaysGroups(scopes: ResolvedScopes, manifest: RulesManifest): void {
@@ -73,7 +64,12 @@ function resolveTech(scopes: ResolvedScopes, manifest: RulesManifest, techId: st
 }
 
 export function resolveRequestScopes(request: RuleRequest, manifest: RulesManifest): ResolvedScopes {
-  const scopes = createResolvedScopes();
+  const scopes = {
+    projects: new Set<string>(),
+    groups: new Set<string>(),
+    techs: new Set<string>(),
+    languages: new Set<string>(),
+  };
 
   switch (request.scope) {
     case 'project':
@@ -111,52 +107,4 @@ export function ruleAppliesToScopes(rule: RuleFile, scopes: ResolvedScopes): boo
     hasIntersection(appliesTo.techs, scopes.techs) ||
     hasIntersection(appliesTo.languages, scopes.languages)
   );
-}
-
-function sortRulesByAlwaysGroups(rules: RuleFile[], manifest: RulesManifest): RuleFile[] {
-  const alwaysGroups = new Set(manifest.defaults?.alwaysGroups ?? []);
-  if (alwaysGroups.size === 0) {
-    return rules;
-  }
-
-  return [...rules].sort((a, b) => {
-    const aAlways = (a.frontmatter.appliesTo.groups ?? []).some((group) => alwaysGroups.has(group));
-    const bAlways = (b.frontmatter.appliesTo.groups ?? []).some((group) => alwaysGroups.has(group));
-
-    if (aAlways === bAlways) {
-      return a.path.localeCompare(b.path);
-    }
-
-    return aAlways ? -1 : 1;
-  });
-}
-
-export function getRulesForRequest(allRules: RuleFile[], manifest: RulesManifest, request: RuleRequest): RuleSet {
-  const scopes = resolveRequestScopes(request, manifest);
-  const matchingRules = allRules.filter((rule) => ruleAppliesToScopes(rule, scopes));
-
-  return {
-    request,
-    rules: sortRulesByAlwaysGroups(matchingRules, manifest),
-  };
-}
-
-/**
- * Merge rules into a single markdown string
- */
-export function mergeRules(ruleSet: RuleSet): string {
-  if (ruleSet.rules.length === 0) {
-    return `# Rules (${ruleSet.request.scope}:${ruleSet.request.id})\n\n_No rules found._`;
-  }
-
-  const parts: string[] = [`# Rules (${ruleSet.request.scope}:${ruleSet.request.id})\n\n`];
-
-  ruleSet.rules.forEach((rule, index) => {
-    if (index > 0) {
-      parts.push('\n\n---\n\n');
-    }
-    parts.push(rule.content.trim());
-  });
-
-  return parts.join('').trim();
 }
