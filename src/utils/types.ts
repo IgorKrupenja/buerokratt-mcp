@@ -77,3 +77,10 @@ export interface RulesManifest {
   projects?: Record<string, ManifestProject>;
   defaults?: ManifestDefaults;
 }
+
+export interface ResolvedScopes {
+  projects: Set<string>;
+  groups: Set<string>;
+  techs: Set<string>;
+  languages: Set<string>;
+}

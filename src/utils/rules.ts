@@ -12,6 +12,7 @@ import matter from 'gray-matter';
 
 import { findFilesByType } from './files.ts';
 import type {
+  ResolvedScopes,
   RuleAppliesTo,
   RuleFile,
   RuleFrontmatter,
@@ -21,7 +22,6 @@ import type {
   RulesManifest,
 } from './types.ts';
 
-import type { ResolvedScopes } from '@/utils/filter.ts';
 import { loadManifest, resolveRequestScopes } from '@/utils/manifest.ts';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -107,6 +107,26 @@ function hasIntersection(values: string[] | undefined, scopeSet: Set<string>): b
   }
 
   return values.some((value) => scopeSet.has(value));
+}
+
+// TODO ???? ==============================================================================================================
+
+function sortRulesByAlwaysGroup(rules: RuleFile[], manifest: RulesManifest): RuleFile[] {
+  const alwaysGroup = manifest.defaults?.alwaysGroup as unknown;
+  if (typeof alwaysGroup !== 'string') {
+    return rules;
+  }
+
+  return [...rules].sort((a, b) => {
+    const aAlways = (a.frontmatter.appliesTo.groups ?? []).includes(alwaysGroup);
+    const bAlways = (b.frontmatter.appliesTo.groups ?? []).includes(alwaysGroup);
+
+    if (aAlways === bAlways) {
+      return a.path.localeCompare(b.path);
+    }
+
+    return aAlways ? -1 : 1;
+  });
 }
 
 /**

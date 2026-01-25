@@ -38,6 +38,7 @@ export function setupTools(server: McpServer): void {
     },
   );
 
+  // todo needed?
   // Tool: List available ids for a scope
   server.registerTool(
     'list_scope_ids',
