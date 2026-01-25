@@ -8,9 +8,9 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
 import { resolveRequestScopes, ruleAppliesToScopes } from '@/utils/filter.ts';
-import { loadAllRules } from '@/utils/loader.ts';
 import { getAvailableScopeIds, getMergedRules } from '@/utils/manager.ts';
 import { loadRulesManifest } from '@/utils/manifest.ts';
+import { loadAllRules } from '@/utils/rules.ts';
 import type { RuleScope } from '@/utils/types.ts';
 
 /**

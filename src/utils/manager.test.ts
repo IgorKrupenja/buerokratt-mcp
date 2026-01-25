@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import * as loaderModule from './loader.ts';
+import * as loaderModule from './rules.ts';
 import { getAvailableScopeIds, getMergedRules, getRulesFor } from './manager.ts';
 import * as manifestModule from './manifest.ts';
 import type { RuleFile, RulesManifest } from './types.ts';

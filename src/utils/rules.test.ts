@@ -2,7 +2,7 @@ import { mkdir, unlink, writeFile } from 'fs/promises';
 
 import { describe, expect, it } from 'vitest';
 
-import { findMarkdownFiles, loadAllRules } from './loader.ts';
+import { findMarkdownFiles, loadAllRules } from './rules.ts';
 
 describe('findMarkdownFiles', () => {
   it('finds all markdown files in a directory', async () => {

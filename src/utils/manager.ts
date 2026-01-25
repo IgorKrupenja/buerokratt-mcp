@@ -5,8 +5,8 @@
  */
 
 import { getRulesForRequest, mergeRules } from './filter.ts';
-import { loadAllRules } from './loader.ts';
 import { loadRulesManifest } from './manifest.ts';
+import { loadAllRules } from './rules.ts';
 import type { RuleRequest, RuleScope, RuleSet } from './types.ts';
 
 /**
