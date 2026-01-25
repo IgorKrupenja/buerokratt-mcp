@@ -4,12 +4,13 @@
  * Loads and parses rule files from the rules directory
  */
 
-import { readdir, readFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import matter from 'gray-matter';
 
+import { findFilesByKind } from './file-finder.ts';
 import type { RuleFile, RuleFrontmatter } from './types.ts';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -20,39 +21,7 @@ const RULES_DIR = join(__dirname, '../../rules');
  * Recursively find all markdown files in a directory
  */
 export async function findMarkdownFiles(dir: string): Promise<string[]> {
-  const files: string[] = [];
-
-  async function scanDir(currentDir: string): Promise<void> {
-    try {
-      const entries = await readdir(currentDir, { withFileTypes: true });
-
-      for (const entry of entries) {
-        const fullPath = join(currentDir, entry.name);
-
-        if (entry.isDirectory()) {
-          await scanDir(fullPath);
-        } else if (entry.isFile() && entry.name.endsWith('.md')) {
-          files.push(fullPath);
-        }
-      }
-    } catch (error) {
-      // If directory doesn't exist or can't be read, return empty array
-      if (error instanceof Error && 'code' in error && (error as any).code === 'ENOENT') {
-        return;
-      }
-      throw error;
-    }
-  }
-
-  try {
-    await scanDir(dir);
-  } catch (error) {
-    throw new Error(
-      `Failed to find markdown files in ${dir}: ${error instanceof Error ? error.message : String(error)}`,
-    );
-  }
-
-  return files;
+  return findFilesByKind(dir, 'markdown');
 }
 
 /**

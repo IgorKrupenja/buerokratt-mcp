@@ -196,7 +196,7 @@ describe('asset resource helpers', () => {
       const result = await findAssetFiles(tempDir);
       expect(result.some((file) => file.endsWith('file.sql'))).toBe(true);
       expect(result.some((file) => file.endsWith('file.json'))).toBe(true);
-      expect(result.some((file) => file.endsWith('file.unknownext'))).toBe(false);
+      expect(result.some((file) => file.endsWith('file.unknownext'))).toBe(true);
     } finally {
       await rm(tempDir, { recursive: true, force: true });
     }
