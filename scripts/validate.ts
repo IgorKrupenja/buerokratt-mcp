@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url';
 
 import { lint } from 'markdownlint/promise';
 
-import { loadAllRules } from '../src/rules/loader.ts';
+import { loadAllRules } from '../src/utils/loader.ts';
 
 export interface ValidationResult {
   valid: boolean;

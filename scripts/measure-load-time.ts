@@ -4,7 +4,7 @@
  * Measures how long it takes to load rules to help decide if caching is needed
  */
 
-import { loadAllRules } from '../src/rules/loader.ts';
+import { loadAllRules } from '../src/utils/loader.ts';
 
 // ANSI color codes
 const colors = {

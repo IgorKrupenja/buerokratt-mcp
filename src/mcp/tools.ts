@@ -7,11 +7,11 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
-import { resolveRequestScopes, ruleAppliesToScopes } from '@/rules/filter.ts';
-import { loadAllRules } from '@/rules/loader.ts';
-import { getAvailableScopeIds, getMergedRules } from '@/rules/manager.ts';
-import { loadRulesManifest } from '@/rules/manifest.ts';
-import type { RuleScope } from '@/rules/types.ts';
+import { resolveRequestScopes, ruleAppliesToScopes } from '@/utils/filter.ts';
+import { loadAllRules } from '@/utils/loader.ts';
+import { getAvailableScopeIds, getMergedRules } from '@/utils/manager.ts';
+import { loadRulesManifest } from '@/utils/manifest.ts';
+import type { RuleScope } from '@/utils/types.ts';
 
 /**
  * Set up tool handlers for the MCP server

@@ -52,14 +52,12 @@ export async function findAssetFiles(dir: string): Promise<string[]> {
   return files;
 }
 
-export async function loadAssetResources(
-  rootDir: string = RULES_DIR,
-): Promise<Record<string, { path: string; mimeType: string }>> {
-  const files = await findAssetFiles(rootDir);
+export async function getAvailableAssets(): Promise<Record<string, { path: string; mimeType: string }>> {
+  const files = await findAssetFiles(RULES_DIR);
   const resources: Record<string, { path: string; mimeType: string }> = {};
 
   for (const filePath of files) {
-    const resourcePath = relative(rootDir, filePath).split('\\').join('/');
+    const resourcePath = relative(RULES_DIR, filePath).split('\\').join('/');
     resources[resourcePath] = {
       path: filePath,
       mimeType: mime.lookup(filePath) || 'application/octet-stream',

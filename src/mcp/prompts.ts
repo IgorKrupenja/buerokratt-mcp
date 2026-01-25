@@ -7,7 +7,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
-import { getMergedRules } from '../rules/manager.ts';
+import { getMergedRules } from '../utils/manager.ts';
 
 /**
  * Set up prompt handlers for the MCP server

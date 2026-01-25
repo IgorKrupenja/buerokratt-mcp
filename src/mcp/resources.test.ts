@@ -5,8 +5,8 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setupResources } from './resources.ts';
-import { findAssetFiles, loadAssetResources } from '../rules/asset-loader.ts';
-import * as managerModule from '../rules/manager.ts';
+import { findAssetFiles, getAvailableAssets } from '../utils/assets.ts';
+import * as managerModule from '../utils/manager.ts';
 
 describe('setupResources', () => {
   let server: McpServer;
@@ -208,7 +208,7 @@ describe('asset resource helpers', () => {
     await writeFile(join(tempDir, 'nested', 'script.sh'), '#!/usr/bin/env bash\necho ok\n');
 
     try {
-      const resources = await loadAssetResources(tempDir);
+      const resources = await getAvailableAssets(tempDir);
       expect(resources['nested/script.sh']).toBeDefined();
       expect(resources['nested/script.sh']?.mimeType).toBe('application/x-sh');
     } finally {

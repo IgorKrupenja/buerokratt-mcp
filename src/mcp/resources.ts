@@ -10,9 +10,9 @@ import { fileURLToPath } from 'node:url';
 
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-import { buildScopeResources, loadAssetResources } from '../rules/asset-loader.ts';
-import { getAvailableScopeIds, getMergedRules } from '../rules/manager.ts';
-import type { RuleScope } from '../rules/types.ts';
+import { buildScopeResources, getAvailableAssets } from '../utils/assets.ts';
+import { getAvailableScopeIds, getMergedRules } from '../utils/manager.ts';
+import type { RuleScope } from '../utils/types.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -26,7 +26,7 @@ export function setupResources(server: McpServer): void {
     'asset-files',
     new ResourceTemplate('rules://assets/{name}', {
       list: async () => {
-        const resources = await loadAssetResources();
+        const resources = await getAvailableAssets();
         return {
           resources: Object.entries(resources).map(([name, { mimeType }]) => ({
             uri: `rules://assets/${name}`,
@@ -48,7 +48,7 @@ export function setupResources(server: McpServer): void {
         throw new Error('Asset name is required');
       }
 
-      const scriptResources = await loadAssetResources();
+      const scriptResources = await getAvailableAssets();
       const scriptResource = scriptResources[name];
       if (!scriptResource) {
         throw new Error(`Unknown asset: ${name}`);
