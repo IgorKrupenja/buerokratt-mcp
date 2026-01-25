@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 
 import { parse as parseYaml } from 'yaml';
 
-import type { RulesManifest } from './types.ts';
+import type { RuleScope, RulesManifest } from './types.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -43,5 +43,25 @@ export async function loadRulesManifest(): Promise<RulesManifest> {
       return {};
     }
     throw new Error(`Failed to load rules manifest: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+/**
+ * Get available IDs for a scope
+ */
+export async function getAvailableScopeIds(scope: RuleScope): Promise<string[]> {
+  const manifest = await loadRulesManifest();
+
+  switch (scope) {
+    case 'project':
+      return Object.keys(manifest.projects ?? {}).sort();
+    case 'group':
+      return Object.keys(manifest.groups ?? {}).sort();
+    case 'tech':
+      return Object.keys(manifest.techs ?? {}).sort();
+    case 'language':
+      return Object.keys(manifest.languages ?? {}).sort();
+    default:
+      return [];
   }
 }

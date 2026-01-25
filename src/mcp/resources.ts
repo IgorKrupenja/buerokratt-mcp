@@ -5,17 +5,14 @@
  */
 
 import { readFile } from 'node:fs/promises';
-import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-import { buildScopeResources, getAvailableAssets } from '../utils/assets.ts';
-import { getAvailableScopeIds, getMergedRules } from '../utils/manager.ts';
+import { getAvailableAssets } from '../utils/assets.ts';
 import type { RuleScope } from '../utils/types.ts';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { getAvailableScopeIds } from '@/utils/manifest.ts';
+import { buildRuleResources, getMergedRules } from '@/utils/rules.ts';
 
 /**
  * Set up resource handlers for the MCP server
@@ -23,7 +20,7 @@ const __dirname = dirname(__filename);
 export function setupResources(server: McpServer): void {
   // Register resource template for bundled assets
   server.registerResource(
-    'asset-files',
+    'assets',
     new ResourceTemplate('rules://assets/{name}', {
       list: async () => {
         const resources = await getAvailableAssets();
@@ -70,14 +67,14 @@ export function setupResources(server: McpServer): void {
 
   // Register a resource template for scope-based rules
   server.registerResource(
-    'scope-rules',
+    'rules',
     new ResourceTemplate('rules://{scope}/{id}', {
       list: async () => {
         const scopes: RuleScope[] = ['project', 'group', 'tech', 'language'];
         const scopeEntries = await Promise.all(
           scopes.map(async (scope) => [scope, await getAvailableScopeIds(scope)] as const),
         );
-        const resources = scopeEntries.flatMap(([scope, ids]) => buildScopeResources(scope, ids));
+        const resources = scopeEntries.flatMap(([scope, ids]) => buildRuleResources(scope, ids));
 
         return {
           resources,

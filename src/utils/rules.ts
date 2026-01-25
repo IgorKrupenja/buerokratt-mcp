@@ -11,17 +11,31 @@ import { fileURLToPath } from 'node:url';
 import matter from 'gray-matter';
 
 import { findFilesByKind } from './file-finder.ts';
-import type { RuleFile, RuleFrontmatter } from './types.ts';
+import type { RuleFile, RuleFrontmatter, RuleRequest, RuleScope, RuleSet } from './types.ts';
+
+import { getRulesForRequest, mergeRules } from '@/utils/filter.ts';
+import { loadRulesManifest } from '@/utils/manifest.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const RULES_DIR = join(__dirname, '../../rules');
 
 /**
- * Recursively find all markdown files in a directory
+ * Get merged rules as markdown for a specific request
  */
-export async function findMarkdownFiles(dir: string): Promise<string[]> {
-  return findFilesByKind(dir, 'markdown');
+export async function getMergedRules(request: RuleRequest): Promise<string> {
+  const ruleSet = await getRulesFor(request);
+  return mergeRules(ruleSet);
+}
+
+/**
+ * Get rules for a specific request
+ */
+export async function getRulesFor(request: RuleRequest): Promise<RuleSet> {
+  // NOTE: We load all rules per request to support hot reload. Refactor to scoped loading if this becomes a bottleneck.
+  // Can be tested with this command: pnpm run measure-load-time
+  const [allRules, manifest] = await Promise.all([loadAllRules(), loadRulesManifest()]);
+  return getRulesForRequest(allRules, manifest, request);
 }
 
 /**
@@ -31,7 +45,7 @@ export async function findMarkdownFiles(dir: string): Promise<string[]> {
 export async function loadAllRules(): Promise<RuleFile[]> {
   try {
     // Find all markdown files in the rules directory
-    const markdownFiles = await findMarkdownFiles(RULES_DIR);
+    const markdownFiles = await findFilesByKind(RULES_DIR, 'markdown');
 
     // Load and parse each file
     const ruleFiles = await Promise.all(
@@ -62,4 +76,13 @@ export async function loadAllRules(): Promise<RuleFile[]> {
   } catch (error) {
     throw new Error(`Failed to load rules: ${error instanceof Error ? error.message : String(error)}`);
   }
+}
+
+export function buildRuleResources(scope: RuleScope, ids: string[]) {
+  return ids.map((id) => ({
+    uri: `rules://${scope}/${id}`,
+    name: `${scope}-${id}`,
+    description: `Rules for ${scope} ${id}`,
+    mimeType: 'text/markdown',
+  }));
 }

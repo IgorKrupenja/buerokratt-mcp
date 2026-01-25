@@ -5,7 +5,8 @@
  * Helps ensure rules don't exceed safe token limits
  */
 
-import { getAvailableScopeIds, getMergedRules } from '../src/utils/manager.ts';
+import { getAvailableScopeIds } from '@/utils/manifest.ts';
+import { getMergedRules } from '@/utils/rules.ts';
 
 // ANSI color codes
 const colors = {
