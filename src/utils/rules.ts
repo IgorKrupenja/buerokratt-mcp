@@ -109,26 +109,6 @@ function hasIntersection(values: string[] | undefined, scopeSet: Set<string>): b
   return values.some((value) => scopeSet.has(value));
 }
 
-// TODO ???? ==============================================================================================================
-
-function sortRulesByAlwaysGroup(rules: RuleFile[], manifest: RulesManifest): RuleFile[] {
-  const alwaysGroup = manifest.defaults?.alwaysGroup as unknown;
-  if (typeof alwaysGroup !== 'string') {
-    return rules;
-  }
-
-  return [...rules].sort((a, b) => {
-    const aAlways = (a.frontmatter.appliesTo.groups ?? []).includes(alwaysGroup);
-    const bAlways = (b.frontmatter.appliesTo.groups ?? []).includes(alwaysGroup);
-
-    if (aAlways === bAlways) {
-      return a.path.localeCompare(b.path);
-    }
-
-    return aAlways ? -1 : 1;
-  });
-}
-
 /**
  * Merge rules into a single markdown string
  */
