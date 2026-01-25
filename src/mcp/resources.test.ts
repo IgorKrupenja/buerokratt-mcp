@@ -4,7 +4,8 @@ import { join } from 'node:path';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { findScriptFiles, getScriptMimeType, loadScriptResources, setupResources } from './resources.ts';
+import { setupResources } from './resources.ts';
+import { findAssetFiles, loadAssetResources } from '../rules/asset-loader.ts';
 import * as managerModule from '../rules/manager.ts';
 
 describe('setupResources', () => {
@@ -192,7 +193,7 @@ describe('asset resource helpers', () => {
     await writeFile(join(tempDir, 'subdir', 'file.json'), '{"ok":true}');
 
     try {
-      const result = await findScriptFiles(tempDir);
+      const result = await findAssetFiles(tempDir);
       expect(result.some((file) => file.endsWith('file.sql'))).toBe(true);
       expect(result.some((file) => file.endsWith('file.json'))).toBe(true);
       expect(result.some((file) => file.endsWith('file.unknownext'))).toBe(false);
@@ -201,20 +202,15 @@ describe('asset resource helpers', () => {
     }
   });
 
-  it('detects mime types with fallback', () => {
-    expect(getScriptMimeType('file.json')).toBe('application/json');
-    expect(getScriptMimeType('file.unknownext')).toBe('application/octet-stream');
-  });
-
   it('builds asset resources map with relative paths', async () => {
     const tempDir = `/tmp/test-assets-${Date.now()}`;
     await mkdir(join(tempDir, 'nested'), { recursive: true });
     await writeFile(join(tempDir, 'nested', 'script.sh'), '#!/usr/bin/env bash\necho ok\n');
 
     try {
-      const resources = await loadScriptResources(tempDir);
+      const resources = await loadAssetResources(tempDir);
       expect(resources['nested/script.sh']).toBeDefined();
-      expect(resources['nested/script.sh']?.mimeType).toBe('text/x-shellscript');
+      expect(resources['nested/script.sh']?.mimeType).toBe('application/x-sh');
     } finally {
       await rm(tempDir, { recursive: true, force: true });
     }

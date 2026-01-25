@@ -4,71 +4,18 @@
  * Handles resource-related requests (listing and reading rules)
  */
 
-import { readdir, readFile } from 'node:fs/promises';
-import { dirname, join, relative } from 'node:path';
+import { readFile } from 'node:fs/promises';
+import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
-import mime from 'mime-types';
 
+import { buildScopeResources, loadAssetResources } from '../rules/asset-loader.ts';
 import { getAvailableScopeIds, getMergedRules } from '../rules/manager.ts';
 import type { RuleScope } from '../rules/types.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-const RULES_DIR = join(__dirname, '../../rules');
-
-function buildScopeResources(scope: RuleScope, ids: string[]) {
-  return ids.map((id) => ({
-    uri: `rules://${scope}/${id}`,
-    name: `${scope}-${id}`,
-    description: `Rules for ${scope} ${id}`,
-    mimeType: 'text/markdown',
-  }));
-}
-
-export async function findScriptFiles(dir: string): Promise<string[]> {
-  const files: string[] = [];
-
-  const entries = await readdir(dir, { withFileTypes: true });
-  for (const entry of entries) {
-    if (entry.name.startsWith('.')) {
-      continue;
-    }
-
-    const fullPath = join(dir, entry.name);
-
-    if (entry.isDirectory()) {
-      files.push(...(await findScriptFiles(fullPath)));
-      continue;
-    }
-
-    if (entry.isFile()) {
-      const mimeType = mime.lookup(entry.name);
-      if (mimeType) {
-        files.push(fullPath);
-      }
-    }
-  }
-
-  return files;
-}
-
-export async function loadScriptResources(): Promise<Record<string, { path: string; mimeType: string }>> {
-  const files = await findScriptFiles(RULES_DIR);
-  const resources: Record<string, { path: string; mimeType: string }> = {};
-
-  for (const filePath of files) {
-    const resourcePath = relative(RULES_DIR, filePath).split('\\').join('/');
-    resources[resourcePath] = {
-      path: filePath,
-      mimeType: mime.lookup(filePath) || 'application/octet-stream',
-    };
-  }
-
-  return resources;
-}
 
 /**
  * Set up resource handlers for the MCP server
@@ -79,7 +26,7 @@ export function setupResources(server: McpServer): void {
     'asset-files',
     new ResourceTemplate('rules://assets/{name}', {
       list: async () => {
-        const resources = await loadScriptResources();
+        const resources = await loadAssetResources();
         return {
           resources: Object.entries(resources).map(([name, { mimeType }]) => ({
             uri: `rules://assets/${name}`,
@@ -101,7 +48,7 @@ export function setupResources(server: McpServer): void {
         throw new Error('Asset name is required');
       }
 
-      const scriptResources = await loadScriptResources();
+      const scriptResources = await loadAssetResources();
       const scriptResource = scriptResources[name];
       if (!scriptResource) {
         throw new Error(`Unknown asset: ${name}`);
