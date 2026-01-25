@@ -21,6 +21,7 @@ export function setupResources(server: McpServer): void {
   // Register resource template for bundled assets
   server.registerResource(
     'assets',
+    // todo, assets NOT rules!
     new ResourceTemplate('rules://assets/{name}', {
       list: async () => {
         const resources = await getAvailableAssets();
