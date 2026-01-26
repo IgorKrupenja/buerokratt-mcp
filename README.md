@@ -32,9 +32,7 @@ Note that `<project-root>` can be a folder with multiple projects/repositories.
 }
 ```
 
-<!-- todo refactor below -->
-
-You might also want to add a simple rule to load rules based on path. See `.cursor/rules/buerokratt-mcp.mdc` for an example. Place it in `<project-root>/.cursor/rules/buerokratt-mcp.mdc`.
+**Recommended:** Copy `examples/.cursor/rules/modular-mcp.mdc` to `<project-root>/.cursor/rules/` to enable natural language prompts like "Get NestJS rules from MCP". This teaches Cursor how to interpret your requests and call the correct MCP resources/tools. See the [Prompting](#prompting) section for details.
 
 #### VS Code
 
@@ -78,10 +76,18 @@ claude mcp add --transport http modular-mcp http://localhost:3627/mcp
 
 ## Prompting
 
-- "Get NestJS rules from MCP server".
-<!-- todo likely need new resource -->
-- "Get projects supported by MCP server".
-- "Get techs supported by MCP server".
+<!-- todo reference above -->
+
+For the best experience, copy `examples/.cursor/rules/modular-mcp.mdc` to your project's `.cursor/rules/` folder. This teaches Cursor how to interpret natural language requests and translate them to the correct MCP calls.
+
+With this rules file in place, you can use natural language prompts:
+
+- "Get NestJS rules from MCP"
+- "Load React rules"
+- "What projects are available?"
+- "Show available tech stacks"
+- "Find rules about testing"
+- "Load Service-Module rules"
 
 ## MCP Server Features
 
