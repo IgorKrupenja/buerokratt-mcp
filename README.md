@@ -18,93 +18,29 @@ Note that this can be a folder with multiple projects/repositories.
 #### Cursor
 
 ```bash
-# Create MCP server configuration
-mkdir -p .cursor && cat > .cursor/mcp.json << 'EOF'
-{
-  "mcpServers": {
-    "modular-mcp": {
-      "url": "http://localhost:3627/mcp",
-      "transport": {
-        "type": "sse"
-      }
-    }
-  }
-}
-EOF
-
-# Create minimal instruction file
-mkdir -p .cursor/rules && cat > .cursor/rules/modular-mcp.mdc << 'EOF'
----
-alwaysApply: true
----
-
-# MCP Rules Server Integration
-
-When working with the `modular-mcp` MCP server, use the `get_mcp_instructions` tool to get detailed instructions on how to use this server effectively.
-EOF
+curl -sSL https://raw.githubusercontent.com/IgorKrupenja/modular-mcp/main/setup.sh | bash -s -- cursor
 ```
 
 #### VS Code
 
 ```bash
-# Create MCP server configuration
-mkdir -p .vscode && cat > .vscode/settings.json << 'EOF'
-{
-  "mcp.servers": {
-    "modular-mcp": {
-      "url": "http://localhost:3627/mcp",
-      "transport": {
-        "type": "sse"
-      }
-    }
-  }
-}
-EOF
-
-# Create instruction file
-mkdir -p .github && cat > .github/copilot-instructions.md << 'EOF'
----
-applyTo: "**"
----
-# MCP Rules Server Integration
-
-When working with the `modular-mcp` MCP server, use the `get_mcp_instructions` tool to get detailed instructions on how to use this server effectively.
-EOF
+curl -sSL https://raw.githubusercontent.com/IgorKrupenja/modular-mcp/main/setup.sh | bash -s -- vscode
 ```
 
 #### JetBrains
 
-```bash
-# Create MCP server configuration
-mkdir -p .idea && cat > .idea/mcp.json << 'EOF'
-{
-  "mcpServers": {
-    "modular-mcp": {
-      "url": "http://localhost:3627/mcp",
-      "transport": {
-        "type": "sse"
-      }
-    }
-  }
-}
-EOF
+1. Run:
 
-# Create instruction file
-mkdir -p .aiassistant/rules && cat > .aiassistant/rules/modular-mcp.md << 'EOF'
-# MCP Rules Server Integration
+   ```bash
+   curl -sSL https://raw.githubusercontent.com/IgorKrupenja/modular-mcp/main/setup.sh | bash -s -- jetbrains
+   ```
 
-When working with the `modular-mcp` MCP server, use the `get_mcp_instructions` tool to get detailed instructions on how to use this server effectively.
-EOF
-```
-
-**Important!** Then in **Settings | Tools | AI Assistant | Project Rules**, set `modular-mcp` to **Always** mode.
+2. In **Settings | Tools | AI Assistant | Project Rules**, set `modular-mcp` to **Always** mode.
 
 #### Claude Code
 
 ```bash
-claude mcp add --transport http modular-mcp http://localhost:3627/mcp
-
-claude --append-system-prompt "When working with the modular-mcp MCP server, use the get_mcp_instructions tool to get detailed instructions on how to use this server effectively."
+curl -sSL https://raw.githubusercontent.com/IgorKrupenja/modular-mcp/main/setup.sh | bash -s -- claude
 ```
 
 ## Prompting
@@ -117,8 +53,6 @@ If you followed the setup instructions above, your AI assistant will automatical
 - "Show available tech stacks"
 - "Find rules about testing"
 - "Load Service-Module rules"
-
-The instructions are stored in the MCP server itself (`rules/mcp-instructions.md`), so updates are automatically available to all users without needing to recopy files.
 
 ## MCP Server Features
 
