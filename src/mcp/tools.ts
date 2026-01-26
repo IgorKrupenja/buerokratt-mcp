@@ -4,6 +4,9 @@
  * Handles tool-related requests (querying and searching rules)
  */
 
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
@@ -15,6 +18,27 @@ import type { RuleScope } from '@/utils/types.ts';
  * Set up tool handlers for the MCP server
  */
 export function setupTools(server: McpServer): void {
+  // Tool: Get MCP server usage instructions
+  server.registerTool(
+    'get_mcp_instructions',
+    {
+      description: 'Get detailed instructions on how to use this MCP server effectively',
+      inputSchema: z.object({}),
+    },
+    async () => {
+      const instructionsPath = join(process.cwd(), 'rules', 'mcp-instructions.md');
+      const instructions = await readFile(instructionsPath, 'utf-8');
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: instructions,
+          },
+        ],
+      };
+    },
+  );
+
   // Tool: List available ids for a scope
   server.registerTool(
     'list_scope_ids',

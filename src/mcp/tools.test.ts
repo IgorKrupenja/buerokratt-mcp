@@ -6,6 +6,11 @@ import { setupTools } from './tools.ts';
 import * as manifestModule from '@/utils/manifest.ts';
 import * as rulesModule from '@/utils/rules.ts';
 
+// Mock fs/promises
+vi.mock('node:fs/promises', () => ({
+  readFile: vi.fn(),
+}));
+
 describe('setupTools', () => {
   let server: McpServer;
   let registeredTools: Map<string, any>;
@@ -35,6 +40,33 @@ describe('setupTools', () => {
 
     getAvailableScopeIdsSpy = vi.spyOn(manifestModule, 'getAvailableScopeIds');
     searchRulesSpy = vi.spyOn(rulesModule, 'searchRulesByKeyword');
+  });
+
+  it('registers get_mcp_instructions tool', () => {
+    setupTools(server);
+
+    expect(registeredTools.has('get_mcp_instructions')).toBe(true);
+    const toolConfig = registeredTools.get('get_mcp_instructions');
+    expect(toolConfig).toBeDefined();
+    expect(toolConfig[0].description).toBe('Get detailed instructions on how to use this MCP server effectively');
+  });
+
+  it('get_mcp_instructions tool handler returns instructions content', async () => {
+    const { readFile } = await import('node:fs/promises');
+    vi.mocked(readFile).mockResolvedValue('# MCP Instructions\n\nDetailed instructions here...');
+
+    setupTools(server);
+
+    const toolConfig = registeredTools.get('get_mcp_instructions');
+    const handler = toolConfig[1];
+
+    const result = await handler({});
+
+    expect(readFile).toHaveBeenCalled();
+    expect(result.content).toBeDefined();
+    expect(result.content[0].type).toBe('text');
+    expect(result.content[0].text).toContain('# MCP Instructions');
+    expect(result.content[0].text).toContain('Detailed instructions here...');
   });
 
   it('registers list_scope_ids tool', () => {

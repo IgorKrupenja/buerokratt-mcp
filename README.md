@@ -17,9 +17,11 @@ Note that `<project-root>` can be a folder with multiple projects/repositories.
 
 #### Cursor
 
-`<project-root>/.cursor/mcp.json`
+Quick setup with two commands:
 
-```json
+```bash
+# Create MCP server configuration
+mkdir -p .cursor && cat > .cursor/mcp.json << 'EOF'
 {
   "mcpServers": {
     "modular-mcp": {
@@ -30,21 +32,28 @@ Note that `<project-root>` can be a folder with multiple projects/repositories.
     }
   }
 }
+EOF
+
+# Create minimal instruction file
+mkdir -p .cursor/rules && cat > .cursor/rules/modular-mcp.mdc << 'EOF'
+---
+alwaysApply: true
+---
+
+# MCP Rules Server Integration
+
+When working with the `modular-mcp` MCP server, use the `get_mcp_instructions` tool to get detailed instructions on how to use this server effectively.
+EOF
 ```
 
-**Recommended:** Add editor-specific instructions to enable natural language prompts like "Get NestJS rules from MCP":
-
-- **Cursor**: Copy `examples/.cursor/rules/modular-mcp.mdc` to `<project-root>/.cursor/rules/`
-- **VS Code**: In Copilot chat, click settings → **Instructions** and create an instructions file
-- **JetBrains**: Copy `examples/.cursor/rules/modular-mcp.mdc` to `<project-root>/.aiassistant/rules/` (rename to `.md` extension and set mode to "Always")
-
-See the [Prompting](#prompting) section for details.
+This setup enables natural language prompts like "Get NestJS rules from MCP". See the [Prompting](#prompting) section for examples.
 
 #### VS Code
 
-`<project-root>/.vscode/settings.json`
+Create MCP server configuration:
 
-```json
+```bash
+mkdir -p .vscode && cat > .vscode/settings.json << 'EOF'
 {
   "mcp.servers": {
     "modular-mcp": {
@@ -55,17 +64,18 @@ See the [Prompting](#prompting) section for details.
     }
   }
 }
+EOF
 ```
 
-<!-- todo https://code.visualstudio.com/docs/copilot/customization/custom-instructions -->
-
-**Optional:** In GitHub Copilot chat, click settings → **Instructions** to create an instructions file that teaches Copilot how to use this MCP server (similar to the Cursor rules file).
+**Optional:** In GitHub Copilot chat, click settings → **Instructions** and add: "When working with the modular-mcp MCP server, use the get_mcp_instructions tool to get detailed usage instructions." See [custom instructions docs](https://code.visualstudio.com/docs/copilot/customization/custom-instructions) for more.
 
 #### JetBrains
 
-`<project-root>/.idea/mcp.json`
+Quick setup with two commands:
 
-```json
+```bash
+# Create MCP server configuration
+mkdir -p .idea && cat > .idea/mcp.json << 'EOF'
 {
   "mcpServers": {
     "modular-mcp": {
@@ -76,9 +86,17 @@ See the [Prompting](#prompting) section for details.
     }
   }
 }
+EOF
+
+# Create instruction file
+mkdir -p .aiassistant/rules && cat > .aiassistant/rules/modular-mcp.md << 'EOF'
+# MCP Rules Server Integration
+
+When working with the `modular-mcp` MCP server, use the `get_mcp_instructions` tool to get detailed instructions on how to use this server effectively.
+EOF
 ```
 
-**Optional:** Copy `examples/.cursor/rules/modular-mcp.mdc` to `<project-root>/.aiassistant/rules/modular-mcp.md` and configure it with **Always** mode in **Settings | Tools | AI Assistant | Project Rules** to enable natural language prompts.
+Then in **Settings | Tools | AI Assistant | Project Rules**, set `modular-mcp` to **Always** mode.
 
 #### Claude Code (CLI)
 
@@ -94,9 +112,7 @@ claude --append-system-prompt "When asked for tech/project rules, use the modula
 
 ## Prompting
 
-For the best experience using natural language prompts, add the instructions file to your editor (see setup instructions above for [Cursor](#cursor), [VS Code](#vs-code), and [JetBrains](#jetbrains)). The `examples/.cursor/rules/modular-mcp.mdc` file teaches AI assistants how to interpret natural language requests and translate them to the correct MCP calls.
-
-With instructions configured, you can use natural language prompts:
+If you followed the setup instructions above, your AI assistant will automatically use the `get_mcp_instructions` tool to learn how to interact with this MCP server. This means you can use natural language prompts like:
 
 - "Get NestJS rules from MCP"
 - "Load React rules"
@@ -105,10 +121,7 @@ With instructions configured, you can use natural language prompts:
 - "Find rules about testing"
 - "Load Service-Module rules"
 
-Without instructions, you can still use explicit resource/tool references:
-
-- `Load rules://tech/nestjs from MCP`
-- `Use list_scope_ids MCP tool with scope "tech"`
+The instructions are stored in the MCP server itself (`rules/mcp-instructions.md`), so updates are automatically available to all users without needing to recopy files.
 
 ## MCP Server Features
 
@@ -120,9 +133,9 @@ Once configured, the MCP server provides:
     <!-- todo add link to buerokratt script example -->
     <!-- todo maybe move to docs and move section above -->
 - **Tools**:
+  - `get_mcp_instructions` - Get detailed instructions on how to use this MCP server
   - `list_scope_ids` - List available ids for a scope
   - `search_rules` - Search rules by keyword
-  <!-- todo below goes elswhere -->
 - **Testing with MCP Inspector**: `pnpm inspect`.
 
 ## Development
