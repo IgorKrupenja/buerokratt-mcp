@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "buerokratt-mcp": {
+    "modular-mcp": {
       "url": "http://localhost:3627/mcp",
       "transport": {
         "type": "sse"
