@@ -74,6 +74,8 @@ Once configured, the MCP server provides:
 - **Resources**:
   - Rules: `rules://{scope}/{id}` (e.g., `rules://project/buerokratt/Service-Module`)
   - Assets: `assets://{path}` (e.g., `assets://projects/buerokratt/sync-upstream.sh`). This way you can include larger code examples, helper scripts, etc. One example is the `sync-upstream.sh` script for the Bürokratt projects.
+    <!-- todo add link to buerokratt script example -->
+    <!-- todo maybe move to docs and move section above -->
 - **Tools**:
   - `get_rules` - Get rules for a specific scope/id
   - `list_scope_ids` - List available ids for a scope
