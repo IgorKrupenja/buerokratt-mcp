@@ -2,7 +2,8 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setupPrompts } from './prompts.ts';
-import * as rulesModule from '../utils/rules.ts';
+
+import * as rulesModule from '@/utils/rules.ts';
 
 describe('setupPrompts', () => {
   let server: McpServer;

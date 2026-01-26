@@ -183,7 +183,9 @@ Content here.
       );
 
       expect(result.valid).toBe(false);
-      expect(result.errors).toContain("'projects.buerokratt/Service-Module.groups' must be a string array in rules/manifest.yml");
+      expect(result.errors).toContain(
+        "'projects.buerokratt/Service-Module.groups' must be a string array in rules/manifest.yml",
+      );
     });
   });
 });

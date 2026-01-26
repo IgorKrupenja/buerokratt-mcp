@@ -2,8 +2,9 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setupResources } from './resources.ts';
-import { getAvailableAssets, loadAsset } from '../utils/assets.ts';
-import * as rulesModule from '../utils/rules.ts';
+
+import { getAvailableAssets, loadAsset } from '@/utils/assets.ts';
+import * as rulesModule from '@/utils/rules.ts';
 
 describe('setupResources', () => {
   let server: McpServer;

@@ -7,7 +7,7 @@
 
 import express from 'express';
 
-import { mcpDeleteHandler, mcpGetHandler, mcpPostHandler } from './server/handlers.ts';
+import { mcpDeleteHandler, mcpGetHandler, mcpPostHandler } from '@/server/handlers.ts';
 
 const app = express();
 app.use(express.json());

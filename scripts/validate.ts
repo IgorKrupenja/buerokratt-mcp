@@ -11,7 +11,7 @@ import { fileURLToPath } from 'url';
 import { lint } from 'markdownlint/promise';
 import { parse as parseYaml } from 'yaml';
 
-import { loadAllRules } from '../src/utils/rules.ts';
+import { loadAllRules } from '@/utils/rules.ts';
 
 export interface ValidationResult {
   valid: boolean;

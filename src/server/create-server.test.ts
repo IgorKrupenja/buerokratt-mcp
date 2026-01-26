@@ -1,9 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { createServer } from './create-server.ts';
-import * as promptsModule from '../mcp/prompts.ts';
-import * as resourcesModule from '../mcp/resources.ts';
-import * as toolsModule from '../mcp/tools.ts';
+
+import * as promptsModule from '@/mcp/prompts.ts';
+import * as resourcesModule from '@/mcp/resources.ts';
+import * as toolsModule from '@/mcp/tools.ts';
 
 describe('createServer', () => {
   it('creates MCP server with correct configuration', () => {

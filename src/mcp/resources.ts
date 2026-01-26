@@ -6,8 +6,7 @@
 
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-import { getAvailableAssets, loadAsset } from '../utils/assets.ts';
-
+import { getAvailableAssets, loadAsset } from '@/utils/assets.ts';
 import { getMergedRules, getRuleScopeEntries, isRuleScope } from '@/utils/rules.ts';
 
 /**
