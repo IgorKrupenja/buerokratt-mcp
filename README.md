@@ -42,7 +42,7 @@ You might also want to add a simple rule to load rules based on path. See `.curs
 ```json
 {
   "mcp.servers": {
-    "buerokratt-mcp": {
+    "modular-mcp": {
       "url": "http://localhost:3627/mcp",
       "transport": {
         "type": "sse"
