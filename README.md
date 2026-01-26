@@ -5,19 +5,17 @@ The `rules/` folder includes example rules for multiple Bürokratt projects. Bü
 
 ## Setup
 
-### In this repo folder:
+### In this repo folder
 
 ```bash
 docker compose up -d
 ```
 
-### In your project folder:
+### In your project(s) folder
 
-Note that `<project-root>` can be a folder with multiple projects/repositories.
+Note that this can be a folder with multiple projects/repositories.
 
 #### Cursor
-
-Quick setup with two commands:
 
 ```bash
 # Create MCP server configuration
@@ -46,13 +44,10 @@ When working with the `modular-mcp` MCP server, use the `get_mcp_instructions` t
 EOF
 ```
 
-This setup enables natural language prompts like "Get NestJS rules from MCP". See the [Prompting](#prompting) section for examples.
-
 #### VS Code
 
-Create MCP server configuration:
-
 ```bash
+# Create MCP server configuration
 mkdir -p .vscode && cat > .vscode/settings.json << 'EOF'
 {
   "mcp.servers": {
@@ -65,13 +60,19 @@ mkdir -p .vscode && cat > .vscode/settings.json << 'EOF'
   }
 }
 EOF
+
+# Create instruction file
+mkdir -p .github && cat > .github/copilot-instructions.md << 'EOF'
+---
+applyTo: "**"
+---
+# MCP Rules Server Integration
+
+When working with the `modular-mcp` MCP server, use the `get_mcp_instructions` tool to get detailed instructions on how to use this server effectively.
+EOF
 ```
 
-**Optional:** In GitHub Copilot chat, click settings → **Instructions** and add: "When working with the modular-mcp MCP server, use the get_mcp_instructions tool to get detailed usage instructions." See [custom instructions docs](https://code.visualstudio.com/docs/copilot/customization/custom-instructions) for more.
-
 #### JetBrains
-
-Quick setup with two commands:
 
 ```bash
 # Create MCP server configuration
@@ -96,18 +97,14 @@ When working with the `modular-mcp` MCP server, use the `get_mcp_instructions` t
 EOF
 ```
 
-Then in **Settings | Tools | AI Assistant | Project Rules**, set `modular-mcp` to **Always** mode.
+**Important!** Then in **Settings | Tools | AI Assistant | Project Rules**, set `modular-mcp` to **Always** mode.
 
 #### Claude Code (CLI)
 
 ```bash
 claude mcp add --transport http modular-mcp http://localhost:3627/mcp
-```
 
-**Optional:** Use `--append-system-prompt` flag to add MCP usage instructions when starting a session:
-
-```bash
-claude --append-system-prompt "When asked for tech/project rules, use the modular-mcp MCP server resources (rules://tech/..., rules://project/...)"
+claude --append-system-prompt "When working with the modular-mcp MCP server, use the get_mcp_instructions tool to get detailed instructions on how to use this server effectively."
 ```
 
 ## Prompting
