@@ -5,15 +5,17 @@ The `rules/` folder includes example rules for multiple Bürokratt projects. Bü
 
 ## Usage
 
-In this repo folder:
+### Setup
+
+**In this repo folder:**
 
 ```bash
 docker compose up -d
 ```
 
-In your project folder:
+**In your project folder:**
 
-Note that `<project-root>` can be a folder with multiple projects.
+Note that `<project-root>` can be a folder with multiple projects/repositories.
 
 **Cursor**:
 
@@ -73,7 +75,11 @@ You might also want to add a simple rule to load rules based on path. See `.curs
 claude mcp add --transport http modular-mcp http://localhost:3627/mcp
 ```
 
-### MCP Server Features
+### Prompting
+
+<!-- todo -->
+
+## MCP Server Features
 
 Once configured, the MCP server provides:
 
