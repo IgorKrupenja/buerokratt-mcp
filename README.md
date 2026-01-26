@@ -99,7 +99,7 @@ EOF
 
 **Important!** Then in **Settings | Tools | AI Assistant | Project Rules**, set `modular-mcp` to **Always** mode.
 
-#### Claude Code (CLI)
+#### Claude Code
 
 ```bash
 claude mcp add --transport http modular-mcp http://localhost:3627/mcp
