@@ -1,43 +1,19 @@
-# Bürokratt MCP Server
+# MCP Rules Server
 
-MCP (Model Context Protocol) server for sharing AI coding assistant rules for [Bürokratt modules](https://github.com/buerokratt).
-
-Rationale: The Buerokratt tech stack, especially the DSL-based backend, is quite unique and is difficult to use with AI coding assistants. This MCP server provides a way to share rules and guidelines for different [Bürokratt modules](https://github.com/buerokratt) in a way that is easy to use with different IDEs and AI coding assistants. It is based on an initial `.cursorrules` setup that is also [provided](examples/legacy/.cursorrules) in this repo for legacy purposes.
-
-Currently available rules:
-
-- `global` - Global rules that apply to all modules
-- `Service-Module` - Service Module specific rules
-- `Buerokratt-Chatbot` - Chatbot Module specific rules
-- `shared-backend` - Shared backend rules (SQL, Ruuter)
-- `shared-frontend` - Shared frontend rules (React, CSS)
-
-## Highlights
-
-- **Backend expertise**: Knows how to write migrations, SQL queries, and Ruuter YAML DSL.
-- **Browser debugging**: Can open browser to debug frontend issues with full console access and automatic cookie authentication. **For now, this only works with Cursor!**
-- **Fork synchronization**: Can sync Bürokratt module forks with upstream repositories.
-- **Service testing**: in Service Module, can test and debug services directly (similar to the test widget on service edit page).
-- **Frontend testing**: Knows how to write frontend tests for Service Module.
-
-## Planned
-
-- [ ] Add support for more modules.
-- [ ] Add OAuth2 support for authentication.
-- [ ] Consider using several MCP servers for different modules **if** context size is an issue. There is a CI check for this, see [checks](#checks) below.
-- [ ] Cache rules in memory if needed. Check with `measure-load-time` script.
+MCP (Model Context Protocol) server with modular architecture for sharing AI coding assistant rules across projects, tech stacks, and languages.  
+The `rules/` folder includes example rules for multiple Bürokratt projects. Bürokratt is an open-source public sector virtual assistant platform.
 
 ## Usage
 
 In this repo folder:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 In your project folder:
 
-Note that `<project-root>` can also be a folder with several Bürokratt modules.
+Note that `<project-root>` can be a folder with multiple projects.
 
 **Cursor**:
 
@@ -53,7 +29,9 @@ Note that `<project-root>` can also be a folder with several Bürokratt modules.
 }
 ```
 
-You might also want to add a simple rule to load the rules for the module based on path. See `.cursor/rules/buerokratt-mcp.mdc` for an example. Place it in `<project-root>/.cursor/rules/buerokratt-mcp.mdc`.
+<!-- todo needs refactor -->
+
+You might also want to add a simple rule to load rules based on path. See `.cursor/rules/buerokratt-mcp.mdc` for an example. Place it in `<project-root>/.cursor/rules/buerokratt-mcp.mdc`.
 
 **VS Code**:
 
@@ -93,34 +71,36 @@ You might also want to add a simple rule to load the rules for the module based 
 
 Once configured, the MCP server provides:
 
-- **Resources**: Access to module-specific rules via `rules://{module}` (e.g., `rules://Service-Module`)
+- **Resources**:
+  - Rules: `rules://{scope}/{id}` (e.g., `rules://project/buerokratt/Service-Module`)
+  - Assets: `assets://{path}` (e.g., `assets://projects/buerokratt/sync-upstream.sh`). This way you can include larger code examples, helper scripts, etc. One example is the `sync-upstream.sh` script for the Bürokratt projects.
 - **Tools**:
-  - `get_rules` - Get rules for a specific module
-  - `list_modules` - List all available modules
+  - `get_rules` - Get rules for a specific scope/id
+  - `list_scope_ids` - List available ids for a scope
   - `search_rules` - Search rules by keyword
 - **Prompts**:
-  - `development-rules` - Get development rules as a system prompt for a specific module
+  - `development-rules` - Get development rules as a system prompt for a scope/id
 - **Testing with MCP Inspector**: `pnpm inspect`.
 
 ## Development
 
 ### Editing rules
 
-Simply edit the rules in the `rules/` folder and commit. Rules are loaded fresh on every request, **so no server restart is needed to get the changes**.
+Rules are loaded fresh on every request, **so no server restart is needed**.
 
-These rules are in Markdown format with frontmatter. `modules` field in frontmatter is required and should be an array of module names. Module names should match Bürokratt repository folder names exactly (e.g., `Service-Module`, `Training-Module`, `Analytics-Module`, `Buerokratt-Chatbot`). Other fields are optional. An example:
+Rules are Markdown files with frontmatter. Use `appliesTo` to declare scope(s) and `rules/manifest.yml` to define projects, groups, techs, and languages. Example:
 
 ```md
 ---
-modules:
-  - Service-Module
-  - Training-Module
-  - Analytics-Module
-  - Buerokratt-Chatbot
-tags:
-  - backend
-  - sql
-  - database
+appliesTo:
+  projects:
+    - buerokratt/Service-Module
+  groups:
+    - buerokratt
+  techs:
+    - react
+  languages:
+    - typescript
 description: Description of the rule
 ---
 
@@ -136,26 +116,23 @@ description: Description of the rule
 
 This can be with an npm script, see [checks](#checks) below.
 
-### Project Structure
+### Rules Folder Structure
 
 ```shell
 buerokratt-mcp/
-├── src/              # Typescript source code
-├── rules/            # Rule files (markdown with frontmatter)
-│   ├── global/       # Global rules that apply to all modules
-│   │   ├── common.md
-│   │   └── typescript.md
-│   ├── Service-Module/    # Service Module specific rules
-│   │   └── rules.md
-│   ├── ...other-modules...    # Other modules specific rules
-│   │   └── rules.md
-│   ├── shared-backend/    # Shared backend rules (SQL, Ruuter)
-│   │   ├── sql-rules.md
-│   │   ├── sql-restrictions.md
-│   │   └── ruuter-rules.md
-│   └── shared-frontend/   # Shared frontend rules (React, CSS)
-│       ├── react-rules.md
-│       └── css-rules.md
+├── src/
+├── rules/
+│   ├── manifest.yml
+│   ├── general.md
+│   ├── projects/
+│   │   └── buerokratt/
+│   │       ├── general.md
+│   │       └── service-module/
+│   │           └── rules.md
+│   └── techs/
+│       └── typescript/
+│           └── react/
+│               └── rules.md
 └── ...
 ```
 
@@ -187,8 +164,8 @@ The following checks run automatically in CI on push and pull requests:
 - **lint**: Runs ESLint to check code quality and style
 - **lint-markdown**: Lints markdown files (rules and README) using markdownlint
 - **typecheck**: Validates TypeScript types without emitting files
-- **validate**: Validates rule files (frontmatter structure, markdown syntax, and module names against GitHub repositories)
-- **check-context-size**: Checks that rule files don't exceed safe token limits
+- **validate**: Validates rule files (frontmatter + manifest structure + markdown syntax)
+- **check-context-size**: Checks merged projects/techs against safe token limits
 - **test**: Runs tests
 
 #### Local
@@ -202,6 +179,6 @@ pnpm lint:markdown
 pnpm typecheck
 pnpm validate
 pnpm check-context-size
-pnpm check-context-size <module-name>
+pnpm check-context-size <project-id> <tech-id>
 pnpm test
 ```
