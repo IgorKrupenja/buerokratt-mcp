@@ -9,6 +9,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
 import { lint } from 'markdownlint/promise';
+import { parse as parseYaml } from 'yaml';
 
 import { loadAllRules } from '../src/utils/rules.ts';
 
@@ -22,7 +23,20 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const MARKDOWNLINT_CONFIG_PATH = join(__dirname, '../.markdownlint.json');
+const MANIFEST_PATH = join(__dirname, '../rules/manifest.yml');
 let markdownlintConfig: Record<string, any> | undefined;
+
+// ANSI color codes
+const colors = {
+  reset: '\x1b[0m',
+  bright: '\x1b[1m',
+  dim: '\x1b[2m',
+  red: '\x1b[31m',
+  yellow: '\x1b[33m',
+  green: '\x1b[32m',
+  blue: '\x1b[34m',
+  cyan: '\x1b[36m',
+};
 
 async function loadMarkdownlintConfig(): Promise<Record<string, any> | undefined> {
   if (markdownlintConfig !== undefined) {
@@ -43,17 +57,90 @@ async function loadMarkdownlintConfig(): Promise<Record<string, any> | undefined
   return undefined;
 }
 
-// ANSI color codes
-const colors = {
-  reset: '\x1b[0m',
-  bright: '\x1b[1m',
-  dim: '\x1b[2m',
-  red: '\x1b[31m',
-  yellow: '\x1b[33m',
-  green: '\x1b[32m',
-  blue: '\x1b[34m',
-  cyan: '\x1b[36m',
-};
+/**
+ * Validate rules manifest structure
+ */
+export function validateManifest(manifest: unknown, filePath: string): ValidationResult {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  if (!manifest || typeof manifest !== 'object') {
+    errors.push(`Manifest must be an object in ${filePath}`);
+    return { valid: false, errors };
+  }
+
+  const manifestValue = manifest as Record<string, unknown>;
+  if (manifestValue.version !== undefined && typeof manifestValue.version !== 'number') {
+    errors.push(`'version' must be a number in ${filePath}`);
+  }
+
+  const sections = ['projects', 'groups', 'techs', 'languages'] as const;
+  for (const section of sections) {
+    const value = manifestValue[section];
+    if (value === undefined) {
+      continue;
+    }
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+      errors.push(`'${section}' must be an object in ${filePath}`);
+      continue;
+    }
+
+    for (const [key, entry] of Object.entries(value)) {
+      if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+        errors.push(`'${section}.${key}' must be an object in ${filePath}`);
+        continue;
+      }
+
+      const entryValue = entry as Record<string, unknown>;
+      if (section === 'projects') {
+        for (const listKey of ['groups', 'techs', 'languages'] as const) {
+          const listValue = entryValue[listKey];
+          if (listValue === undefined) {
+            continue;
+          }
+          if (!Array.isArray(listValue) || listValue.some((item) => typeof item !== 'string')) {
+            errors.push(`'projects.${key}.${listKey}' must be a string array in ${filePath}`);
+          }
+        }
+      }
+
+      if (section === 'techs') {
+        const dependsOn = entryValue.dependsOn;
+        if (
+          dependsOn !== undefined &&
+          (!Array.isArray(dependsOn) || dependsOn.some((item) => typeof item !== 'string'))
+        ) {
+          errors.push(`'techs.${key}.dependsOn' must be a string array in ${filePath}`);
+        }
+      }
+
+      if (section === 'groups' || section === 'languages' || section === 'techs' || section === 'projects') {
+        const description = entryValue.description;
+        if (description !== undefined && typeof description !== 'string') {
+          errors.push(`'${section}.${key}.description' must be a string in ${filePath}`);
+        }
+      }
+    }
+  }
+
+  const defaults = manifestValue.defaults;
+  if (defaults !== undefined) {
+    if (!defaults || typeof defaults !== 'object' || Array.isArray(defaults)) {
+      errors.push(`'defaults' must be an object in ${filePath}`);
+    } else {
+      const alwaysGroup = (defaults as Record<string, unknown>).alwaysGroup;
+      if (alwaysGroup !== undefined && typeof alwaysGroup !== 'string') {
+        errors.push(`'defaults.alwaysGroup' must be a string in ${filePath}`);
+      }
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors: errors.length > 0 ? errors : undefined,
+    warnings: warnings.length > 0 ? warnings : undefined,
+  };
+}
 
 /**
  * Validate frontmatter structure (Level 1)
@@ -145,10 +232,39 @@ async function main() {
   console.log(`${colors.bright}${colors.blue}🔍 Validating Rule Files${colors.reset}\n`);
 
   try {
+    const manifestRaw = await readFile(MANIFEST_PATH, 'utf-8');
+    const manifestParsed = parseYaml(manifestRaw);
     const allRules = await loadAllRules();
     let totalErrors = 0;
     let totalWarnings = 0;
     let validFiles = 0;
+
+    const manifestPath = 'rules/manifest.yml';
+    console.log(`${colors.cyan}Checking ${manifestPath}...${colors.reset}`);
+    const manifestResult = validateManifest(manifestParsed, manifestPath);
+
+    if (manifestResult.errors?.length) {
+      totalErrors += manifestResult.errors.length;
+      console.log(`${colors.red}  ❌ ${manifestResult.errors.length} error(s)${colors.reset}`);
+      for (const error of manifestResult.errors) {
+        console.log(`${colors.red}    • ${error}${colors.reset}`);
+      }
+    }
+
+    if (manifestResult.warnings?.length) {
+      totalWarnings += manifestResult.warnings.length;
+      console.log(`${colors.yellow}  ⚠️  ${manifestResult.warnings.length} warning(s)${colors.reset}`);
+      for (const warning of manifestResult.warnings) {
+        console.log(`${colors.yellow}    • ${warning}${colors.reset}`);
+      }
+    }
+
+    if (!manifestResult.errors?.length && !manifestResult.warnings?.length) {
+      validFiles++;
+      console.log(`${colors.green}  ✅ Valid${colors.reset}`);
+    }
+
+    console.log('');
 
     for (const rule of allRules) {
       const relativePath = rule.path.replace(/^.*\/rules\//, 'rules/');

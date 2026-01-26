@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { validateFrontmatter, validateMarkdown } from './validate.ts';
+import { validateFrontmatter, validateManifest, validateMarkdown } from './validate.ts';
 
 describe('validate utilities', () => {
   describe('validateFrontmatter', () => {
@@ -121,6 +121,69 @@ Content here.
 
       // Should not throw, may have warnings
       expect(result.valid).toBe(true);
+    });
+  });
+
+  describe('validateManifest', () => {
+    it('validates a correct manifest', () => {
+      const manifest = {
+        version: 1,
+        projects: {
+          'buerokratt/Service-Module': {
+            groups: ['global'],
+            techs: ['react'],
+            languages: ['typescript'],
+            description: 'Service rules',
+          },
+        },
+        groups: {
+          global: { description: 'Always' },
+        },
+        techs: {
+          react: { dependsOn: ['typescript'], description: 'React rules' },
+        },
+        languages: {
+          typescript: { description: 'TS rules' },
+        },
+        defaults: {
+          alwaysGroup: 'global',
+        },
+      };
+
+      const result = validateManifest(manifest, 'rules/manifest.yml');
+
+      expect(result.valid).toBe(true);
+      expect(result.errors).toBeUndefined();
+    });
+
+    it('rejects non-object manifest', () => {
+      const result = validateManifest('not-an-object', 'rules/manifest.yml');
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain('Manifest must be an object in rules/manifest.yml');
+    });
+
+    it('rejects invalid version type', () => {
+      const result = validateManifest({ version: '1' }, 'rules/manifest.yml');
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain("'version' must be a number in rules/manifest.yml");
+    });
+
+    it('rejects invalid project scopes', () => {
+      const result = validateManifest(
+        {
+          projects: {
+            'buerokratt/Service-Module': {
+              groups: 'global',
+            },
+          },
+        },
+        'rules/manifest.yml',
+      );
+
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain("'projects.buerokratt/Service-Module.groups' must be a string array in rules/manifest.yml");
     });
   });
 });
