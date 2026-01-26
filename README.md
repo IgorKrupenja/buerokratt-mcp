@@ -101,8 +101,7 @@ Once configured, the MCP server provides:
 - **Tools**:
   - `list_scope_ids` - List available ids for a scope
   - `search_rules` - Search rules by keyword
-- **Prompts**:
-  - `development-rules` - Get development rules as a system prompt for a scope/id
+  <!-- todo below goes elswhere -->
 - **Testing with MCP Inspector**: `pnpm inspect`.
 
 ## Development

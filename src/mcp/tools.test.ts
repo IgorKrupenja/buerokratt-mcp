@@ -10,7 +10,6 @@ describe('setupTools', () => {
   let server: McpServer;
   let registeredTools: Map<string, any>;
   let getAvailableScopeIdsSpy: ReturnType<typeof vi.spyOn>;
-  let getMergedRulesSpy: ReturnType<typeof vi.spyOn>;
   let searchRulesSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
@@ -35,35 +34,7 @@ describe('setupTools', () => {
     };
 
     getAvailableScopeIdsSpy = vi.spyOn(manifestModule, 'getAvailableScopeIds');
-    getMergedRulesSpy = vi.spyOn(rulesModule, 'getMergedRules');
     searchRulesSpy = vi.spyOn(rulesModule, 'searchRulesByKeyword');
-  });
-
-  it('registers get_rules tool', () => {
-    setupTools(server);
-
-    expect(registeredTools.has('get_rules')).toBe(true);
-    const toolConfig = registeredTools.get('get_rules');
-    expect(toolConfig).toBeDefined();
-    expect(toolConfig[0].description).toBe('Get rules for a specific scope and id');
-  });
-
-  it('get_rules tool handler returns merged rules', async () => {
-    getMergedRulesSpy.mockResolvedValue('# Test Rules\n\nContent here');
-
-    setupTools(server);
-
-    const toolConfig = registeredTools.get('get_rules');
-    const handler = toolConfig[1]; // Handler is the second argument
-
-    const result = await handler({ scope: 'project', id: 'buerokratt/Service-Module' });
-
-    expect(getMergedRulesSpy).toHaveBeenCalledWith({ scope: 'project', id: 'buerokratt/Service-Module' });
-    expect(result.content).toBeDefined();
-    expect(result.content[0].type).toBe('text');
-    expect(result.content[0].text).toBe('# Test Rules\n\nContent here');
-
-    getMergedRulesSpy.mockRestore();
   });
 
   it('registers list_scope_ids tool', () => {
