@@ -6,7 +6,6 @@
 
 import { randomUUID } from 'node:crypto';
 
-import { InMemoryEventStore } from '@modelcontextprotocol/sdk/examples/shared/inMemoryEventStore.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 import type { Request, Response } from 'express';
@@ -33,10 +32,12 @@ export const mcpPostHandler = async (req: Request, res: Response): Promise<void>
       transport = transports[sessionId];
     } else if (!sessionId && isInitializeRequest(req.body)) {
       // New initialization request
-      const eventStore = new InMemoryEventStore();
+      // Note: eventStore is not used to avoid empty SSE priming events that cause
+      // validation errors in Cursor's MCP client (known bug)
       transport = new StreamableHTTPServerTransport({
         sessionIdGenerator: () => randomUUID(),
-        eventStore, // Enable resumability
+        // eventStore is not used, this disables resumability but prevents
+        // empty SSE events that Cursor incorrectly tries to parse as JSON-RPC
         onsessioninitialized: (sid) => {
           console.log(`Session initialized with ID: ${sid}`);
           transports[sid] = transport;
@@ -99,12 +100,7 @@ export const mcpGetHandler = async (req: Request, res: Response): Promise<void> 
     return;
   }
 
-  const lastEventId = (req.headers['last-event-id'] as string) || undefined;
-  if (lastEventId) {
-    console.log(`Client reconnecting with Last-Event-ID: ${lastEventId}`);
-  } else {
-    console.log(`Establishing new SSE stream for session ${sessionId}`);
-  }
+  console.log(`Establishing SSE stream for session ${sessionId}`);
 
   const transport = transports[sessionId];
   await transport.handleRequest(req, res);

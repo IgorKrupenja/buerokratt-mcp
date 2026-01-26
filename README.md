@@ -23,7 +23,10 @@ Note that `<project-root>` can be a folder with multiple projects/repositories.
 {
   "mcpServers": {
     "modular-mcp": {
-      "url": "http://localhost:3627/mcp"
+      "url": "http://localhost:3627/mcp",
+      "transport": {
+        "type": "sse"
+      }
     }
   }
 }
