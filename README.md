@@ -18,13 +18,13 @@ Note that this can be a folder with multiple projects/repositories.
 #### Cursor
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/IgorKrupenja/modular-mcp/main/setup.sh | bash -s -- cursor
+curl -sSL https://raw.githubusercontent.com/IgorKrupenja/modular-mcp/main/scripts/setup.sh | bash -s -- cursor
 ```
 
 #### VS Code
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/IgorKrupenja/modular-mcp/main/setup.sh | bash -s -- vscode
+curl -sSL https://raw.githubusercontent.com/IgorKrupenja/modular-mcp/main/scripts/setup.sh | bash -s -- vscode
 ```
 
 #### JetBrains
@@ -32,7 +32,7 @@ curl -sSL https://raw.githubusercontent.com/IgorKrupenja/modular-mcp/main/setup.
 1. Run:
 
    ```bash
-   curl -sSL https://raw.githubusercontent.com/IgorKrupenja/modular-mcp/main/setup.sh | bash -s -- jetbrains
+   curl -sSL https://raw.githubusercontent.com/IgorKrupenja/modular-mcp/main/scripts/setup.sh | bash -s -- jetbrains
    ```
 
 2. In **Settings | Tools | AI Assistant | Project Rules**, set `modular-mcp` to **Always** mode.
@@ -40,7 +40,7 @@ curl -sSL https://raw.githubusercontent.com/IgorKrupenja/modular-mcp/main/setup.
 #### Claude Code
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/IgorKrupenja/modular-mcp/main/setup.sh | bash -s -- claude
+curl -sSL https://raw.githubusercontent.com/IgorKrupenja/modular-mcp/main/scripts/setup.sh | bash -s -- claude
 ```
 
 ## Prompting
