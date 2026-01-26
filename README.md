@@ -78,7 +78,10 @@ claude mcp add --transport http modular-mcp http://localhost:3627/mcp
 
 ## Prompting
 
-<!-- todo -->
+- "Get NestJS rules from MCP server".
+<!-- todo likely need new resource -->
+- "Get projects supported by MCP server".
+- "Get techs supported by MCP server".
 
 ## MCP Server Features
 
