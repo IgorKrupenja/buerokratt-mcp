@@ -146,7 +146,7 @@ Content here.
           typescript: { description: 'TS rules' },
         },
         defaults: {
-          alwaysGroup: 'global',
+          globalGroup: 'global',
         },
       };
 

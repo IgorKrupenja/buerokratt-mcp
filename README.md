@@ -96,6 +96,14 @@ Once configured, the MCP server provides:
 
 Rules are loaded fresh on every request, **so no server restart is needed**.
 
+#### Global rules
+
+Global rules live in `rules/general.md` and are always included. To always include a group, set `defaults.globalGroup` in `rules/manifest.yml`. Use `USE_GLOBAL_RULES=false` to disable loading the global group; when unset or `true`, the manifest value is used.
+
+#### Manifest structure
+
+`rules/manifest.yml` defines available ids and relationships between projects, groups, techs, and languages. The `defaults.globalGroup` entry is applied on every request unless `USE_GLOBAL_RULES` is set to `false`.
+
 Rules are Markdown files with frontmatter. Use `appliesTo` to declare scope(s) and `rules/manifest.yml` to define projects, groups, techs, and languages. Update the manifest only when you introduce new ids. Example:
 
 ```md

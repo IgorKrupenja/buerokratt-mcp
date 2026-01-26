@@ -31,7 +31,7 @@ describe('loadManifest', () => {
             '    groups:',
             '      - global',
             'defaults:',
-            '  alwaysGroup: global',
+            '  globalGroup: global',
           ].join('\n'),
         ),
     }));
@@ -44,7 +44,7 @@ describe('loadManifest', () => {
     expect(manifest.techs?.react?.dependsOn).toEqual(['typescript']);
     expect(manifest.groups?.global?.description).toBe('Always');
     expect(manifest.projects?.['buerokratt/Service-Module']?.groups).toEqual(['global']);
-    expect(manifest.defaults?.alwaysGroup).toBe('global');
+    expect(manifest.defaults?.globalGroup).toBe('global');
   });
 
   it('returns empty manifest on ENOENT', async () => {
@@ -100,6 +100,17 @@ describe('getAvailableScopeIds', () => {
 });
 
 describe('resolveRequestScopes', () => {
+  const envKey = 'USE_GLOBAL_RULES';
+  const originalEnvValue = process.env[envKey];
+
+  afterEach(() => {
+    if (originalEnvValue === undefined) {
+      delete process.env[envKey];
+    } else {
+      process.env[envKey] = originalEnvValue;
+    }
+  });
+
   it('resolves project memberships and dependencies', async () => {
     vi.unmock('node:fs/promises');
     const { resolveRequestScopes } = await import('./manifest.ts');
@@ -116,7 +127,7 @@ describe('resolveRequestScopes', () => {
         },
       },
       defaults: {
-        alwaysGroup: 'global',
+        globalGroup: 'global',
       },
     };
 
@@ -126,5 +137,39 @@ describe('resolveRequestScopes', () => {
     expect(scopes.groups.has('global')).toBe(true);
     expect(scopes.techs.has('react')).toBe(true);
     expect(scopes.languages.has('typescript')).toBe(true);
+  });
+
+  it('skips globalGroup when USE_GLOBAL_RULES=false', async () => {
+    process.env.USE_GLOBAL_RULES = 'false';
+    const { resolveRequestScopes } = await import('./manifest.ts');
+
+    const manifest: RulesManifest = {
+      groups: { global: {} },
+      defaults: {
+        globalGroup: 'global',
+      },
+    };
+
+    const scopes = resolveRequestScopes({ scope: 'group', id: 'custom' }, manifest);
+
+    expect(scopes.groups.has('custom')).toBe(true);
+    expect(scopes.groups.has('global')).toBe(false);
+  });
+
+  it('uses manifest globalGroup when USE_GLOBAL_RULES=true', async () => {
+    process.env.USE_GLOBAL_RULES = 'true';
+    const { resolveRequestScopes } = await import('./manifest.ts');
+
+    const manifest: RulesManifest = {
+      groups: { global: {} },
+      defaults: {
+        globalGroup: 'global',
+      },
+    };
+
+    const scopes = resolveRequestScopes({ scope: 'group', id: 'custom' }, manifest);
+
+    expect(scopes.groups.has('custom')).toBe(true);
+    expect(scopes.groups.has('global')).toBe(true);
   });
 });

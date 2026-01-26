@@ -26,7 +26,7 @@ const manifest: RulesManifest = {
   groups: { global: {} },
   techs: { react: {} },
   languages: { typescript: {} },
-  defaults: { alwaysGroup: 'global' },
+  defaults: { globalGroup: 'global' },
 };
 
 describe('loadAllRules', () => {

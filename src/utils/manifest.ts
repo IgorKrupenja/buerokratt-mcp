@@ -141,6 +141,15 @@ function resolveTech(scopes: ResolvedScopes, manifest: RulesManifest, techId: st
 }
 
 function addAlwaysGroup(scopes: ResolvedScopes, manifest: RulesManifest): void {
-  const alwaysGroup = manifest.defaults?.alwaysGroup;
-  if (alwaysGroup) scopes.groups.add(alwaysGroup);
+  const globalGroup = resolveGlobalGroup(manifest);
+  if (globalGroup) scopes.groups.add(globalGroup);
+}
+
+function resolveGlobalGroup(manifest: RulesManifest): string | undefined {
+  const envValue = process.env.USE_GLOBAL_RULES;
+  if (envValue !== undefined && envValue.trim().toLowerCase() === 'false') {
+    return undefined;
+  }
+
+  return manifest.defaults?.globalGroup;
 }

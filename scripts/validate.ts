@@ -128,9 +128,9 @@ export function validateManifest(manifest: unknown, filePath: string): Validatio
     if (!defaults || typeof defaults !== 'object' || Array.isArray(defaults)) {
       errors.push(`'defaults' must be an object in ${filePath}`);
     } else {
-      const alwaysGroup = (defaults as Record<string, unknown>).alwaysGroup;
-      if (alwaysGroup !== undefined && typeof alwaysGroup !== 'string') {
-        errors.push(`'defaults.alwaysGroup' must be a string in ${filePath}`);
+      const globalGroup = (defaults as Record<string, unknown>).globalGroup;
+      if (globalGroup !== undefined && typeof globalGroup !== 'string') {
+        errors.push(`'defaults.globalGroup' must be a string in ${filePath}`);
       }
     }
   }
