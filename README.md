@@ -29,8 +29,6 @@ Note that `<project-root>` can be a folder with multiple projects.
 }
 ```
 
-<!-- todo needs refactor -->
-
 You might also want to add a simple rule to load rules based on path. See `.cursor/rules/buerokratt-mcp.mdc` for an example. Place it in `<project-root>/.cursor/rules/buerokratt-mcp.mdc`.
 
 **VS Code**:
@@ -67,6 +65,12 @@ You might also want to add a simple rule to load rules based on path. See `.curs
 }
 ```
 
+**Claude Code (CLI)**:
+
+```bash
+claude mcp add --transport http buerokratt-mcp http://localhost:3627/mcp
+```
+
 ### MCP Server Features
 
 Once configured, the MCP server provides:
@@ -90,7 +94,7 @@ Once configured, the MCP server provides:
 
 Rules are loaded fresh on every request, **so no server restart is needed**.
 
-Rules are Markdown files with frontmatter. Use `appliesTo` to declare scope(s) and `rules/manifest.yml` to define projects, groups, techs, and languages. Example:
+Rules are Markdown files with frontmatter. Use `appliesTo` to declare scope(s) and `rules/manifest.yml` to define projects, groups, techs, and languages. Update the manifest only when you introduce new ids. Example:
 
 ```md
 ---
@@ -111,10 +115,10 @@ description: Description of the rule
 ... rule set content ...
 ```
 
-**⚠️ Important note on context size**. To ensure the MCP server works correctly, the rule set should not exceed the following limits:
+**⚠️ Important note on context size**. To ensure the MCP server works correctly, merged projects/techs should not exceed:
 
-- Individual files: Safe < 10 KB, Warning < 20 KB
-- Merged modules: Safe < 50 KB, Warning < 100 KB
+- Safe < 50 KB
+- Warning < 100 KB
 
 This can be with an npm script, see [checks](#checks) below.
 
@@ -129,12 +133,28 @@ buerokratt-mcp/
 │   ├── projects/
 │   │   └── buerokratt/
 │   │       ├── general.md
-│   │       └── service-module/
+│   │       ├── css.md
+│   │       ├── react.md
+│   │       ├── ruuter.md
+│   │       ├── sql.md
+│   │       ├── sql-restrictions.md
+│   │       ├── sync-upstream.sh
+│   │       └── Service-Module/
 │   │           └── rules.md
 │   └── techs/
+│       ├── css/
+│       │   └── tailwind/
+│       │       └── rules.md
+│       ├── java/
+│       │   ├── rules.md
+│       │   └── spring/
+│       │       └── rules.md
 │       └── typescript/
-│           └── react/
-│               └── rules.md
+│           ├── nestjs/
+│           │   └── rules.md
+│           ├── react/
+│           │   └── rules.md
+│           └── rules.md
 └── ...
 ```
 
