@@ -3,19 +3,21 @@
 MCP (Model Context Protocol) server with modular architecture for sharing AI coding assistant rules across projects, tech stacks, and languages.  
 The `rules/` folder includes example rules for multiple Bürokratt projects. Bürokratt is an open-source public sector virtual assistant platform.
 
-## Setup
+## Usage
 
-### In this repo folder:
+### Setup
+
+**In this repo folder:**
 
 ```bash
 docker compose up -d
 ```
 
-### In your project folder:
+**In your project folder:**
 
 Note that `<project-root>` can be a folder with multiple projects/repositories.
 
-#### Cursor
+**Cursor**:
 
 `<project-root>/.cursor/mcp.json`
 
@@ -33,7 +35,7 @@ Note that `<project-root>` can be a folder with multiple projects/repositories.
 
 You might also want to add a simple rule to load rules based on path. See `.cursor/rules/buerokratt-mcp.mdc` for an example. Place it in `<project-root>/.cursor/rules/buerokratt-mcp.mdc`.
 
-#### VS Code
+**VS Code**:
 
 `<project-root>/.vscode/settings.json`
 
@@ -50,7 +52,7 @@ You might also want to add a simple rule to load rules based on path. See `.curs
 }
 ```
 
-#### JetBrains
+**JetBrains**:
 
 `<project-root>/.idea/mcp.json`
 
@@ -67,13 +69,13 @@ You might also want to add a simple rule to load rules based on path. See `.curs
 }
 ```
 
-#### Claude Code (CLI)
+**Claude Code (CLI)**:
 
 ```bash
 claude mcp add --transport http modular-mcp http://localhost:3627/mcp
 ```
 
-## Prompting
+### Prompting
 
 <!-- todo -->
 

@@ -7,13 +7,7 @@
 
 import express from 'express';
 
-import {
-  mcpDeleteHandler,
-  mcpGetHandler,
-  mcpPostHandler,
-  mcpSseGetHandler,
-  mcpSsePostHandler,
-} from '@/server/handlers.ts';
+import { mcpDeleteHandler, mcpGetHandler, mcpPostHandler } from '@/server/handlers.ts';
 
 const app = express();
 app.use(express.json());
@@ -21,8 +15,6 @@ app.use(express.json());
 app.post('/mcp', mcpPostHandler);
 app.get('/mcp', mcpGetHandler);
 app.delete('/mcp', mcpDeleteHandler);
-app.get('/mcp/sse', mcpSseGetHandler);
-app.post('/mcp/messages', mcpSsePostHandler);
 
 const MCP_PORT = process.env.MCP_PORT ? parseInt(process.env.MCP_PORT, 10) : 3627;
 
