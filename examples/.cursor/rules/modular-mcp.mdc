@@ -15,6 +15,8 @@ Load rules from MCP when the user asks for:
 - Language-specific rules (e.g., "Get TypeScript rules")
 - Discovery (e.g., "What projects are available?", "Show available tech stacks")
 
+**Important:** When loading rules, add them to the conversation context for reference. Do NOT save them as files in `.cursor/rules/` or anywhere else - they are temporary context, not project files.
+
 ## Available MCP Resources
 
 ### Rules Resource: `rules://{scope}/{id}`
@@ -30,8 +32,6 @@ Use the `list_scope_ids` tool to discover what's available for that scope before
 
 ## Available MCP Tools
 
-### Discovery Tools
-
 1. **list_scope_ids** - List available IDs for a scope
    - Parameters: `scope` (project/group/tech/language)
    - Use when: User asks "What projects are available?" or "Show available technologies"
@@ -39,10 +39,6 @@ Use the `list_scope_ids` tool to discover what's available for that scope before
 2. **search_rules** - Search rules by keyword
    - Parameters: `keyword` (required), `scope` (optional), `id` (optional)
    - Use when: User asks "Find rules about testing" or "Search for database rules"
-
-3. **get_rules** - Get rules for specific scope/id
-   - Parameters: `scope`, `id`
-   - Use when: You need to fetch rules programmatically instead of using resource URIs
 
 ## How to Respond to User Requests
 
@@ -91,3 +87,4 @@ User says: "Get React and NestJS rules for this full-stack project"
 - **Rules stay in context** once loaded - user can ask follow-up questions
 - **Resource IDs are case-sensitive** - use exact IDs as shown above
 - **Only load when explicitly asked** - don't load rules preemptively
+- **NEVER save loaded rules as files** - Rules from MCP should be kept in conversation context only, NOT written to `.cursor/rules/` or any other files. They are dynamically loaded content, not project files.

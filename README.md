@@ -99,7 +99,6 @@ Once configured, the MCP server provides:
     <!-- todo add link to buerokratt script example -->
     <!-- todo maybe move to docs and move section above -->
 - **Tools**:
-  - `get_rules` - Get rules for a specific scope/id
   - `list_scope_ids` - List available ids for a scope
   - `search_rules` - Search rules by keyword
 - **Prompts**:
