@@ -2,17 +2,15 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setupTools } from './tools.ts';
-import * as managerModule from '../utils/manager.ts';
 import * as manifestModule from '../utils/manifest.ts';
-import * as loaderModule from '../utils/rules.ts';
+import * as rulesModule from '../utils/rules.ts';
 
 describe('setupTools', () => {
   let server: McpServer;
   let registeredTools: Map<string, any>;
   let getAvailableScopeIdsSpy: ReturnType<typeof vi.spyOn>;
   let getMergedRulesSpy: ReturnType<typeof vi.spyOn>;
-  let loadAllRulesSpy: ReturnType<typeof vi.spyOn>;
-  let loadManifestSpy: ReturnType<typeof vi.spyOn>;
+  let searchRulesSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     server = new McpServer(
@@ -35,10 +33,9 @@ describe('setupTools', () => {
       return (originalRegisterTool as any)(name, ...args);
     };
 
-    getAvailableScopeIdsSpy = vi.spyOn(managerModule, 'getAvailableScopeIds');
-    getMergedRulesSpy = vi.spyOn(managerModule, 'getMergedRules');
-    loadAllRulesSpy = vi.spyOn(loaderModule, 'loadAllRules');
-    loadManifestSpy = vi.spyOn(manifestModule, 'loadRulesManifest');
+    getAvailableScopeIdsSpy = vi.spyOn(manifestModule, 'getAvailableScopeIds');
+    getMergedRulesSpy = vi.spyOn(rulesModule, 'getMergedRules');
+    searchRulesSpy = vi.spyOn(rulesModule, 'searchRulesByKeyword');
   });
 
   it('registers get_rules tool', () => {
@@ -105,19 +102,7 @@ describe('setupTools', () => {
   });
 
   it('search_rules tool handler finds matching rules', async () => {
-    loadAllRulesSpy.mockResolvedValue([
-      {
-        path: 'rules/test1.md',
-        frontmatter: { appliesTo: { projects: ['buerokratt/Service-Module'] }, description: 'Test rule' },
-        content: 'This is a test rule about SQL queries',
-      },
-      {
-        path: 'rules/test2.md',
-        frontmatter: { appliesTo: { groups: ['global'] } },
-        content: 'This is about something else',
-      },
-    ]);
-    loadManifestSpy.mockResolvedValue({ defaults: { alwaysGroups: ['global'] }, groups: { global: {} } });
+    searchRulesSpy.mockResolvedValue('Found 1 rule(s) containing "SQL":\n\n**rules/test1.md**');
 
     setupTools(server);
 
@@ -126,38 +111,17 @@ describe('setupTools', () => {
 
     const result = await handler({ keyword: 'SQL' });
 
-    expect(loadAllRulesSpy).toHaveBeenCalled();
+    expect(searchRulesSpy).toHaveBeenCalledWith({ keyword: 'SQL', scope: undefined, id: undefined });
     expect(result.content[0].text).toContain('Found 1 rule(s)');
     expect(result.content[0].text).toContain('test1.md');
-    expect(result.content[0].text).toContain('SQL queries');
 
-    loadAllRulesSpy.mockRestore();
-    loadManifestSpy.mockRestore();
+    searchRulesSpy.mockRestore();
   });
 
   it('search_rules tool handler filters by scope when specified', async () => {
-    loadAllRulesSpy.mockResolvedValue([
-      {
-        path: 'rules/test1.md',
-        frontmatter: { appliesTo: { projects: ['buerokratt/Service-Module'] } },
-        content: 'This is a test rule about SQL',
-      },
-      {
-        path: 'rules/test2.md',
-        frontmatter: { appliesTo: { groups: ['global'] } },
-        content: 'This is about SQL too',
-      },
-      {
-        path: 'rules/test3.md',
-        frontmatter: { appliesTo: { projects: ['other/project'] } },
-        content: 'This is about SQL as well',
-      },
-    ]);
-    loadManifestSpy.mockResolvedValue({
-      defaults: { alwaysGroups: ['global'] },
-      groups: { global: {} },
-      projects: { 'buerokratt/Service-Module': { groups: ['global'] } },
-    });
+    searchRulesSpy.mockResolvedValue(
+      'Found 2 rule(s) containing "SQL":\n\n**rules/test1.md**\n\n---\n\n**rules/test2.md**',
+    );
 
     setupTools(server);
 
@@ -166,26 +130,16 @@ describe('setupTools', () => {
 
     const result = await handler({ keyword: 'SQL', scope: 'project', id: 'buerokratt/Service-Module' });
 
-    // The filter logic includes 'global' rules even when filtering by a specific module
-    // So we should get both service-module and global rules
     expect(result.content[0].text).toContain('Found 2 rule(s)');
     expect(result.content[0].text).toContain('test1.md');
     expect(result.content[0].text).toContain('test2.md');
-    expect(result.content[0].text).not.toContain('test3.md');
+    expect(searchRulesSpy).toHaveBeenCalledWith({ keyword: 'SQL', scope: 'project', id: 'buerokratt/Service-Module' });
 
-    loadAllRulesSpy.mockRestore();
-    loadManifestSpy.mockRestore();
+    searchRulesSpy.mockRestore();
   });
 
   it('search_rules tool handler returns no results message when nothing found', async () => {
-    loadAllRulesSpy.mockResolvedValue([
-      {
-        path: 'rules/test1.md',
-        frontmatter: { appliesTo: { projects: ['buerokratt/Service-Module'] } },
-        content: 'This is a test rule',
-      },
-    ]);
-    loadManifestSpy.mockResolvedValue({});
+    searchRulesSpy.mockResolvedValue('No rules found containing "nonexistent".');
 
     setupTools(server);
 
@@ -197,22 +151,11 @@ describe('setupTools', () => {
     expect(result.content[0].text).toContain('No rules found');
     expect(result.content[0].text).toContain('nonexistent');
 
-    loadAllRulesSpy.mockRestore();
-    loadManifestSpy.mockRestore();
+    searchRulesSpy.mockRestore();
   });
 
   it('search_rules tool handler searches in description', async () => {
-    loadAllRulesSpy.mockResolvedValue([
-      {
-        path: 'rules/test1.md',
-        frontmatter: {
-          appliesTo: { projects: ['buerokratt/Service-Module'] },
-          description: 'This is about SQL queries',
-        },
-        content: 'Some content here',
-      },
-    ]);
-    loadManifestSpy.mockResolvedValue({});
+    searchRulesSpy.mockResolvedValue('Found 1 rule(s) containing "SQL":\n\n**rules/test1.md**');
 
     setupTools(server);
 
@@ -223,8 +166,8 @@ describe('setupTools', () => {
 
     expect(result.content[0].text).toContain('Found 1 rule(s)');
     expect(result.content[0].text).toContain('test1.md');
+    expect(searchRulesSpy).toHaveBeenCalledWith({ keyword: 'SQL', scope: undefined, id: undefined });
 
-    loadAllRulesSpy.mockRestore();
-    loadManifestSpy.mockRestore();
+    searchRulesSpy.mockRestore();
   });
 });

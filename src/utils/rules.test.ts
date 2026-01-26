@@ -1,61 +1,33 @@
-import { mkdir, unlink, writeFile } from 'fs/promises';
-
 import { describe, expect, it } from 'vitest';
 
-import { findMarkdownFiles, loadAllRules } from './rules.ts';
+import { resolveRequestScopes } from './manifest.ts';
+import {
+  getMergedRules,
+  getRulesForRequest,
+  loadAllRules,
+  ruleAppliesToScopes,
+  searchRulesByKeyword,
+} from './rules.ts';
+import type { RuleFile, RulesManifest } from './types.ts';
 
-describe('findMarkdownFiles', () => {
-  it('finds all markdown files in a directory', async () => {
-    const tempDir = `/tmp/test-rules-${Date.now()}`;
-    await mkdir(tempDir, { recursive: true });
-    await mkdir(`${tempDir}/subdir`, { recursive: true });
-    await writeFile(`${tempDir}/file1.md`, 'Content 1');
-    await writeFile(`${tempDir}/subdir/file2.md`, 'Content 2');
-    await writeFile(`${tempDir}/file.txt`, 'Not a markdown file');
+function createRuleFile(path: string, appliesTo: RuleFile['frontmatter']['appliesTo'], content: string): RuleFile {
+  return {
+    path,
+    frontmatter: {
+      appliesTo,
+    },
+    content,
+    raw: `---\nappliesTo: ${JSON.stringify(appliesTo)}\n---\n${content}`,
+  };
+}
 
-    try {
-      const result = await findMarkdownFiles(tempDir);
-
-      expect(result.length).toBe(2);
-      expect(result.some((f) => f.includes('file1.md'))).toBe(true);
-      expect(result.some((f) => f.includes('file2.md'))).toBe(true);
-      expect(result.every((f) => f.endsWith('.md'))).toBe(true);
-    } finally {
-      // Cleanup
-      try {
-        await unlink(`${tempDir}/file1.md`);
-        await unlink(`${tempDir}/subdir/file2.md`);
-        await unlink(`${tempDir}/file.txt`);
-      } catch {
-        // Ignore cleanup errors
-      }
-    }
-  });
-
-  it('returns empty array when directory does not exist', async () => {
-    const result = await findMarkdownFiles('/nonexistent/directory/path');
-
-    expect(result).toEqual([]);
-  });
-
-  it('returns empty array when directory has no markdown files', async () => {
-    const tempDir = `/tmp/test-rules-empty-${Date.now()}`;
-    await mkdir(tempDir, { recursive: true });
-    await writeFile(`${tempDir}/file.txt`, 'Not markdown');
-
-    try {
-      const result = await findMarkdownFiles(tempDir);
-
-      expect(result).toEqual([]);
-    } finally {
-      try {
-        await unlink(`${tempDir}/file.txt`);
-      } catch {
-        // Ignore cleanup errors
-      }
-    }
-  });
-});
+const manifest: RulesManifest = {
+  projects: { 'buerokratt/Service-Module': {} },
+  groups: { global: {} },
+  techs: { react: {} },
+  languages: { typescript: {} },
+  defaults: { alwaysGroup: 'global' },
+};
 
 describe('loadAllRules', () => {
   it('loads all rule files from rules directory', async () => {
@@ -76,5 +48,56 @@ describe('loadAllRules', () => {
       expect(typeof rule.content).toBe('string');
       expect(rule.raw).toBeTruthy();
     }
+  });
+});
+
+describe('searchRulesByKeyword', () => {
+  it('returns message when nothing matches', async () => {
+    const result = await searchRulesByKeyword({ keyword: 'keyword-that-does-not-exist' });
+    expect(result).toContain('No rules found');
+  });
+
+  it('includes scoped results when scope and id provided', async () => {
+    const result = await searchRulesByKeyword({
+      keyword: 'rules',
+      scope: 'project',
+      id: 'buerokratt/Service-Module',
+    });
+
+    expect(result).toContain('Found');
+    expect(result).toContain('buerokratt/Service-Module');
+  });
+});
+
+describe('ruleAppliesToScopes', () => {
+  it('matches rules across any appliesTo category', () => {
+    const scopes = resolveRequestScopes({ scope: 'tech', id: 'react' }, manifest);
+    const rule = createRuleFile('rules/test.md', { techs: ['react'] }, 'React rule');
+
+    expect(ruleAppliesToScopes(rule, scopes)).toBe(true);
+  });
+});
+
+describe('getRulesForRequest', () => {
+  it('returns rules for a specific request', () => {
+    const mockRules: RuleFile[] = [
+      createRuleFile('rules/common.md', { groups: ['global'] }, 'Global rule'),
+      createRuleFile('rules/service.md', { projects: ['buerokratt/Service-Module'] }, 'Service rule'),
+    ];
+
+    const result = getRulesForRequest(mockRules, manifest, { scope: 'project', id: 'buerokratt/Service-Module' });
+
+    expect(result).toHaveLength(2);
+    expect(result[0]?.content).toBe('Global rule');
+    expect(result[1]?.content).toBe('Service rule');
+  });
+});
+
+describe('getMergedRules', () => {
+  it('returns merged markdown for a request', async () => {
+    const result = await getMergedRules({ scope: 'project', id: 'buerokratt/Service-Module' });
+
+    expect(result).toContain('# Rules (project:buerokratt/Service-Module)');
+    expect(result).not.toContain('_No rules found._');
   });
 });

@@ -1,12 +1,9 @@
-import { mkdir, rm, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
-
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setupResources } from './resources.ts';
-import { findAssetFiles, getAvailableAssets } from '../utils/assets.ts';
-import * as managerModule from '../utils/manager.ts';
+import { getAvailableAssets, loadAsset } from '../utils/assets.ts';
+import * as rulesModule from '../utils/rules.ts';
 
 describe('setupResources', () => {
   let server: McpServer;
@@ -34,29 +31,29 @@ describe('setupResources', () => {
       return (originalRegisterResource as any)(name, ...args);
     };
 
-    getMergedRulesSpy = vi.spyOn(managerModule, 'getMergedRules');
+    getMergedRulesSpy = vi.spyOn(rulesModule, 'getMergedRules');
   });
 
-  it('registers scope-rules resource', () => {
+  it('registers rules resource', () => {
     setupResources(server);
 
-    expect(registeredResources.has('scope-rules')).toBe(true);
-    const resourceConfig = registeredResources.get('scope-rules');
+    expect(registeredResources.has('rules')).toBe(true);
+    const resourceConfig = registeredResources.get('rules');
     expect(resourceConfig).toBeDefined();
   });
 
-  it('registers asset-files resource', () => {
+  it('registers assets resource', () => {
     setupResources(server);
 
-    expect(registeredResources.has('asset-files')).toBe(true);
-    const resourceConfig = registeredResources.get('asset-files');
+    expect(registeredResources.has('assets')).toBe(true);
+    const resourceConfig = registeredResources.get('assets');
     expect(resourceConfig).toBeDefined();
   });
 
-  it('asset-files resource read handler returns asset content', async () => {
+  it('assets resource read handler returns asset content', async () => {
     setupResources(server);
 
-    const resourceConfig = registeredResources.get('asset-files');
+    const resourceConfig = registeredResources.get('assets');
     expect(resourceConfig).toBeDefined();
     const readHandler = resourceConfig?.[2] as (
       uri: URL,
@@ -64,21 +61,21 @@ describe('setupResources', () => {
     ) => Promise<{ contents: Array<{ uri: string; mimeType: string; text: string }> }>;
     expect(typeof readHandler).toBe('function');
 
-    const uri = new URL('rules://assets/projects/buerokratt/sync-upstream.sh');
+    const uri = new URL('assets://projects/buerokratt/sync-upstream.sh');
     const result = await readHandler(uri, { name: 'projects/buerokratt/sync-upstream.sh' });
 
     expect(result.contents).toBeDefined();
     expect(result.contents.length).toBe(1);
     const content = result.contents[0]!;
     expect(content.uri).toBe(uri.toString());
-    expect(content.mimeType).toBe('text/x-shellscript');
+    expect(content.mimeType).toBe('application/x-sh');
     expect(content.text).toMatch(/^#!\/(usr\/bin\/env bash|bin\/bash)/);
   });
 
-  it('scope-rules resource is registered with correct structure', () => {
+  it('rules resource is registered with correct structure', () => {
     setupResources(server);
 
-    const resourceConfig = registeredResources.get('scope-rules');
+    const resourceConfig = registeredResources.get('rules');
     expect(resourceConfig).toBeDefined();
     expect(resourceConfig?.length).toBeGreaterThan(0);
 
@@ -97,12 +94,12 @@ describe('setupResources', () => {
     expect(typeof readHandler).toBe('function');
   });
 
-  it('scope-rules resource read handler returns merged rules for scope', async () => {
+  it('rules resource read handler returns merged rules for scope', async () => {
     getMergedRulesSpy.mockResolvedValue('# Test Rules\n\nContent here');
 
     setupResources(server);
 
-    const resourceConfig = registeredResources.get('scope-rules');
+    const resourceConfig = registeredResources.get('rules');
     expect(resourceConfig).toBeDefined();
     const readHandler = resourceConfig?.[2] as (
       uri: URL,
@@ -124,12 +121,12 @@ describe('setupResources', () => {
     getMergedRulesSpy.mockRestore();
   });
 
-  it('scope-rules resource read handler handles string variables', async () => {
+  it('rules resource read handler handles string variables', async () => {
     getMergedRulesSpy.mockResolvedValue('Rules content');
 
     setupResources(server);
 
-    const resourceConfig = registeredResources.get('scope-rules');
+    const resourceConfig = registeredResources.get('rules');
     expect(resourceConfig).toBeDefined();
     const readHandler = resourceConfig?.[2] as (
       uri: URL,
@@ -147,12 +144,12 @@ describe('setupResources', () => {
     getMergedRulesSpy.mockRestore();
   });
 
-  it('scope-rules resource read handler handles array variables', async () => {
+  it('rules resource read handler handles array variables', async () => {
     getMergedRulesSpy.mockResolvedValue('Rules content');
 
     setupResources(server);
 
-    const resourceConfig = registeredResources.get('scope-rules');
+    const resourceConfig = registeredResources.get('rules');
     expect(resourceConfig).toBeDefined();
     const readHandler = resourceConfig?.[2] as (
       uri: URL,
@@ -170,10 +167,10 @@ describe('setupResources', () => {
     getMergedRulesSpy.mockRestore();
   });
 
-  it('scope-rules resource read handler throws error when scope or id is missing', async () => {
+  it('rules resource read handler throws error when scope or id is missing', async () => {
     setupResources(server);
 
-    const resourceConfig = registeredResources.get('scope-rules');
+    const resourceConfig = registeredResources.get('rules');
     expect(resourceConfig).toBeDefined();
     const readHandler = resourceConfig?.[2] as (uri: URL, variables: Record<string, unknown>) => Promise<unknown>;
     expect(typeof readHandler).toBe('function');
@@ -185,34 +182,15 @@ describe('setupResources', () => {
 });
 
 describe('asset resource helpers', () => {
-  it('finds files with known mime types', async () => {
-    const tempDir = `/tmp/test-assets-${Date.now()}`;
-    await mkdir(join(tempDir, 'subdir'), { recursive: true });
-    await writeFile(join(tempDir, 'file.sql'), 'select 1;');
-    await writeFile(join(tempDir, 'file.unknownext'), 'data');
-    await writeFile(join(tempDir, 'subdir', 'file.json'), '{"ok":true}');
-
-    try {
-      const result = await findAssetFiles(tempDir);
-      expect(result.some((file) => file.endsWith('file.sql'))).toBe(true);
-      expect(result.some((file) => file.endsWith('file.json'))).toBe(true);
-      expect(result.some((file) => file.endsWith('file.unknownext'))).toBe(true);
-    } finally {
-      await rm(tempDir, { recursive: true, force: true });
-    }
+  it('builds asset resources map with relative paths', async () => {
+    const resources = await getAvailableAssets();
+    expect(resources['projects/buerokratt/sync-upstream.sh']).toBeDefined();
+    expect(resources['projects/buerokratt/sync-upstream.sh']?.mimeType).toBe('application/x-sh');
   });
 
-  it('builds asset resources map with relative paths', async () => {
-    const tempDir = `/tmp/test-assets-${Date.now()}`;
-    await mkdir(join(tempDir, 'nested'), { recursive: true });
-    await writeFile(join(tempDir, 'nested', 'script.sh'), '#!/usr/bin/env bash\necho ok\n');
-
-    try {
-      const resources = await getAvailableAssets(tempDir);
-      expect(resources['nested/script.sh']).toBeDefined();
-      expect(resources['nested/script.sh']?.mimeType).toBe('application/x-sh');
-    } finally {
-      await rm(tempDir, { recursive: true, force: true });
-    }
+  it('loads asset content by name', async () => {
+    const asset = await loadAsset('projects/buerokratt/sync-upstream.sh');
+    expect(asset.mimeType).toBe('application/x-sh');
+    expect(asset.content).toMatch(/^#!\/(usr\/bin\/env bash|bin\/bash)/);
   });
 });

@@ -2,7 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setupPrompts } from './prompts.ts';
-import * as managerModule from '../utils/manager.ts';
+import * as rulesModule from '../utils/rules.ts';
 
 describe('setupPrompts', () => {
   let server: McpServer;
@@ -30,7 +30,7 @@ describe('setupPrompts', () => {
       return (originalRegisterPrompt as any)(name, ...args);
     };
 
-    getMergedRulesSpy = vi.spyOn(managerModule, 'getMergedRules');
+    getMergedRulesSpy = vi.spyOn(rulesModule, 'getMergedRules');
   });
 
   it('registers development-rules prompt', () => {
