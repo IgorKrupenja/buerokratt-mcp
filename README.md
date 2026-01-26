@@ -22,12 +22,14 @@ Note that `<project-root>` can be a folder with multiple projects.
 ```json
 {
   "mcpServers": {
-    "buerokratt-mcp": {
+    "modular-mcp": {
       "url": "http://localhost:3627/mcp"
     }
   }
 }
 ```
+
+<!-- todo refactor below -->
 
 You might also want to add a simple rule to load rules based on path. See `.cursor/rules/buerokratt-mcp.mdc` for an example. Place it in `<project-root>/.cursor/rules/buerokratt-mcp.mdc`.
 
@@ -55,7 +57,7 @@ You might also want to add a simple rule to load rules based on path. See `.curs
 ```json
 {
   "mcpServers": {
-    "buerokratt-mcp": {
+    "modular-mcp": {
       "url": "http://localhost:3627/mcp",
       "transport": {
         "type": "sse"
@@ -68,7 +70,7 @@ You might also want to add a simple rule to load rules based on path. See `.curs
 **Claude Code (CLI)**:
 
 ```bash
-claude mcp add --transport http buerokratt-mcp http://localhost:3627/mcp
+claude mcp add --transport http modular-mcp http://localhost:3627/mcp
 ```
 
 ### MCP Server Features
@@ -125,37 +127,41 @@ This can be with an npm script, see [checks](#checks) below.
 ### Rules Folder Structure
 
 ```shell
-buerokratt-mcp/
-├── src/
-├── rules/
-│   ├── manifest.yml
-│   ├── general.md
-│   ├── projects/
-│   │   └── buerokratt/
-│   │       ├── general.md
-│   │       ├── css.md
-│   │       ├── react.md
-│   │       ├── ruuter.md
-│   │       ├── sql.md
-│   │       ├── sql-restrictions.md
-│   │       ├── sync-upstream.sh
-│   │       └── Service-Module/
-│   │           └── rules.md
-│   └── techs/
-│       ├── css/
-│       │   └── tailwind/
-│       │       └── rules.md
-│       ├── java/
-│       │   ├── rules.md
-│       │   └── spring/
-│       │       └── rules.md
-│       └── typescript/
-│           ├── nestjs/
-│           │   └── rules.md
-│           ├── react/
-│           │   └── rules.md
-│           └── rules.md
-└── ...
+rules/
+├── manifest.yml
+├── general.md
+├── projects/
+│   ├── buerokratt/
+│   │   ├── general.md
+│   │   ├── css.md
+│   │   ├── react.md
+│   │   ├── ruuter.md
+│   │   ├── sql.md
+│   │   ├── sql-restrictions.md
+│   │   ├── sync-upstream.sh
+│   │   └── Service-Module/
+│   │   │   └── rules.md
+│   │   │   └── ...
+│   │   └── ...
+│   └── ...
+└── techs/
+    ├── css/
+    │   └── tailwind/
+    │   │   └── rules.md
+    │   └── ...
+    ├── java/
+    │   ├── rules.md
+    │   └── spring/
+    │   │   └── rules.md
+    │   └── ...
+    ├── typescript/
+    │   ├── nestjs/
+    │   │   └── rules.md
+    │   ├── react/
+    │   │   └── rules.md
+    │   ├── rules.md
+    │   └── ...
+    └── ...
 ```
 
 ### Running the project for local development
